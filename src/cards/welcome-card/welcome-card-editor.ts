@@ -1,5 +1,11 @@
 import { css, html, LitElement, PropertyValues } from "lit";
 import { ActionConfig, fireEvent, HomeAssistant } from "custom-card-helpers";
+import {
+  renderActionEditor,
+  renderActionFields,
+  renderEntityPicker,
+  renderTextField,
+} from "../../shared/base-card";
 
 type WelcomeTabConfig = {
   icon?: string;
@@ -103,20 +109,29 @@ class WelcomeCardEditor extends LitElement {
     return html`
       <div class="editor">
         <div class="grid">
-          ${this.renderEntityPicker("Weather entity", "weather_entity", ["weather"])}
+          ${renderEntityPicker({
+            hass: this.hass,
+            label: "Weather entity",
+            value: String(this.config.weather_entity || ""),
+            domains: ["weather"],
+            onValueChanged: (value) => this.updateConfigValue("weather_entity", value),
+          })}
           ${this.renderCheckbox("Show temperature", "show_temperature")}
           ${this.renderCheckbox("Use Home Assistant weather icons", "use_ha_weather_icons")}
-          ${this.renderEntityPicker(
-            "Temperature entity override",
-            "temperature_entity",
-            ["sensor"],
-            !this.config.show_temperature
-          )}
-          ${this.renderTextField(
-            "Settings navigation path",
-            "settings_navigation_path",
-            DEFAULT_SETTINGS_NAVIGATION_PATH
-          )}
+          ${renderEntityPicker({
+            hass: this.hass,
+            label: "Temperature entity override",
+            value: String(this.config.temperature_entity || ""),
+            domains: ["sensor"],
+            disabled: !this.config.show_temperature,
+            onValueChanged: (value) => this.updateConfigValue("temperature_entity", value),
+          })}
+          ${renderTextField({
+            label: "Settings navigation path",
+            value: String(this.config.settings_navigation_path || ""),
+            placeholder: DEFAULT_SETTINGS_NAVIGATION_PATH,
+            onInput: (value) => this.updateConfigValue("settings_navigation_path", value),
+          })}
         </div>
 
         <section>
@@ -155,43 +170,8 @@ class WelcomeCardEditor extends LitElement {
           ${this.renderTabTextField(index, "color", "Color", "#86a9f8")}
         </div>
 
-        ${this.renderActionEditor("Tap action", index, tab.tap_action || { action: "none" })}
+        ${this.renderSharedActionEditor("Tap action", index, tab.tap_action || { action: "none" })}
       </fieldset>
-    `;
-  }
-
-  private renderEntityPicker(
-    label: string,
-    key: keyof WelcomeCardEditorConfig,
-    domains: string[],
-    disabled = false
-  ) {
-    return html`
-      <div class="field">
-        <ha-entity-picker
-          .hass=${this.hass}
-          .label=${label}
-          .value=${this.config[key] || ""}
-          .includeDomains=${domains}
-          ?disabled=${disabled}
-          allow-custom-entity
-          @value-changed=${(event: CustomEvent) => this.updateConfigValue(key, event.detail.value)}
-        ></ha-entity-picker>
-      </div>
-    `;
-  }
-
-  private renderTextField(label: string, key: keyof WelcomeCardEditorConfig, placeholder = "") {
-    return html`
-      <label>
-        <span>${label}</span>
-        <input
-          .value=${String(this.config[key] || "")}
-          placeholder=${placeholder}
-          @input=${(event: InputEvent) =>
-            this.updateConfigValue(key, (event.target as HTMLInputElement).value)}
-        />
-      </label>
     `;
   }
 
@@ -240,76 +220,23 @@ class WelcomeCardEditor extends LitElement {
     `;
   }
 
-  private renderActionEditor(label: string, index: number, actionConfig: ActionConfig) {
-    const action = actionConfig.action;
+  private renderSharedActionEditor(label: string, index: number, actionConfig: ActionConfig) {
+    const errorKey = this.getServiceDataErrorKey(index);
 
-    return html`
-      <fieldset class="action-editor">
-        <legend>${label}</legend>
-
-        <label>
-          <span>Action</span>
-          <select
-            .value=${action}
-            @change=${(event: Event) =>
-              this.updateTabActionType(index, (event.target as HTMLSelectElement).value as ActionType)}
-          >
-            ${ACTION_OPTIONS.map(
-              (option) => html`
-                <option value=${option.value} ?selected=${option.value === action}>${option.label}</option>
-              `
-            )}
-          </select>
-        </label>
-
-        ${this.renderActionFields(index, actionConfig)}
-      </fieldset>
-    `;
-  }
-
-  private renderActionFields(index: number, actionConfig: ActionConfig) {
-    switch (actionConfig.action) {
-      case "more-info":
-        return this.renderActionInput(index, "entity", "Entity override", "Optional entity");
-      case "navigate":
-        return this.renderActionInput(index, "navigation_path", "Navigation path", "/lovelace/0");
-      case "url":
-        return this.renderActionInput(index, "url_path", "URL path", "https://example.com");
-      case "call-service":
-        return html`
-          ${this.renderActionInput(index, "service", "Service", "light.turn_on")}
-          <label>
-            <span>Service data JSON</span>
-            <textarea
-              .value=${this.formatJson((actionConfig as any).service_data)}
-              placeholder='{"brightness_pct": 50}'
-              @change=${(event: Event) =>
-                this.updateServiceData(index, (event.target as HTMLTextAreaElement).value)}
-            ></textarea>
-          </label>
-          ${this.serviceDataErrors[this.getServiceDataErrorKey(index)]
-            ? html`<div class="error">${this.serviceDataErrors[this.getServiceDataErrorKey(index)]}</div>`
-            : ""}
-        `;
-      default:
-        return "";
-    }
-  }
-
-  private renderActionInput(index: number, property: string, label: string, placeholder: string) {
-    const actionConfig = this.getTab(index).tap_action || { action: "none" };
-
-    return html`
-      <label>
-        <span>${label}</span>
-        <input
-          .value=${String((actionConfig as any)[property] || "")}
-          placeholder=${placeholder}
-          @input=${(event: InputEvent) =>
-            this.updateTabActionValue(index, property, (event.target as HTMLInputElement).value)}
-        />
-      </label>
-    `;
+    return renderActionEditor<ActionType>({
+      label,
+      className: "action-editor",
+      actionConfig: actionConfig as any,
+      actionOptions: ACTION_OPTIONS as any,
+      onActionTypeChanged: (action) => this.updateTabActionType(index, action),
+      fields: renderActionFields({
+        actionConfig,
+        formatJson: (value) => this.formatJson(value),
+        onActionValueChanged: (property, value) => this.updateTabActionValue(index, property, value),
+        onServiceDataChanged: (value) => this.updateServiceData(index, value),
+        serviceDataError: this.serviceDataErrors[errorKey],
+      }),
+    });
   }
 
   private updateConfigValue(key: keyof WelcomeCardEditorConfig, value: unknown) {

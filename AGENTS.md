@@ -98,6 +98,21 @@ Typical contents:
 
 Avoid duplicating logic across cards.
 
+### Editor UI helper methods (avoid duplication)
+
+To keep card editors consistent and avoid copy/paste drift, common editor render helpers are shared in `src/shared/base-card.ts`.
+
+Use these helpers in editors instead of re-implementing them:
+
+* `renderEntityPicker`
+* `renderTextField`
+* `renderIconPicker`
+* `renderActionEditor`
+* `renderActionFields`
+* `renderActionInput`
+
+When creating or updating an editor (`getConfigElement`), prefer importing these helpers and wiring them to your editor’s `updateConfigValue` / `updateActionValue` handlers.
+
 ---
 
 ## ⚡ Reactivity & rendering

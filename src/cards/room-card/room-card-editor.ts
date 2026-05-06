@@ -1,5 +1,12 @@
 import { css, html, LitElement, PropertyValues } from "lit";
 import { ActionConfig, fireEvent, HomeAssistant } from "custom-card-helpers";
+import {
+  renderActionEditor,
+  renderActionFields,
+  renderEntityPicker,
+  renderIconPicker,
+  renderTextField,
+} from "../../shared/base-card";
 
 type RoomCardEditorConfig = {
   type?: string;
@@ -75,140 +82,79 @@ class RoomCardEditor extends LitElement {
     return html`
       <div class="editor">
         <div class="grid">
-          ${this.renderTextField("Name", "name", "Living room")}
-          ${this.renderEntityPicker("Light entity", "entity", ["light"])}
-          ${this.renderIconPicker("Icon", "icon", "mdi:sofa")}
-          ${this.renderEntityPicker("Sensor 1 entity", "sensor1_entity", ["sensor"])}
-          ${this.renderIconPicker("Sensor 1 icon", "sensor1_icon", "mdi:thermometer")}
-          ${this.renderEntityPicker("Sensor 2 entity", "sensor2_entity", ["sensor"])}
-          ${this.renderIconPicker("Sensor 2 icon", "sensor2_icon", "mdi:water-percent")}
+          ${renderTextField({
+            label: "Name",
+            value: String(this.config.name || ""),
+            placeholder: "Living room",
+            onInput: (value) => this.updateConfigValue("name", value),
+          })}
+          ${renderEntityPicker({
+            hass: this.hass,
+            label: "Light entity",
+            value: String(this.config.entity || ""),
+            domains: ["light"],
+            onValueChanged: (value) => this.updateConfigValue("entity", value),
+          })}
+          ${renderIconPicker({
+            hass: this.hass,
+            label: "Icon",
+            value: String(this.config.icon || ""),
+            fallback: "mdi:sofa",
+            onValueChanged: (value) => this.updateConfigValue("icon", value),
+          })}
+          ${renderEntityPicker({
+            hass: this.hass,
+            label: "Sensor 1 entity",
+            value: String(this.config.sensor1_entity || ""),
+            domains: ["sensor"],
+            onValueChanged: (value) => this.updateConfigValue("sensor1_entity", value),
+          })}
+          ${renderIconPicker({
+            hass: this.hass,
+            label: "Sensor 1 icon",
+            value: String(this.config.sensor1_icon || ""),
+            fallback: "mdi:thermometer",
+            onValueChanged: (value) => this.updateConfigValue("sensor1_icon", value),
+          })}
+          ${renderEntityPicker({
+            hass: this.hass,
+            label: "Sensor 2 entity",
+            value: String(this.config.sensor2_entity || ""),
+            domains: ["sensor"],
+            onValueChanged: (value) => this.updateConfigValue("sensor2_entity", value),
+          })}
+          ${renderIconPicker({
+            hass: this.hass,
+            label: "Sensor 2 icon",
+            value: String(this.config.sensor2_icon || ""),
+            fallback: "mdi:water-percent",
+            onValueChanged: (value) => this.updateConfigValue("sensor2_icon", value),
+          })}
         </div>
 
-        ${this.renderActionEditor("Card tap action", "tap_action")}
-        ${this.renderActionEditor("Light short press action", "light_tap_action")}
-        ${this.renderActionEditor("Light long press action", "light_hold_action")}
+        ${this.renderSharedActionEditor("Card tap action", "tap_action")}
+        ${this.renderSharedActionEditor("Light short press action", "light_tap_action")}
+        ${this.renderSharedActionEditor("Light long press action", "light_hold_action")}
       </div>
     `;
   }
 
-  private renderEntityPicker(label: string, key: keyof RoomCardEditorConfig, domains: string[]) {
-    return html`
-      <div class="field">
-        <ha-entity-picker
-          .hass=${this.hass}
-          .label=${label}
-          .value=${this.config[key] || ""}
-          .includeDomains=${domains}
-          allow-custom-entity
-          @value-changed=${(event: CustomEvent) => this.updateConfigValue(key, event.detail.value)}
-        ></ha-entity-picker>
-      </div>
-    `;
-  }
+  private renderSharedActionEditor(label: string, key: ActionKey) {
+    const actionConfig = (this.config[key] || { action: "none" }) as ActionConfig;
 
-  private renderTextField(label: string, key: keyof RoomCardEditorConfig, placeholder = "") {
-    return html`
-      <label>
-        <span>${label}</span>
-        <input
-          .value=${String(this.config[key] || "")}
-          placeholder=${placeholder}
-          @input=${(event: InputEvent) =>
-            this.updateConfigValue(key, (event.target as HTMLInputElement).value)}
-        />
-      </label>
-    `;
-  }
-
-  private renderIconPicker(label: string, key: keyof RoomCardEditorConfig, fallback: string) {
-    return html`
-      <div class="field">
-        <ha-icon-picker
-          .hass=${this.hass}
-          .label=${label}
-          .value=${this.config[key] || fallback}
-          @value-changed=${(event: CustomEvent) => this.updateConfigValue(key, event.detail.value)}
-        ></ha-icon-picker>
-      </div>
-    `;
-  }
-
-  private renderActionEditor(label: string, key: ActionKey) {
-    const actionConfig = this.config[key] || { action: "none" };
-    const action = actionConfig.action;
-
-    return html`
-      <fieldset>
-        <legend>${label}</legend>
-
-        <label>
-          <span>Action</span>
-          <select
-            .value=${action}
-            @change=${(event: Event) =>
-              this.updateActionType(key, (event.target as HTMLSelectElement).value as ActionType)}
-          >
-            ${ACTION_OPTIONS.map(
-              (option) => html`
-                <option value=${option.value} ?selected=${option.value === action}>${option.label}</option>
-              `
-            )}
-          </select>
-        </label>
-
-        ${this.renderActionFields(key, actionConfig)}
-      </fieldset>
-    `;
-  }
-
-  private renderActionFields(key: ActionKey, actionConfig: ActionConfig) {
-    switch (actionConfig.action) {
-      case "more-info":
-        return this.renderActionInput(key, "entity", "Entity override", "Optional entity");
-      case "navigate":
-        return this.renderActionInput(key, "navigation_path", "Navigation path", "/lovelace/0");
-      case "url":
-        return this.renderActionInput(key, "url_path", "URL path", "https://example.com");
-      case "call-service":
-        return html`
-          ${this.renderActionInput(key, "service", "Service", "light.turn_on")}
-          <label>
-            <span>Service data JSON</span>
-            <textarea
-              .value=${this.formatJson((actionConfig as any).service_data)}
-              placeholder='{"brightness_pct": 50}'
-              @change=${(event: Event) =>
-                this.updateServiceData(key, (event.target as HTMLTextAreaElement).value)}
-            ></textarea>
-          </label>
-          ${this.serviceDataErrors[key]
-            ? html`<div class="error">${this.serviceDataErrors[key]}</div>`
-            : ""}
-        `;
-      default:
-        return "";
-    }
-  }
-
-  private renderActionInput(
-    key: ActionKey,
-    property: string,
-    label: string,
-    placeholder: string
-  ) {
-    const actionConfig = this.config[key] || { action: "none" };
-
-    return html`
-      <label>
-        <span>${label}</span>
-        <input
-          .value=${String((actionConfig as any)[property] || "")}
-          placeholder=${placeholder}
-          @input=${(event: InputEvent) =>
-            this.updateActionValue(key, property, (event.target as HTMLInputElement).value)}
-        />
-      </label>
-    `;
+    return renderActionEditor<ActionType>({
+      label,
+      actionConfig: actionConfig as any,
+      actionOptions: ACTION_OPTIONS as any,
+      onActionTypeChanged: (action) => this.updateActionType(key, action),
+      fields: renderActionFields({
+        actionConfig,
+        formatJson: (value) => this.formatJson(value),
+        onActionValueChanged: (property, value) => this.updateActionValue(key, property, value),
+        onServiceDataChanged: (value) => this.updateServiceData(key, value),
+        serviceDataError: this.serviceDataErrors[key],
+      }),
+    });
   }
 
   private updateConfigValue(key: keyof RoomCardEditorConfig, value: unknown) {
