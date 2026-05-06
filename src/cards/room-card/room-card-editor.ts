@@ -77,7 +77,7 @@ class RoomCardEditor extends LitElement {
         <div class="grid">
           ${this.renderEntityPicker("Light entity", "entity", ["light"])}
           ${this.renderTextField("Name", "name", "Living room")}
-          ${this.renderTextField("Icon", "icon", "mdi:sofa")}
+          ${this.renderIconPicker("Icon", "icon", "mdi:sofa")}
           ${this.renderEntityPicker("Sensor 1 entity", "sensor1_entity", ["sensor"])}
           ${this.renderIconPicker("Sensor 1 icon", "sensor1_icon", "mdi:thermometer")}
           ${this.renderEntityPicker("Sensor 2 entity", "sensor2_entity", ["sensor"])}
