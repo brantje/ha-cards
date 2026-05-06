@@ -1,7 +1,7 @@
 import { css, html } from "lit";
 import { styleMap } from "lit/directives/style-map.js";
 import { ActionConfig, handleActionConfig, HomeAssistant } from "custom-card-helpers";
-import { BaseCard } from "../shared/base-card";
+import { BaseCard } from "../../shared/base-card";
 import "./room-card-editor";
 
 type RoomCardConfig = {
@@ -73,6 +73,7 @@ class RoomCard extends BaseCard {
     const isLightOff = this.isLightOff(light);
     const name = this.config.name || light?.attributes?.friendly_name || "Room";
     const lightRgb = this.getLightRgb(light);
+    const hasSensors = Boolean(this.config.sensor1_entity || this.config.sensor2_entity);
     const styles = lightRgb
       ? {
           "--room-light-rgb": lightRgb.join(","),
@@ -104,16 +105,24 @@ class RoomCard extends BaseCard {
 
           <div class="details">
             <div class="name">${name}</div>
-            <div class="sensors">
-              ${this.renderSensor(
-                this.config.sensor1_icon || DEFAULT_SENSOR1_ICON,
-                this.config.sensor1_entity
-              )}
-              ${this.renderSensor(
-                this.config.sensor2_icon || DEFAULT_SENSOR2_ICON,
-                this.config.sensor2_entity
-              )}
-            </div>
+            ${hasSensors
+              ? html`
+                  <div class="sensors">
+                    ${this.config.sensor1_entity
+                      ? this.renderSensor(
+                          this.config.sensor1_icon || DEFAULT_SENSOR1_ICON,
+                          this.config.sensor1_entity
+                        )
+                      : ""}
+                    ${this.config.sensor2_entity
+                      ? this.renderSensor(
+                          this.config.sensor2_icon || DEFAULT_SENSOR2_ICON,
+                          this.config.sensor2_entity
+                        )
+                      : ""}
+                  </div>
+                `
+              : ""}
           </div>
         </div>
       </ha-card>
@@ -272,7 +281,7 @@ class RoomCard extends BaseCard {
 
     .card {
       cursor: pointer;
-      padding: 12px;
+      padding: 12px 12px 12px 24px;
     }
 
     .card:focus {
@@ -352,7 +361,7 @@ class RoomCard extends BaseCard {
     }
 
     .details {
-      margin-top: 24px;
+      margin-top: 12px;
     }
 
     .name {

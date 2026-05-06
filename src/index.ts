@@ -1,1 +1,1 @@
-import "./cards/room-card";
+import "./cards/room-card/room-card";
