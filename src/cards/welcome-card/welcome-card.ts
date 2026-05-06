@@ -28,6 +28,7 @@ type HassEntity = {
 
 const DEFAULT_SETTINGS_NAVIGATION_PATH = "/config/dashboard";
 const DEFAULT_TAB_ACTION: ActionConfig = { action: "none" };
+const COLLAPSED_STORAGE_PREFIX = "welcome-card:collapsed";
 
 const DEFAULT_TABS: WelcomeTabConfig[] = [
   {
@@ -128,6 +129,7 @@ class WelcomeCard extends BaseCard {
       tabs: DEFAULT_TABS,
       ...config,
     };
+    this._collapsed = this.loadCollapsedState();
   }
 
   connectedCallback() {
@@ -235,6 +237,33 @@ class WelcomeCard extends BaseCard {
 
   private toggleCollapsed() {
     this._collapsed = !this._collapsed;
+    this.saveCollapsedState();
+  }
+
+  private getStorageKey() {
+    const keyParts = [
+      this.config?.weather_entity || "no-weather",
+      this.config?.settings_navigation_path || DEFAULT_SETTINGS_NAVIGATION_PATH,
+      (this.config?.tabs || []).map((tab) => tab.label || "").join("|"),
+    ];
+
+    return `${COLLAPSED_STORAGE_PREFIX}${keyParts.join(":")}`;
+  }
+
+  private loadCollapsedState() {
+    try {
+      return window.localStorage.getItem(this.getStorageKey()) === "true";
+    } catch {
+      return false;
+    }
+  }
+
+  private saveCollapsedState() {
+    try {
+      window.localStorage.setItem(this.getStorageKey(), String(this._collapsed));
+    } catch {
+      // Ignore storage failures, for example private browsing quota errors.
+    }
   }
 
   private handleSettingsTap() {
