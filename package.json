@@ -1,0 +1,21 @@
+{
+  "name": "ha-card-dev",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "dev": "vite build --watch",
+    "build": "vite build"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "custom-card-helpers": "^1.9.0",
+    "lit": "^3.3.2"
+  },
+  "devDependencies": {
+    "typescript": "^6.0.3",
+    "vite": "^6.4.2"
+  }
+}
