@@ -67,6 +67,7 @@ When editing `src/cards/room-card.ts`:
 
 * Treat the configured `entity` as the room light and derive visual state from `hass.states[entity]`.
 * Keep `hass` reactive via `BaseCard` so card visuals update after light toggles.
+* Override `getWatchedEntities()` to include every entity the card reads (light + sensors). See "Reactivity & rendering" below.
 * When the light is off or unavailable, use `#1d1d1d` for the main card background and `mdi:lightbulb-off` for the light button icon.
 
 ---
@@ -96,6 +97,34 @@ Typical contents:
 * Shared styles
 
 Avoid duplicating logic across cards.
+
+---
+
+## ⚡ Reactivity & rendering
+
+Home Assistant replaces the entire `hass` object on **every state change for any entity in the system**. If a card treats `hass` as a plain Lit reactive property without filtering, it will re-render on every state tick — frequently dozens of times per second — even when none of the entities it shows have changed. With multiple cards on a dashboard this caused severe browser lag.
+
+### Rules for cards
+
+* Always extend `BaseCard`. It implements a `shouldUpdate` that:
+  * Re-renders on every `config` change.
+  * On `hass` changes, re-renders only when one of the entity ids returned by `getWatchedEntities()` actually changed (reference equality on the per-entity state object — that's what HA replaces).
+* **Override `getWatchedEntities()`** in any card that reads more than `config.entity`. List every entity id the render path depends on (primary entity + each sensor/secondary entity). The default returns `[config.entity]`, which is wrong for cards that also display sensors.
+* Don't add ad-hoc reactive properties for derived state — derive it inside `render()` so `shouldUpdate` stays the single source of truth for re-render decisions.
+
+### Rules for editors (`getConfigElement`)
+
+* Editors are plain `LitElement`s, not `BaseCard`, so they need their own `shouldUpdate`.
+* Re-render on `config` changes and on the **first** `hass` arrival only. Don't re-render on subsequent `hass` swaps — `ha-entity-picker` / `ha-icon-picker` manage their own internal state, and forwarding a fresh `hass` on every state tick forces them to re-derive a list of every entity in HA, which is the main cause of editor lag.
+* When you add new pickers or fields to an editor, you do **not** need to widen the `shouldUpdate` — `config` changes already trigger a render with the latest `this.hass` forwarded to children.
+
+### Symptoms to watch for
+
+If the dashboard or "Edit card" dialog feels sluggish, profile re-renders before changing visuals. Common regressions:
+
+* A card reads `hass.states[some_id]` but `some_id` isn't in `getWatchedEntities()` → stale UI.
+* A card adds a new sensor field but forgets to extend `getWatchedEntities()` → stale UI.
+* An editor's `shouldUpdate` is removed or widened to always re-render on `hass` → entity-picker lag returns.
 
 ---
 
@@ -200,6 +229,7 @@ To support HACS:
 * Reuse shared utilities
 * Use HA CSS variables for styling
 * Validate config in `setConfig`
+* Override `getWatchedEntities()` whenever a card reads more than `config.entity` (see "Reactivity & rendering")
 
 ### Don’t
 
@@ -207,6 +237,7 @@ To support HACS:
 * Don’t rely on external frameworks
 * Don’t forget to import new cards in `index.ts`
 * Don’t break existing card APIs
+* Don’t let cards or editors re-render on every `hass` update — that's what made the browser lag
 
 ---
 
