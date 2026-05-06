@@ -10,7 +10,9 @@ type RoomCardConfig = {
   name?: string;
   icon?: string;
   temperature_entity?: string;
+  temperature_icon?: string;
   humidity_entity?: string;
+  humidity_icon?: string;
   tap_action?: ActionConfig;
   light_tap_action?: ActionConfig;
   light_hold_action?: ActionConfig;
@@ -24,6 +26,8 @@ type HassEntity = {
 const DEFAULT_TAP_ACTION: ActionConfig = { action: "more-info" };
 const DEFAULT_LIGHT_TAP_ACTION: ActionConfig = { action: "toggle" };
 const DEFAULT_LIGHT_HOLD_ACTION: ActionConfig = { action: "more-info" };
+const DEFAULT_TEMPERATURE_ICON = "mdi:thermometer";
+const DEFAULT_HUMIDITY_ICON = "mdi:water-percent";
 
 class RoomCard extends BaseCard {
   config!: RoomCardConfig;
@@ -40,6 +44,8 @@ class RoomCard extends BaseCard {
       entity: "",
       name: "Living room",
       icon: "mdi:sofa",
+      temperature_icon: DEFAULT_TEMPERATURE_ICON,
+      humidity_icon: DEFAULT_HUMIDITY_ICON,
       tap_action: DEFAULT_TAP_ACTION,
       light_tap_action: DEFAULT_LIGHT_TAP_ACTION,
       light_hold_action: DEFAULT_LIGHT_HOLD_ACTION,
@@ -53,6 +59,8 @@ class RoomCard extends BaseCard {
 
     this.config = {
       icon: "mdi:sofa",
+      temperature_icon: DEFAULT_TEMPERATURE_ICON,
+      humidity_icon: DEFAULT_HUMIDITY_ICON,
       tap_action: DEFAULT_TAP_ACTION,
       light_tap_action: DEFAULT_LIGHT_TAP_ACTION,
       light_hold_action: DEFAULT_LIGHT_HOLD_ACTION,
@@ -97,8 +105,14 @@ class RoomCard extends BaseCard {
           <div class="details">
             <div class="name">${name}</div>
             <div class="sensors">
-              ${this.renderSensor("mdi:thermometer", this.config.temperature_entity)}
-              ${this.renderSensor("mdi:water-percent", this.config.humidity_entity)}
+              ${this.renderSensor(
+                this.config.temperature_icon || DEFAULT_TEMPERATURE_ICON,
+                this.config.temperature_entity
+              )}
+              ${this.renderSensor(
+                this.config.humidity_icon || DEFAULT_HUMIDITY_ICON,
+                this.config.humidity_entity
+              )}
             </div>
           </div>
         </div>

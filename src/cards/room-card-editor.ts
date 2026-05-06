@@ -7,7 +7,9 @@ type RoomCardEditorConfig = {
   name?: string;
   icon?: string;
   temperature_entity?: string;
+  temperature_icon?: string;
   humidity_entity?: string;
+  humidity_icon?: string;
   tap_action?: ActionConfig;
   light_tap_action?: ActionConfig;
   light_hold_action?: ActionConfig;
@@ -44,6 +46,8 @@ class RoomCardEditor extends LitElement {
   setConfig(config: RoomCardEditorConfig) {
     this.config = {
       icon: "mdi:sofa",
+      temperature_icon: "mdi:thermometer",
+      humidity_icon: "mdi:water-percent",
       tap_action: { action: "more-info" },
       light_tap_action: { action: "toggle" },
       light_hold_action: { action: "more-info" },
@@ -59,7 +63,9 @@ class RoomCardEditor extends LitElement {
           ${this.renderTextField("Name", "name", "Living room")}
           ${this.renderTextField("Icon", "icon", "mdi:sofa")}
           ${this.renderEntityPicker("Temperature sensor", "temperature_entity", ["sensor"])}
+          ${this.renderIconPicker("Temperature icon", "temperature_icon", "mdi:thermometer")}
           ${this.renderEntityPicker("Humidity sensor", "humidity_entity", ["sensor"])}
+          ${this.renderIconPicker("Humidity icon", "humidity_icon", "mdi:water-percent")}
         </div>
 
         ${this.renderActionEditor("Card tap action", "tap_action")}
@@ -95,6 +101,19 @@ class RoomCardEditor extends LitElement {
             this.updateConfigValue(key, (event.target as HTMLInputElement).value)}
         />
       </label>
+    `;
+  }
+
+  private renderIconPicker(label: string, key: keyof RoomCardEditorConfig, fallback: string) {
+    return html`
+      <div class="field">
+        <ha-icon-picker
+          .hass=${this.hass}
+          .label=${label}
+          .value=${this.config[key] || fallback}
+          @value-changed=${(event: CustomEvent) => this.updateConfigValue(key, event.detail.value)}
+        ></ha-icon-picker>
+      </div>
     `;
   }
 
@@ -246,7 +265,10 @@ class RoomCardEditor extends LitElement {
   private async loadHomeAssistantPickers() {
     const loadCardHelpers = (window as any).loadCardHelpers;
 
-    if (customElements.get("ha-entity-picker") || !loadCardHelpers) {
+    if (
+      (customElements.get("ha-entity-picker") && customElements.get("ha-icon-picker")) ||
+      !loadCardHelpers
+    ) {
       return;
     }
 
@@ -280,7 +302,8 @@ class RoomCardEditor extends LitElement {
       display: block;
     }
 
-    ha-entity-picker {
+    ha-entity-picker,
+    ha-icon-picker {
       display: block;
       width: 100%;
     }
