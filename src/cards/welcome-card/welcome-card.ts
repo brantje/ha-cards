@@ -295,11 +295,11 @@ class WelcomeCard extends BaseCard {
   private getGreeting() {
     const hour = this._now.getHours();
 
-    if (hour < 12) {
+    if (hour > 5 && hour < 12) {
       return "Good morning";
     }
 
-    if (hour < 18) {
+    if (hour > 15 && hour < 18) {
       return "Good afternoon";
     }
 
