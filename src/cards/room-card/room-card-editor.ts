@@ -1,4 +1,4 @@
-import { css, html, LitElement } from "lit";
+import { css, html, LitElement, PropertyValues } from "lit";
 import { ActionConfig, fireEvent, HomeAssistant } from "custom-card-helpers";
 
 type RoomCardEditorConfig = {
@@ -53,6 +53,22 @@ class RoomCardEditor extends LitElement {
       light_hold_action: { action: "more-info" },
       ...config,
     };
+  }
+
+  shouldUpdate(changedProperties: PropertyValues): boolean {
+    if (changedProperties.has("config")) {
+      return true;
+    }
+
+    if (changedProperties.has("hass")) {
+      const oldHass = changedProperties.get("hass") as HomeAssistant | undefined;
+      // Only re-render the very first time hass becomes available. The pickers
+      // manage their own internal state from there, so churning them on every
+      // state tick caused major lag in dashboards with many entities.
+      return !oldHass && Boolean(this.hass);
+    }
+
+    return false;
   }
 
   render() {

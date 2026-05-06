@@ -5,7 +5,7 @@ export default defineConfig({
     lib: {
       entry: "src/index.ts",   // 👈 important
       formats: ["es"],
-      fileName: () => "my-ha-cards.js"
+      fileName: () => "ha-cards.js"
     },
     rollupOptions: {
       external: []

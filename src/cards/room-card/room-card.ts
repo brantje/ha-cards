@@ -68,6 +68,14 @@ class RoomCard extends BaseCard {
     };
   }
 
+  protected getWatchedEntities(): string[] {
+    return [
+      this.config?.entity,
+      this.config?.sensor1_entity,
+      this.config?.sensor2_entity,
+    ].filter((id): id is string => Boolean(id));
+  }
+
   render() {
     const light = this.getLightEntity();
     const isLightOff = this.isLightOff(light);

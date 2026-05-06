@@ -112,7 +112,7 @@ npm run build
 ### Output
 
 ```
-dist/my-ha-cards.js
+dist/ha-cards.js
 ```
 
 ### Requirements
@@ -150,7 +150,7 @@ Ensure CORS is enabled.
 ### Resource config
 
 ```yaml
-url: /local/my-ha-cards.js
+url: /local/ha-cards.js
 type: module
 ```
 
@@ -169,7 +169,7 @@ name: Living room
 Cards can be hosted externally:
 
 ```yaml
-url: https://example.com/my-ha-cards.js
+url: https://example.com/ha-cards.js
 type: module
 ```
 
