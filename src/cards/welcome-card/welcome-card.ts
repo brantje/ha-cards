@@ -401,7 +401,7 @@ class WelcomeCard extends BaseCard {
 
   static styles = css`
     ha-card {
-      background: #1d1d1d;
+      background: var(--card-background-color);
       border: none;
       border-radius: 20px;
       color: var(--primary-text-color);

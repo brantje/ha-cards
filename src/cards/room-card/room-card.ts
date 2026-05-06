@@ -284,7 +284,7 @@ class RoomCard extends BaseCard {
     }
 
     ha-card.light-off {
-      background: #1d1d1d;
+      background: var(--card-background-color);
     }
 
     .card {
