@@ -224,3 +224,42 @@ export function renderActionEditor<TAction extends string>(params: {
     </fieldset>
   `;
 }
+
+export function renderSharedActionEditor<TAction extends string>(params: {
+  label: string;
+  actionConfig: { action: TAction } & ActionConfig;
+  actionOptions: EditorActionOption<TAction>[];
+  onActionTypeChanged: (action: TAction) => void;
+  onActionValueChanged: (property: string, value: string) => void;
+  onServiceDataChanged: (value: string) => void;
+  formatJson: (value: unknown) => string;
+  serviceDataError?: string;
+  className?: string;
+}): TemplateResult {
+  const {
+    label,
+    actionConfig,
+    actionOptions,
+    onActionTypeChanged,
+    onActionValueChanged,
+    onServiceDataChanged,
+    formatJson,
+    serviceDataError,
+    className,
+  } = params;
+
+  return renderActionEditor<TAction>({
+    label,
+    className,
+    actionConfig,
+    actionOptions,
+    onActionTypeChanged,
+    fields: renderActionFields({
+      actionConfig,
+      formatJson,
+      onActionValueChanged,
+      onServiceDataChanged,
+      serviceDataError,
+    }),
+  });
+}

@@ -1,8 +1,7 @@
 import { css, html, LitElement, PropertyValues } from "lit";
 import { ActionConfig, fireEvent, HomeAssistant } from "custom-card-helpers";
 import {
-  renderActionEditor,
-  renderActionFields,
+  renderSharedActionEditor,
   renderEntityPicker,
   renderIconPicker,
   renderTextField,
@@ -132,28 +131,25 @@ class RoomCardEditor extends LitElement {
           })}
         </div>
 
-        ${this.renderSharedActionEditor("Card tap action", "tap_action")}
-        ${this.renderSharedActionEditor("Light short press action", "light_tap_action")}
-        ${this.renderSharedActionEditor("Light long press action", "light_hold_action")}
+        ${this.renderActionEditor("Card tap action", "tap_action")}
+        ${this.renderActionEditor("Light short press action", "light_tap_action")}
+        ${this.renderActionEditor("Light long press action", "light_hold_action")}
       </div>
     `;
   }
 
-  private renderSharedActionEditor(label: string, key: ActionKey) {
+  private renderActionEditor(label: string, key: ActionKey) {
     const actionConfig = (this.config[key] || { action: "none" }) as ActionConfig;
 
-    return renderActionEditor<ActionType>({
+    return renderSharedActionEditor<ActionType>({
       label,
       actionConfig: actionConfig as any,
       actionOptions: ACTION_OPTIONS as any,
       onActionTypeChanged: (action) => this.updateActionType(key, action),
-      fields: renderActionFields({
-        actionConfig,
-        formatJson: (value) => this.formatJson(value),
-        onActionValueChanged: (property, value) => this.updateActionValue(key, property, value),
-        onServiceDataChanged: (value) => this.updateServiceData(key, value),
-        serviceDataError: this.serviceDataErrors[key],
-      }),
+      onActionValueChanged: (property, value) => this.updateActionValue(key, property, value),
+      onServiceDataChanged: (value) => this.updateServiceData(key, value),
+      formatJson: (value) => this.formatJson(value),
+      serviceDataError: this.serviceDataErrors[key],
     });
   }
 

@@ -107,6 +107,7 @@ Use these helpers in editors instead of re-implementing them:
 * `renderEntityPicker`
 * `renderTextField`
 * `renderIconPicker`
+* `renderSharedActionEditor`
 * `renderActionEditor`
 * `renderActionFields`
 * `renderActionInput`

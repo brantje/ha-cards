@@ -1,8 +1,7 @@
 import { css, html, LitElement, PropertyValues } from "lit";
 import { ActionConfig, fireEvent, HomeAssistant } from "custom-card-helpers";
 import {
-  renderActionEditor,
-  renderActionFields,
+  renderSharedActionEditor,
   renderEntityPicker,
   renderTextField,
 } from "../../shared/base-card";
@@ -170,7 +169,7 @@ class WelcomeCardEditor extends LitElement {
           ${this.renderTabTextField(index, "color", "Color", "#86a9f8")}
         </div>
 
-        ${this.renderSharedActionEditor("Tap action", index, tab.tap_action || { action: "none" })}
+        ${this.renderTabActionEditor("Tap action", index, tab.tap_action || { action: "none" })}
       </fieldset>
     `;
   }
@@ -220,22 +219,19 @@ class WelcomeCardEditor extends LitElement {
     `;
   }
 
-  private renderSharedActionEditor(label: string, index: number, actionConfig: ActionConfig) {
+  private renderTabActionEditor(label: string, index: number, actionConfig: ActionConfig) {
     const errorKey = this.getServiceDataErrorKey(index);
 
-    return renderActionEditor<ActionType>({
+    return renderSharedActionEditor<ActionType>({
       label,
       className: "action-editor",
       actionConfig: actionConfig as any,
       actionOptions: ACTION_OPTIONS as any,
       onActionTypeChanged: (action) => this.updateTabActionType(index, action),
-      fields: renderActionFields({
-        actionConfig,
-        formatJson: (value) => this.formatJson(value),
-        onActionValueChanged: (property, value) => this.updateTabActionValue(index, property, value),
-        onServiceDataChanged: (value) => this.updateServiceData(index, value),
-        serviceDataError: this.serviceDataErrors[errorKey],
-      }),
+      onActionValueChanged: (property, value) => this.updateTabActionValue(index, property, value),
+      onServiceDataChanged: (value) => this.updateServiceData(index, value),
+      formatJson: (value) => this.formatJson(value),
+      serviceDataError: this.serviceDataErrors[errorKey],
     });
   }
 
