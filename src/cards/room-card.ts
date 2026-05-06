@@ -9,10 +9,10 @@ type RoomCardConfig = {
   entity: string;
   name?: string;
   icon?: string;
-  temperature_entity?: string;
-  temperature_icon?: string;
-  humidity_entity?: string;
-  humidity_icon?: string;
+  sensor1_entity?: string;
+  sensor1_icon?: string;
+  sensor2_entity?: string;
+  sensor2_icon?: string;
   tap_action?: ActionConfig;
   light_tap_action?: ActionConfig;
   light_hold_action?: ActionConfig;
@@ -26,8 +26,8 @@ type HassEntity = {
 const DEFAULT_TAP_ACTION: ActionConfig = { action: "more-info" };
 const DEFAULT_LIGHT_TAP_ACTION: ActionConfig = { action: "toggle" };
 const DEFAULT_LIGHT_HOLD_ACTION: ActionConfig = { action: "more-info" };
-const DEFAULT_TEMPERATURE_ICON = "mdi:thermometer";
-const DEFAULT_HUMIDITY_ICON = "mdi:water-percent";
+const DEFAULT_SENSOR1_ICON = "mdi:thermometer";
+const DEFAULT_SENSOR2_ICON = "mdi:water-percent";
 
 class RoomCard extends BaseCard {
   config!: RoomCardConfig;
@@ -44,8 +44,8 @@ class RoomCard extends BaseCard {
       entity: "",
       name: "Living room",
       icon: "mdi:sofa",
-      temperature_icon: DEFAULT_TEMPERATURE_ICON,
-      humidity_icon: DEFAULT_HUMIDITY_ICON,
+      sensor1_icon: DEFAULT_SENSOR1_ICON,
+      sensor2_icon: DEFAULT_SENSOR2_ICON,
       tap_action: DEFAULT_TAP_ACTION,
       light_tap_action: DEFAULT_LIGHT_TAP_ACTION,
       light_hold_action: DEFAULT_LIGHT_HOLD_ACTION,
@@ -59,8 +59,8 @@ class RoomCard extends BaseCard {
 
     this.config = {
       icon: "mdi:sofa",
-      temperature_icon: DEFAULT_TEMPERATURE_ICON,
-      humidity_icon: DEFAULT_HUMIDITY_ICON,
+      sensor1_icon: DEFAULT_SENSOR1_ICON,
+      sensor2_icon: DEFAULT_SENSOR2_ICON,
       tap_action: DEFAULT_TAP_ACTION,
       light_tap_action: DEFAULT_LIGHT_TAP_ACTION,
       light_hold_action: DEFAULT_LIGHT_HOLD_ACTION,
@@ -106,12 +106,12 @@ class RoomCard extends BaseCard {
             <div class="name">${name}</div>
             <div class="sensors">
               ${this.renderSensor(
-                this.config.temperature_icon || DEFAULT_TEMPERATURE_ICON,
-                this.config.temperature_entity
+                this.config.sensor1_icon || DEFAULT_SENSOR1_ICON,
+                this.config.sensor1_entity
               )}
               ${this.renderSensor(
-                this.config.humidity_icon || DEFAULT_HUMIDITY_ICON,
-                this.config.humidity_entity
+                this.config.sensor2_icon || DEFAULT_SENSOR2_ICON,
+                this.config.sensor2_entity
               )}
             </div>
           </div>

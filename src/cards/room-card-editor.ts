@@ -6,10 +6,10 @@ type RoomCardEditorConfig = {
   entity?: string;
   name?: string;
   icon?: string;
-  temperature_entity?: string;
-  temperature_icon?: string;
-  humidity_entity?: string;
-  humidity_icon?: string;
+  sensor1_entity?: string;
+  sensor1_icon?: string;
+  sensor2_entity?: string;
+  sensor2_icon?: string;
   tap_action?: ActionConfig;
   light_tap_action?: ActionConfig;
   light_hold_action?: ActionConfig;
@@ -46,8 +46,8 @@ class RoomCardEditor extends LitElement {
   setConfig(config: RoomCardEditorConfig) {
     this.config = {
       icon: "mdi:sofa",
-      temperature_icon: "mdi:thermometer",
-      humidity_icon: "mdi:water-percent",
+      sensor1_icon: "mdi:thermometer",
+      sensor2_icon: "mdi:water-percent",
       tap_action: { action: "more-info" },
       light_tap_action: { action: "toggle" },
       light_hold_action: { action: "more-info" },
@@ -62,10 +62,10 @@ class RoomCardEditor extends LitElement {
           ${this.renderEntityPicker("Light entity", "entity", ["light"])}
           ${this.renderTextField("Name", "name", "Living room")}
           ${this.renderTextField("Icon", "icon", "mdi:sofa")}
-          ${this.renderEntityPicker("Temperature sensor", "temperature_entity", ["sensor"])}
-          ${this.renderIconPicker("Temperature icon", "temperature_icon", "mdi:thermometer")}
-          ${this.renderEntityPicker("Humidity sensor", "humidity_entity", ["sensor"])}
-          ${this.renderIconPicker("Humidity icon", "humidity_icon", "mdi:water-percent")}
+          ${this.renderEntityPicker("Sensor 1 entity", "sensor1_entity", ["sensor"])}
+          ${this.renderIconPicker("Sensor 1 icon", "sensor1_icon", "mdi:thermometer")}
+          ${this.renderEntityPicker("Sensor 2 entity", "sensor2_entity", ["sensor"])}
+          ${this.renderIconPicker("Sensor 2 icon", "sensor2_icon", "mdi:water-percent")}
         </div>
 
         ${this.renderActionEditor("Card tap action", "tap_action")}
