@@ -11,8 +11,13 @@ type UnavailableDevicesCardEditorConfig = {
   issue_states?: string[] | string;
   ignored_entities?: string[] | string;
   ignored_devices?: string[] | string;
+  ignored_integrations?: string[] | string;
   ignored_name_patterns?: string[] | string;
   row_detail?: RowDetailMode;
+};
+
+type EntityRegistryEntry = {
+  platform?: string | null;
 };
 
 const DEFAULT_TITLE = "Possible Issues";
@@ -23,10 +28,14 @@ const DEFAULT_ROW_DETAIL: RowDetailMode = "none";
 class UnavailableDevicesCardEditor extends LitElement {
   hass?: HomeAssistant;
   config: UnavailableDevicesCardEditorConfig = {};
+  private integrationOptions: string[] = [];
+  private integrationsLoading = false;
+  private integrationsVersion = 0;
 
   static properties = {
     hass: { attribute: false },
     config: { attribute: false },
+    integrationsVersion: { state: true },
   };
 
   setConfig(config: UnavailableDevicesCardEditorConfig) {
@@ -36,6 +45,7 @@ class UnavailableDevicesCardEditor extends LitElement {
       issue_states: DEFAULT_ISSUE_STATES,
       ignored_entities: [],
       ignored_devices: [],
+      ignored_integrations: [],
       ignored_name_patterns: [],
       row_detail: DEFAULT_ROW_DETAIL,
       ...config,
@@ -43,7 +53,7 @@ class UnavailableDevicesCardEditor extends LitElement {
   }
 
   shouldUpdate(changedProperties: PropertyValues): boolean {
-    if (changedProperties.has("config")) {
+    if (changedProperties.has("config") || changedProperties.has("integrationsVersion")) {
       return true;
     }
 
@@ -53,6 +63,12 @@ class UnavailableDevicesCardEditor extends LitElement {
     }
 
     return false;
+  }
+
+  updated(changedProperties: PropertyValues) {
+    if (changedProperties.has("hass")) {
+      this.loadIntegrationOptions();
+    }
   }
 
   render() {
@@ -69,6 +85,7 @@ class UnavailableDevicesCardEditor extends LitElement {
           ${this.renderListField("Issue states", "issue_states", DEFAULT_ISSUE_STATES, "unavailable, unknown")}
           ${this.renderListField("Ignored entity IDs or patterns", "ignored_entities", [], "sensor.openweathermap_weather")}
           ${this.renderListField("Ignored device IDs or patterns", "ignored_devices", [], "nuki, 65oled855")}
+          ${this.renderIgnoredIntegrationsField()}
           ${this.renderListField("Ignored name patterns", "ignored_name_patterns", [], "Printer, Test device")}
           ${this.renderRowDetailField()}
         </div>
@@ -88,6 +105,43 @@ class UnavailableDevicesCardEditor extends LitElement {
       placeholder,
       onInput: (value) => this.updateListValue(key, value),
     });
+  }
+
+  private renderIgnoredIntegrationsField() {
+    const selected = this.parseConfigList(this.config.ignored_integrations);
+    const selectedSet = new Set(selected);
+    const available = this.integrationOptions.filter((integration) => !selectedSet.has(integration));
+    const isDisabled = this.integrationsLoading || available.length === 0;
+
+    return html`
+      <label>
+        <span>Ignored integrations</span>
+        <select ?disabled=${isDisabled} @change=${this.handleIgnoredIntegrationSelected}>
+          <option value="">
+            ${this.integrationsLoading
+              ? "Loading integrations..."
+              : available.length
+              ? "Add integration"
+              : "No integrations available"}
+          </option>
+          ${available.map((integration) => html`<option value=${integration}>${this.formatIntegrationName(integration)}</option>`)}
+        </select>
+      </label>
+      ${selected.length
+        ? html`
+            <div class="chips" aria-label="Ignored integrations">
+              ${selected.map(
+                (integration) => html`
+                  <button class="chip" type="button" @click=${() => this.removeIgnoredIntegration(integration)}>
+                    ${this.formatIntegrationName(integration)}
+                    <span aria-hidden="true">x</span>
+                  </button>
+                `
+              )}
+            </div>
+          `
+        : ""}
+    `;
   }
 
   private renderRowDetailField() {
@@ -123,6 +177,30 @@ class UnavailableDevicesCardEditor extends LitElement {
     });
   }
 
+  private handleIgnoredIntegrationSelected(event: Event) {
+    const select = event.target as HTMLSelectElement;
+    const integration = select.value;
+    select.value = "";
+
+    if (!integration) {
+      return;
+    }
+
+    this.updateConfig({
+      ...this.config,
+      ignored_integrations: [...this.parseConfigList(this.config.ignored_integrations), integration],
+    });
+  }
+
+  private removeIgnoredIntegration(integration: string) {
+    this.updateConfig({
+      ...this.config,
+      ignored_integrations: this.parseConfigList(this.config.ignored_integrations).filter(
+        (selected) => selected !== integration
+      ),
+    });
+  }
+
   private parseList(value: string) {
     return value
       .split(",")
@@ -130,14 +208,49 @@ class UnavailableDevicesCardEditor extends LitElement {
       .filter(Boolean);
   }
 
+  private parseConfigList(value?: string[] | string) {
+    if (value === undefined || value === null || value === "") {
+      return [];
+    }
+
+    return Array.isArray(value) ? value : this.parseList(String(value));
+  }
+
   private formatList(value: string[] | string | undefined, fallback: string[]) {
     const source = value === undefined || value === null || value === "" ? fallback : value;
     return Array.isArray(source) ? source.join(", ") : String(source);
   }
 
+  private formatIntegrationName(integration: string) {
+    return integration
+      .split("_")
+      .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+      .join(" ");
+  }
+
   private updateConfig(config: UnavailableDevicesCardEditorConfig) {
     this.config = config;
     fireEvent(this, "config-changed", { config });
+  }
+
+  private async loadIntegrationOptions() {
+    if (!this.hass || this.integrationsLoading || this.integrationOptions.length) {
+      return;
+    }
+
+    this.integrationsLoading = true;
+    this.integrationsVersion += 1;
+
+    try {
+      const entities = await this.hass.callWS<EntityRegistryEntry[]>({
+        type: "config/entity_registry/list",
+      });
+
+      this.integrationOptions = [...new Set(entities.map((entry) => entry.platform).filter(Boolean) as string[])].sort();
+    } finally {
+      this.integrationsLoading = false;
+      this.integrationsVersion += 1;
+    }
   }
 
   static styles = css`
@@ -173,6 +286,32 @@ class UnavailableDevicesCardEditor extends LitElement {
       min-height: 40px;
       padding: 8px 10px;
       width: 100%;
+    }
+
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .chip {
+      align-items: center;
+      background: var(--card-background-color, #fff);
+      border: 1px solid var(--divider-color, #ddd);
+      border-radius: 999px;
+      color: var(--primary-text-color);
+      cursor: pointer;
+      display: inline-flex;
+      font: inherit;
+      gap: 8px;
+      min-height: 32px;
+      padding: 5px 10px;
+    }
+
+    .chip span {
+      color: var(--secondary-text-color);
+      font-size: 13px;
+      line-height: 1;
     }
   `;
 }

@@ -12,6 +12,7 @@ type UnavailableDevicesCardConfig = {
   issue_states?: string[] | string;
   ignored_entities?: string[] | string;
   ignored_devices?: string[] | string;
+  ignored_integrations?: string[] | string;
   ignored_name_patterns?: string[] | string;
   row_detail?: RowDetailMode;
 };
@@ -28,6 +29,7 @@ type EntityRegistryEntry = {
   original_icon?: string | null;
   name?: string | null;
   original_name?: string | null;
+  platform?: string | null;
 };
 
 type DeviceRegistryEntry = {
@@ -72,6 +74,7 @@ class UnavailableDevicesCard extends BaseCard {
       issue_states: DEFAULT_ISSUE_STATES,
       ignored_entities: [],
       ignored_devices: [],
+      ignored_integrations: [],
       ignored_name_patterns: [],
       row_detail: DEFAULT_ROW_DETAIL,
     };
@@ -84,6 +87,7 @@ class UnavailableDevicesCard extends BaseCard {
       issue_states: DEFAULT_ISSUE_STATES,
       ignored_entities: [],
       ignored_devices: [],
+      ignored_integrations: [],
       ignored_name_patterns: [],
       row_detail: DEFAULT_ROW_DETAIL,
       ...config,
@@ -159,6 +163,9 @@ class UnavailableDevicesCard extends BaseCard {
     const issueStates = new Set(this.normalizeList(this.config.issue_states, DEFAULT_ISSUE_STATES));
     const ignoredEntities = this.normalizeList(this.config.ignored_entities);
     const ignoredDevices = this.normalizeList(this.config.ignored_devices);
+    const ignoredIntegrations = new Set(
+      this.normalizeList(this.config.ignored_integrations).map((integration) => integration.toLowerCase())
+    );
     const ignoredNames = this.normalizeList(this.config.ignored_name_patterns);
     const deviceById = new Map(this.deviceRegistry.map((device) => [device.id, device]));
     const grouped = new Map<string, EntityRegistryEntry[]>();
@@ -169,6 +176,10 @@ class UnavailableDevicesCard extends BaseCard {
       const device = deviceById.get(deviceId);
 
       if (!entity || !device || !issueStates.has(entity.state)) {
+        continue;
+      }
+
+      if (entry.platform && ignoredIntegrations.has(entry.platform.toLowerCase())) {
         continue;
       }
 
