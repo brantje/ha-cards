@@ -23,6 +23,7 @@ type EntityRegistryEntry = {
 const DEFAULT_TITLE = "Possible Issues";
 const DEFAULT_DOMAINS = ["sensor", "light", "switch"];
 const DEFAULT_ISSUE_STATES = ["unavailable"];
+const COMMON_ISSUE_STATES = ["unavailable", "unknown", "none"];
 const DEFAULT_ROW_DETAIL: RowDetailMode = "none";
 
 class UnavailableDevicesCardEditor extends LitElement {
@@ -82,7 +83,7 @@ class UnavailableDevicesCardEditor extends LitElement {
             onInput: (value) => this.updateConfigValue("title", value),
           })}
           ${this.renderListField("Domains", "domains", DEFAULT_DOMAINS, "sensor, light, switch")}
-          ${this.renderListField("Issue states", "issue_states", DEFAULT_ISSUE_STATES, "unavailable, unknown")}
+          ${this.renderIssueStatesField()}
           ${this.renderListField("Ignored entity IDs or patterns", "ignored_entities", [], "sensor.openweathermap_weather")}
           ${this.renderListField("Ignored device IDs or patterns", "ignored_devices", [], "nuki, 65oled855")}
           ${this.renderIgnoredIntegrationsField()}
@@ -107,6 +108,48 @@ class UnavailableDevicesCardEditor extends LitElement {
     });
   }
 
+  private renderIssueStatesField() {
+    const selected = this.parseConfigList(this.config.issue_states);
+    const selectedSet = new Set(selected);
+    const available = COMMON_ISSUE_STATES.filter((state) => !selectedSet.has(state));
+
+    return html`
+      <div class="field-group">
+        <label>
+          <span>Issue states</span>
+          <select ?disabled=${available.length === 0} @change=${(event: Event) => this.handleIssueStateSelected(event)}>
+            <option value="">${available.length ? "Add state" : "All common states selected"}</option>
+            ${available.map((state) => html`<option value=${state}>${state}</option>`)}
+          </select>
+        </label>
+
+        <div class="custom-row">
+          <input
+            class="custom-issue-state"
+            placeholder="Custom state"
+            @keydown=${(event: KeyboardEvent) => this.handleCustomIssueStateKeydown(event)}
+          />
+          <button type="button" @click=${() => this.addCustomIssueState()}>Add</button>
+        </div>
+
+        ${selected.length
+          ? html`
+              <div class="chips" aria-label="Issue states">
+                ${selected.map(
+                  (state) => html`
+                    <button class="chip" type="button" @click=${() => this.removeIssueState(state)}>
+                      ${state}
+                      <span aria-hidden="true">x</span>
+                    </button>
+                  `
+                )}
+              </div>
+            `
+          : ""}
+      </div>
+    `;
+  }
+
   private renderIgnoredIntegrationsField() {
     const selected = this.parseConfigList(this.config.ignored_integrations);
     const selectedSet = new Set(selected);
@@ -116,7 +159,7 @@ class UnavailableDevicesCardEditor extends LitElement {
     return html`
       <label>
         <span>Ignored integrations</span>
-        <select ?disabled=${isDisabled} @change=${this.handleIgnoredIntegrationSelected}>
+        <select ?disabled=${isDisabled} @change=${(event: Event) => this.handleIgnoredIntegrationSelected(event)}>
           <option value="">
             ${this.integrationsLoading
               ? "Loading integrations..."
@@ -174,6 +217,62 @@ class UnavailableDevicesCardEditor extends LitElement {
     this.updateConfig({
       ...this.config,
       [key]: this.parseList(value),
+    });
+  }
+
+  private handleIssueStateSelected(event: Event) {
+    const select = event.target as HTMLSelectElement;
+    const state = select.value;
+    select.value = "";
+
+    if (!state) {
+      return;
+    }
+
+    this.addIssueState(state);
+  }
+
+  private handleCustomIssueStateKeydown(event: KeyboardEvent) {
+    if (event.key !== "Enter") {
+      return;
+    }
+
+    event.preventDefault();
+    this.addCustomIssueState(event.target as HTMLInputElement);
+  }
+
+  private addCustomIssueState(input?: HTMLInputElement) {
+    const customInput = input || this.renderRoot.querySelector<HTMLInputElement>(".custom-issue-state");
+    const state = customInput?.value.trim();
+
+    if (!state) {
+      return;
+    }
+
+    this.addIssueState(state);
+
+    if (customInput) {
+      customInput.value = "";
+    }
+  }
+
+  private addIssueState(state: string) {
+    const selected = this.parseConfigList(this.config.issue_states);
+
+    if (selected.includes(state)) {
+      return;
+    }
+
+    this.updateConfig({
+      ...this.config,
+      issue_states: [...selected, state],
+    });
+  }
+
+  private removeIssueState(state: string) {
+    this.updateConfig({
+      ...this.config,
+      issue_states: this.parseConfigList(this.config.issue_states).filter((selected) => selected !== state),
     });
   }
 
@@ -269,6 +368,11 @@ class UnavailableDevicesCardEditor extends LitElement {
       gap: 6px;
     }
 
+    .field-group {
+      display: grid;
+      gap: 8px;
+    }
+
     label span {
       color: var(--secondary-text-color);
       font-size: 12px;
@@ -276,7 +380,8 @@ class UnavailableDevicesCardEditor extends LitElement {
     }
 
     input,
-    select {
+    select,
+    button {
       background: var(--card-background-color, #fff);
       border: 1px solid var(--divider-color, #ddd);
       border-radius: 6px;
@@ -286,6 +391,23 @@ class UnavailableDevicesCardEditor extends LitElement {
       min-height: 40px;
       padding: 8px 10px;
       width: 100%;
+    }
+
+    button {
+      cursor: pointer;
+      width: auto;
+    }
+
+    button:disabled,
+    select:disabled {
+      cursor: default;
+      opacity: 0.55;
+    }
+
+    .custom-row {
+      display: grid;
+      gap: 8px;
+      grid-template-columns: minmax(0, 1fr) auto;
     }
 
     .chips {
