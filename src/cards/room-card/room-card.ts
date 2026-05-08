@@ -300,7 +300,7 @@ class RoomCard extends BaseCard {
 
     .card {
       cursor: pointer;
-      padding: 12px 12px 12px 24px;
+      padding: 10px;
     }
 
     .card:focus {
@@ -313,10 +313,9 @@ class RoomCard extends BaseCard {
     }
 
     .top-row {
-      align-items: center;
+      align-items: stretch;
       display: flex;
-      gap: 24px;
-      justify-content: space-between;
+      gap: 50px;
     }
 
     .room-icon {
@@ -325,6 +324,7 @@ class RoomCard extends BaseCard {
       border-radius: 999px;
       color: #ffd34c;
       display: flex;
+      flex: 0 0 auto;
       height: 42px;
       justify-content: center;
       width: 42px;
@@ -343,17 +343,16 @@ class RoomCard extends BaseCard {
       align-items: center;
       background: rgba(var(--room-light-rgb), 0.33);
       border: 0;
-      border-radius: 14px;
+      border-radius: 12px;
       color: #ffd968;
       cursor: pointer;
       display: flex;
-      flex: 0 0 33%;
+      flex: 1 1 0;
       height: 42px;
       justify-content: center;
+      min-width: 0;
       padding: 0;
       transition: filter 120ms ease, transform 120ms ease;
-      width: 33%;
-      min-width: 107px;
     }
 
     .light-button-off {
@@ -421,22 +420,17 @@ class RoomCard extends BaseCard {
     }
 
     @media (max-width: 420px) {
-      .card {
-        padding: 20px;
+      .top-row {
+        gap: 12px;
       }
-
-      .room-icon,
-      .light-button {
-        height: 72px;
-      }
-
       .room-icon {
-        width: 72px;
+        height: 50px;
+        width: 50px;
+        border-radius: 50%;
       }
 
-      .light-button {
-        flex-basis: 33%;
-        width: 33%;
+      .sensors {
+        gap: 10px;
       }
     }
   `;
