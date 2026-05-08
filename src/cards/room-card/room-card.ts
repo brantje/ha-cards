@@ -1,6 +1,6 @@
 import { css, html } from "lit";
 import { styleMap } from "lit/directives/style-map.js";
-import { ActionConfig, handleActionConfig, HomeAssistant } from "custom-card-helpers";
+import { ActionConfig, formatNumber, handleActionConfig, HomeAssistant } from "custom-card-helpers";
 import { BaseCard } from "../../shared/base-card";
 import "./room-card-editor";
 
@@ -151,7 +151,18 @@ class RoomCard extends BaseCard {
 
   private formatEntityState(entity: HassEntity) {
     const unit = entity.attributes?.unit_of_measurement || "";
-    return `${entity.state}${unit ? ` ${unit}` : ""}`;
+    const value = this.formatSensorValue(entity.state);
+    return `${value}${unit ? ` ${unit}` : ""}`;
+  }
+
+  private formatSensorValue(value: string) {
+    const numericValue = Number(value);
+
+    if (value.trim() === "" || !Number.isFinite(numericValue)) {
+      return value;
+    }
+
+    return formatNumber(numericValue, this.hass?.locale, { maximumFractionDigits: 2 });
   }
 
   private getLightEntity() {
