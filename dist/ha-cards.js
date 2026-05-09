@@ -22,7 +22,7 @@ let Wt = class {
     return this.cssText;
   }
 };
-const te = (a) => new Wt(typeof a == "string" ? a : a + "", void 0, $t), L = (a, ...t) => {
+const te = (a) => new Wt(typeof a == "string" ? a : a + "", void 0, $t), I = (a, ...t) => {
   const e = a.length === 1 ? a[0] : t.reduce((i, s, n) => i + ((o) => {
     if (o._$cssResult$ === !0) return o.cssText;
     if (typeof o == "number") return o;
@@ -75,7 +75,7 @@ const { is: ie, defineProperty: se, getOwnPropertyDescriptor: ne, getOwnProperty
   return e;
 } }, qt = (a, t) => !ie(a, t), Tt = { attribute: !0, type: String, converter: pt, reflect: !1, useDefault: !1, hasChanged: qt };
 Symbol.metadata ?? (Symbol.metadata = Symbol("metadata")), b.litPropertyMetadata ?? (b.litPropertyMetadata = /* @__PURE__ */ new WeakMap());
-let S = class extends HTMLElement {
+let E = class extends HTMLElement {
   static addInitializer(t) {
     this._$Ei(), (this.l ?? (this.l = [])).push(t);
   }
@@ -278,28 +278,28 @@ let S = class extends HTMLElement {
   firstUpdated(t) {
   }
 };
-S.elementStyles = [], S.shadowRootOptions = { mode: "open" }, S[D("elementProperties")] = /* @__PURE__ */ new Map(), S[D("finalized")] = /* @__PURE__ */ new Map(), Y == null || Y({ ReactiveElement: S }), (b.reactiveElementVersions ?? (b.reactiveElementVersions = [])).push("2.1.2");
+E.elementStyles = [], E.shadowRootOptions = { mode: "open" }, E[D("elementProperties")] = /* @__PURE__ */ new Map(), E[D("finalized")] = /* @__PURE__ */ new Map(), Y == null || Y({ ReactiveElement: E }), (b.reactiveElementVersions ?? (b.reactiveElementVersions = [])).push("2.1.2");
 /**
  * @license
  * Copyright 2017 Google LLC
  * SPDX-License-Identifier: BSD-3-Clause
  */
-const N = globalThis, kt = (a) => a, q = N.trustedTypes, Lt = q ? q.createPolicy("lit-html", { createHTML: (a) => a }) : void 0, Bt = "$lit$", m = `lit$${Math.random().toFixed(9).slice(2)}$`, Jt = "?" + m, ce = `<${Jt}>`, x = document, O = () => x.createComment(""), V = (a) => a === null || typeof a != "object" && typeof a != "function", wt = Array.isArray, he = (a) => wt(a) || typeof (a == null ? void 0 : a[Symbol.iterator]) == "function", tt = `[ 	
-\f\r]`, I = /<(?:(!--|\/[^a-zA-Z])|(\/?[a-zA-Z][^>\s]*)|(\/?$))/g, It = /-->/g, Dt = />/g, _ = RegExp(`>|${tt}(?:([^\\s"'>=/]+)(${tt}*=${tt}*(?:[^ 	
-\f\r"'\`<>=]|("|')|))|$)`, "g"), Nt = /'/g, Ot = /"/g, Gt = /^(?:script|style|textarea|title)$/i, de = (a) => (t, ...e) => ({ _$litType$: a, strings: t, values: e }), h = de(1), A = Symbol.for("lit-noChange"), p = Symbol.for("lit-nothing"), Vt = /* @__PURE__ */ new WeakMap(), y = x.createTreeWalker(x, 129);
+const N = globalThis, kt = (a) => a, q = N.trustedTypes, It = q ? q.createPolicy("lit-html", { createHTML: (a) => a }) : void 0, Bt = "$lit$", m = `lit$${Math.random().toFixed(9).slice(2)}$`, Jt = "?" + m, ce = `<${Jt}>`, A = document, O = () => A.createComment(""), V = (a) => a === null || typeof a != "object" && typeof a != "function", wt = Array.isArray, he = (a) => wt(a) || typeof (a == null ? void 0 : a[Symbol.iterator]) == "function", tt = `[ 	
+\f\r]`, L = /<(?:(!--|\/[^a-zA-Z])|(\/?[a-zA-Z][^>\s]*)|(\/?$))/g, Lt = /-->/g, Dt = />/g, _ = RegExp(`>|${tt}(?:([^\\s"'>=/]+)(${tt}*=${tt}*(?:[^ 	
+\f\r"'\`<>=]|("|')|))|$)`, "g"), Nt = /'/g, Ot = /"/g, Gt = /^(?:script|style|textarea|title)$/i, de = (a) => (t, ...e) => ({ _$litType$: a, strings: t, values: e }), h = de(1), C = Symbol.for("lit-noChange"), p = Symbol.for("lit-nothing"), Vt = /* @__PURE__ */ new WeakMap(), y = A.createTreeWalker(A, 129);
 function Kt(a, t) {
   if (!wt(a) || !a.hasOwnProperty("raw")) throw Error("invalid template strings array");
-  return Lt !== void 0 ? Lt.createHTML(t) : t;
+  return It !== void 0 ? It.createHTML(t) : t;
 }
 const ue = (a, t) => {
   const e = a.length - 1, i = [];
-  let s, n = t === 2 ? "<svg>" : t === 3 ? "<math>" : "", o = I;
+  let s, n = t === 2 ? "<svg>" : t === 3 ? "<math>" : "", o = L;
   for (let l = 0; l < e; l++) {
     const r = a[l];
     let c, d, u = -1, g = 0;
-    for (; g < r.length && (o.lastIndex = g, d = o.exec(r), d !== null); ) g = o.lastIndex, o === I ? d[1] === "!--" ? o = It : d[1] !== void 0 ? o = Dt : d[2] !== void 0 ? (Gt.test(d[2]) && (s = RegExp("</" + d[2], "g")), o = _) : d[3] !== void 0 && (o = _) : o === _ ? d[0] === ">" ? (o = s ?? I, u = -1) : d[1] === void 0 ? u = -2 : (u = o.lastIndex - d[2].length, c = d[1], o = d[3] === void 0 ? _ : d[3] === '"' ? Ot : Nt) : o === Ot || o === Nt ? o = _ : o === It || o === Dt ? o = I : (o = _, s = void 0);
+    for (; g < r.length && (o.lastIndex = g, d = o.exec(r), d !== null); ) g = o.lastIndex, o === L ? d[1] === "!--" ? o = Lt : d[1] !== void 0 ? o = Dt : d[2] !== void 0 ? (Gt.test(d[2]) && (s = RegExp("</" + d[2], "g")), o = _) : d[3] !== void 0 && (o = _) : o === _ ? d[0] === ">" ? (o = s ?? L, u = -1) : d[1] === void 0 ? u = -2 : (u = o.lastIndex - d[2].length, c = d[1], o = d[3] === void 0 ? _ : d[3] === '"' ? Ot : Nt) : o === Ot || o === Nt ? o = _ : o === Lt || o === Dt ? o = L : (o = _, s = void 0);
     const f = o === _ && a[l + 1].startsWith("/>") ? " " : "";
-    n += o === I ? r + ce : u >= 0 ? (i.push(c), r.slice(0, u) + Bt + r.slice(u) + m + f) : r + m + (u === -2 ? l : f);
+    n += o === L ? r + ce : u >= 0 ? (i.push(c), r.slice(0, u) + Bt + r.slice(u) + m + f) : r + m + (u === -2 ? l : f);
   }
   return [Kt(a, n + (a[e] || "<?>") + (t === 2 ? "</svg>" : t === 3 ? "</math>" : "")), i];
 };
@@ -336,13 +336,13 @@ class U {
     }
   }
   static createElement(t, e) {
-    const i = x.createElement("template");
+    const i = A.createElement("template");
     return i.innerHTML = t, i;
   }
 }
 function k(a, t, e = a, i) {
   var o, l;
-  if (t === A) return t;
+  if (t === C) return t;
   let s = i !== void 0 ? (o = e._$Co) == null ? void 0 : o[i] : e._$Cl;
   const n = V(t) ? void 0 : t._$litDirective$;
   return (s == null ? void 0 : s.constructor) !== n && ((l = s == null ? void 0 : s._$AO) == null || l.call(s, !1), n === void 0 ? s = void 0 : (s = new n(a), s._$AT(a, e, i)), i !== void 0 ? (e._$Co ?? (e._$Co = []))[i] = s : e._$Cl = s), s !== void 0 && (t = k(a, s._$AS(a, t.values), s, i)), t;
@@ -358,7 +358,7 @@ class pe {
     return this._$AM._$AU;
   }
   u(t) {
-    const { el: { content: e }, parts: i } = this._$AD, s = ((t == null ? void 0 : t.creationScope) ?? x).importNode(e, !0);
+    const { el: { content: e }, parts: i } = this._$AD, s = ((t == null ? void 0 : t.creationScope) ?? A).importNode(e, !0);
     y.currentNode = s;
     let n = y.nextNode(), o = 0, l = 0, r = i[0];
     for (; r !== void 0; ) {
@@ -368,7 +368,7 @@ class pe {
       }
       o !== (r == null ? void 0 : r.index) && (n = y.nextNode(), o++);
     }
-    return y.currentNode = x, s;
+    return y.currentNode = A, s;
   }
   p(t) {
     let e = 0;
@@ -395,7 +395,7 @@ class R {
     return this._$AB;
   }
   _$AI(t, e = this) {
-    t = k(this, t, e), V(t) ? t === p || t == null || t === "" ? (this._$AH !== p && this._$AR(), this._$AH = p) : t !== this._$AH && t !== A && this._(t) : t._$litType$ !== void 0 ? this.$(t) : t.nodeType !== void 0 ? this.T(t) : he(t) ? this.k(t) : this._(t);
+    t = k(this, t, e), V(t) ? t === p || t == null || t === "" ? (this._$AH !== p && this._$AR(), this._$AH = p) : t !== this._$AH && t !== C && this._(t) : t._$litType$ !== void 0 ? this.$(t) : t.nodeType !== void 0 ? this.T(t) : he(t) ? this.k(t) : this._(t);
   }
   O(t) {
     return this._$AA.parentNode.insertBefore(t, this._$AB);
@@ -404,7 +404,7 @@ class R {
     this._$AH !== t && (this._$AR(), this._$AH = this.O(t));
   }
   _(t) {
-    this._$AH !== p && V(this._$AH) ? this._$AA.nextSibling.data = t : this.T(x.createTextNode(t)), this._$AH = t;
+    this._$AH !== p && V(this._$AH) ? this._$AA.nextSibling.data = t : this.T(A.createTextNode(t)), this._$AH = t;
   }
   $(t) {
     var n;
@@ -451,11 +451,11 @@ let Q = class {
   _$AI(t, e = this, i, s) {
     const n = this.strings;
     let o = !1;
-    if (n === void 0) t = k(this, t, e, 0), o = !V(t) || t !== this._$AH && t !== A, o && (this._$AH = t);
+    if (n === void 0) t = k(this, t, e, 0), o = !V(t) || t !== this._$AH && t !== C, o && (this._$AH = t);
     else {
       const l = t;
       let r, c;
-      for (t = n[0], r = 0; r < n.length - 1; r++) c = k(this, l[i + r], e, r), c === A && (c = this._$AH[r]), o || (o = !V(c) || c !== this._$AH[r]), c === p ? t = p : t !== p && (t += (c ?? "") + n[r + 1]), this._$AH[r] = c;
+      for (t = n[0], r = 0; r < n.length - 1; r++) c = k(this, l[i + r], e, r), c === C && (c = this._$AH[r]), o || (o = !V(c) || c !== this._$AH[r]), c === p ? t = p : t !== p && (t += (c ?? "") + n[r + 1]), this._$AH[r] = c;
     }
     o && !s && this.j(t);
   }
@@ -484,7 +484,7 @@ class me extends Q {
     super(t, e, i, s, n), this.type = 5;
   }
   _$AI(t, e = this) {
-    if ((t = k(this, t, e, 0) ?? p) === A) return;
+    if ((t = k(this, t, e, 0) ?? p) === C) return;
     const i = this._$AH, s = t === p && i !== p || t.capture !== i.capture || t.once !== i.once || t.passive !== i.passive, n = t !== p && (i === p || s);
     s && this.element.removeEventListener(this.name, this, i), n && this.element.addEventListener(this.name, this, t), this._$AH = t;
   }
@@ -521,7 +521,7 @@ const ve = (a, t, e) => {
  * SPDX-License-Identifier: BSD-3-Clause
  */
 const w = globalThis;
-let v = class extends S {
+let v = class extends E {
   constructor() {
     super(...arguments), this.renderOptions = { host: this }, this._$Do = void 0;
   }
@@ -543,7 +543,7 @@ let v = class extends S {
     super.disconnectedCallback(), (t = this._$Do) == null || t.setConnected(!1);
   }
   render() {
-    return A;
+    return C;
   }
 };
 var jt;
@@ -601,7 +601,7 @@ const Zt = "important", we = " !" + Zt, Xt = ye(class extends $e {
         i.includes("-") || n ? e.setProperty(i, n ? s.slice(0, -11) : s, n ? Zt : "") : e[i] = s;
       }
     }
-    return A;
+    return C;
   }
 });
 var $, Ut;
@@ -655,14 +655,14 @@ var Ae = function(a) {
     e.minimumFractionDigits = i, e.maximumFractionDigits = i;
   }
   return e;
-}, Ee = ["closed", "locked", "off"], C = function(a, t, e, i) {
+}, Ee = ["closed", "locked", "off"], S = function(a, t, e, i) {
   i = i || {}, e = e ?? {};
   var s = new Event(t, { bubbles: i.bubbles === void 0 || i.bubbles, cancelable: !!i.cancelable, composed: i.composed === void 0 || i.composed });
   return s.detail = e, a.dispatchEvent(s), s;
 }, P = function(a) {
-  C(window, "haptic", a);
+  S(window, "haptic", a);
 }, Te = function(a, t, e) {
-  e === void 0 && (e = !1), e ? history.replaceState(null, "", t) : history.pushState(null, "", t), C(window, "location-changed", { replace: e });
+  e === void 0 && (e = !1), e ? history.replaceState(null, "", t) : history.pushState(null, "", t), S(window, "location-changed", { replace: e });
 }, ke = function(a, t, e) {
   e === void 0 && (e = !0);
   var i, s = xe(t), n = s === "group" ? "homeassistant" : s;
@@ -677,15 +677,15 @@ var Ae = function(a) {
       i = e ? "turn_on" : "turn_off";
   }
   return a.callService(n, i, { entity_id: t });
-}, Le = function(a, t) {
+}, Ie = function(a, t) {
   var e = Ee.includes(a.states[t].state);
   return ke(a, t, e);
-}, E = function(a, t, e, i) {
+}, x = function(a, t, e, i) {
   if (i || (i = { action: "more-info" }), !i.confirmation || i.confirmation.exemptions && i.confirmation.exemptions.some(function(n) {
     return n.user === t.user.id;
   }) || (P("warning"), confirm(i.confirmation.text || "Are you sure you want to " + i.action + "?"))) switch (i.action) {
     case "more-info":
-      (e.entity || e.camera_image) && C(a, "hass-more-info", { entityId: e.entity ? e.entity : e.camera_image });
+      (e.entity || e.camera_image) && S(a, "hass-more-info", { entityId: e.entity ? e.entity : e.camera_image });
       break;
     case "navigate":
       i.navigation_path && Te(0, i.navigation_path);
@@ -694,7 +694,7 @@ var Ae = function(a) {
       i.url_path && window.open(i.url_path);
       break;
     case "toggle":
-      e.entity && (Le(t, e.entity), P("success"));
+      e.entity && (Ie(t, e.entity), P("success"));
       break;
     case "call-service":
       if (!i.service) return void P("failure");
@@ -702,7 +702,7 @@ var Ae = function(a) {
       t.callService(s[0], s[1], i.service_data, i.target), P("success");
       break;
     case "fire-dom-event":
-      C(a, "ll-custom", i);
+      S(a, "ll-custom", i);
   }
 };
 const xt = class xt extends v {
@@ -802,7 +802,7 @@ function M(a) {
     </label>
   `;
 }
-function Ie(a) {
+function Le(a) {
   const { actionConfig: t, formatJson: e, onActionValueChanged: i, onServiceDataChanged: s, serviceDataError: n } = a;
   switch (t.action) {
     case "more-info":
@@ -888,7 +888,7 @@ function Yt(a) {
     actionConfig: e,
     actionOptions: i,
     onActionTypeChanged: s,
-    fields: Ie({
+    fields: Le({
       actionConfig: e,
       formatJson: l,
       onActionValueChanged: n,
@@ -1047,7 +1047,7 @@ const Ne = [
     return t ? JSON.stringify(t, null, 2) : "";
   }
   updateConfig(t) {
-    this.config = t, C(this, "config-changed", { config: t });
+    this.config = t, S(this, "config-changed", { config: t });
   }
   async loadHomeAssistantPickers() {
     const t = window.loadCardHelpers;
@@ -1062,7 +1062,7 @@ const Ne = [
 J.properties = {
   hass: { attribute: !1 },
   config: { attribute: !1 }
-}, J.styles = L`
+}, J.styles = I`
     .editor {
       display: grid;
       gap: 18px;
@@ -1288,7 +1288,7 @@ const F = { action: "more-info" }, nt = { action: "toggle" }, at = { action: "mo
     t.preventDefault();
   }
   runAction(t) {
-    E(
+    x(
       this,
       this.hass,
       {
@@ -1298,7 +1298,7 @@ const F = { action: "more-info" }, nt = { action: "toggle" }, at = { action: "mo
     );
   }
 };
-At.styles = L`
+At.styles = I`
     ha-card {
       --room-light-rgb: 94, 124, 84;
       background: #332d1d;
@@ -1628,6 +1628,15 @@ const Rt = "Possible Issues", zt = ["sensor", "light", "switch"], Oe = ["unavail
                     />
                   </label>
 
+                  <label>
+                    <span>Navigation path</span>
+                    <input
+                      .value=${e.navigation_path || ""}
+                      placeholder="/lovelace/issues"
+                      @input=${(s) => this.updateValueCheck(i, "navigation_path", s.target.value)}
+                    />
+                  </label>
+
                   <button type="button" @click=${() => this.removeValueCheck(i)}>Remove check</button>
                 </div>
               `
@@ -1764,7 +1773,7 @@ const Rt = "Possible Issues", zt = ["sensor", "light", "switch"], Oe = ["unavail
     return t.split("_").map((e) => e.charAt(0).toUpperCase() + e.slice(1)).join(" ");
   }
   updateConfig(t) {
-    this.config = t, C(this, "config-changed", { config: t });
+    this.config = t, S(this, "config-changed", { config: t });
   }
   async loadHomeAssistantPickers() {
     const t = window.loadCardHelpers;
@@ -1793,7 +1802,7 @@ G.properties = {
   hass: { attribute: !1 },
   config: { attribute: !1 },
   integrationsVersion: { state: !0 }
-}, G.styles = L`
+}, G.styles = I`
     .editor {
       display: grid;
       gap: 18px;
@@ -1994,7 +2003,7 @@ const lt = "Possible Issues", ct = ["sensor", "light", "switch"], ht = ["unavail
     var o;
     const e = t.check.entity, i = t.check.message || this.getEntityName(e, t.entity), s = t.check.submessage || this.getValueCheckDetail(t), n = ((o = t.entity.attributes) == null ? void 0 : o.icon) || "mdi:alert-circle-outline";
     return h`
-      <button class="device-row" type="button" @click=${() => this.openEntity(e)}>
+      <button class="device-row" type="button" @click=${() => this.openValueCheckIssue(t)}>
         <ha-icon .icon=${n}></ha-icon>
         <span class="row-text">
           <span class="name">${i}</span>
@@ -2084,7 +2093,7 @@ const lt = "Possible Issues", ct = ["sensor", "light", "switch"], ht = ["unavail
     }[t];
   }
   openDevice(t) {
-    E(
+    x(
       this,
       this.hass,
       {},
@@ -2095,7 +2104,7 @@ const lt = "Possible Issues", ct = ["sensor", "light", "switch"], ht = ["unavail
     );
   }
   openEntity(t) {
-    E(
+    x(
       this,
       this.hass,
       {},
@@ -2105,13 +2114,29 @@ const lt = "Possible Issues", ct = ["sensor", "light", "switch"], ht = ["unavail
       }
     );
   }
+  openValueCheckIssue(t) {
+    if (t.check.navigation_path) {
+      x(
+        this,
+        this.hass,
+        {},
+        {
+          action: "navigate",
+          navigation_path: t.check.navigation_path
+        }
+      );
+      return;
+    }
+    this.openEntity(t.check.entity);
+  }
   getValueChecks() {
     return (this.config.value_checks || []).map((t) => ({
       entity: String(t.entity || "").trim(),
       operator: this.normalizeOperator(t.operator),
       values: this.normalizeList(t.values),
       message: this.normalizeOptionalText(t.message),
-      submessage: this.normalizeOptionalText(t.submessage)
+      submessage: this.normalizeOptionalText(t.submessage),
+      navigation_path: this.normalizeOptionalText(t.navigation_path)
     })).filter((t) => t.entity && t.values.length);
   }
   normalizeOptionalText(t) {
@@ -2190,7 +2215,7 @@ K.properties = {
   hass: { attribute: !1 },
   config: { attribute: !1 },
   registryVersion: { state: !0 }
-}, K.styles = L`
+}, K.styles = I`
     ha-card {
       background: rgba(68, 115, 158, 1);
       border: none;
@@ -2550,7 +2575,7 @@ const Mt = "/config/dashboard", He = [
     return t ? JSON.stringify(t, null, 2) : "";
   }
   updateConfig(t) {
-    this.config = t, C(this, "config-changed", { config: t });
+    this.config = t, S(this, "config-changed", { config: t });
   }
   async loadHomeAssistantPickers() {
     const t = window.loadCardHelpers;
@@ -2565,7 +2590,7 @@ const Mt = "/config/dashboard", He = [
 Z.properties = {
   hass: { attribute: !1 },
   config: { attribute: !1 }
-}, Z.styles = L`
+}, Z.styles = I`
     .editor {
       display: grid;
       gap: 18px;
@@ -2887,7 +2912,7 @@ const j = "/config/dashboard", ze = { action: "none" }, Pe = "welcome-card:colla
     }
   }
   handleSettingsTap() {
-    E(
+    x(
       this,
       this.hass,
       {},
@@ -2899,10 +2924,10 @@ const j = "/config/dashboard", ze = { action: "none" }, Pe = "welcome-card:colla
   }
   handleWeatherTap() {
     const t = this.config.weather_entity || this.config.temperature_entity;
-    t && E(this, this.hass, { entity: t }, { action: "more-info" });
+    t && x(this, this.hass, { entity: t }, { action: "more-info" });
   }
   runTabAction(t) {
-    E(this, this.hass, {}, t.tap_action || ze);
+    x(this, this.hass, {}, t.tap_action || ze);
   }
   getGreeting() {
     const t = this._now.getHours();
@@ -2968,7 +2993,7 @@ X.properties = {
   config: { attribute: !1 },
   _collapsed: { state: !0 },
   _now: { state: !0 }
-}, X.styles = L`
+}, X.styles = I`
     ha-card {
       background: var(--card-background-color);
       border: none;

@@ -130,6 +130,7 @@ Clicking a device row navigates to the device page in Home Assistant. Clicking a
   - **`values`**: One or more values (array or comma-separated string). Operators match if any value matches, except `not_contains`, which matches only when none of the values are contained.
   - **`message`** (optional): Main row text to show instead of the entity friendly name
   - **`submessage`** (optional): Secondary row text to show instead of the generated state/operator detail
+  - **`navigation_path`** (optional): Dashboard/path to navigate to when clicking the matching row. Defaults to opening more-info for the entity.
 - **`ignored_entities`** (optional): Entity IDs or substrings to ignore (array or comma-separated string)
 - **`ignored_devices`** (optional): Device IDs or substrings to ignore (array or comma-separated string)
 - **`ignored_integrations`** (optional): Integration/platform identifiers to ignore (array or comma-separated string)
@@ -154,6 +155,7 @@ value_checks:
       - jammed
     message: Washing machine issue
     submessage: Check the machine before starting a new cycle
+    navigation_path: /lovelace/issues
   - entity: sensor.freezer_temperature
     operator: gt
     values: "-12"

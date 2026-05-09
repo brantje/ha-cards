@@ -12,6 +12,7 @@ type ValueCheckConfig = {
   values?: string[] | string;
   message?: string;
   submessage?: string;
+  navigation_path?: string;
 };
 
 type NormalizedValueCheck = {
@@ -20,6 +21,7 @@ type NormalizedValueCheck = {
   values: string[];
   message?: string;
   submessage?: string;
+  navigation_path?: string;
 };
 
 type PossibleIssuesCardConfig = {
@@ -192,7 +194,7 @@ class PossibleIssuesCard extends BaseCard {
     const icon = issue.entity.attributes?.icon || "mdi:alert-circle-outline";
 
     return html`
-      <button class="device-row" type="button" @click=${() => this.openEntity(entityId)}>
+      <button class="device-row" type="button" @click=${() => this.openValueCheckIssue(issue)}>
         <ha-icon .icon=${icon}></ha-icon>
         <span class="row-text">
           <span class="name">${name}</span>
@@ -367,6 +369,23 @@ class PossibleIssuesCard extends BaseCard {
     );
   }
 
+  private openValueCheckIssue(issue: IssueEntity) {
+    if (issue.check.navigation_path) {
+      handleActionConfig(
+        this,
+        this.hass,
+        {},
+        {
+          action: "navigate",
+          navigation_path: issue.check.navigation_path,
+        }
+      );
+      return;
+    }
+
+    this.openEntity(issue.check.entity);
+  }
+
   private getValueChecks(): NormalizedValueCheck[] {
     return (this.config.value_checks || [])
       .map((check) => ({
@@ -375,6 +394,7 @@ class PossibleIssuesCard extends BaseCard {
         values: this.normalizeList(check.values),
         message: this.normalizeOptionalText(check.message),
         submessage: this.normalizeOptionalText(check.submessage),
+        navigation_path: this.normalizeOptionalText(check.navigation_path),
       }))
       .filter((check) => check.entity && check.values.length);
   }

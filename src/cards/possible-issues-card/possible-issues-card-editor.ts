@@ -18,6 +18,7 @@ type ValueCheckConfig = {
   values?: string[] | string;
   message?: string;
   submessage?: string;
+  navigation_path?: string;
 };
 
 type PossibleIssuesCardEditorConfig = {
@@ -254,6 +255,16 @@ class PossibleIssuesCardEditor extends LitElement {
                       placeholder="Check the machine before starting a new cycle"
                       @input=${(event: Event) =>
                         this.updateValueCheck(index, "submessage", (event.target as HTMLInputElement).value)}
+                    />
+                  </label>
+
+                  <label>
+                    <span>Navigation path</span>
+                    <input
+                      .value=${check.navigation_path || ""}
+                      placeholder="/lovelace/issues"
+                      @input=${(event: Event) =>
+                        this.updateValueCheck(index, "navigation_path", (event.target as HTMLInputElement).value)}
                     />
                   </label>
 
