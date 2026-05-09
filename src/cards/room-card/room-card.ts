@@ -300,7 +300,7 @@ class RoomCard extends BaseCard {
 
     .card {
       cursor: pointer;
-      padding: 10px;
+      padding: 12px 12px 12px 24px;
     }
 
     .card:focus {
@@ -420,6 +420,9 @@ class RoomCard extends BaseCard {
     }
 
     @media (max-width: 420px) {
+      .card {
+        padding: 10px;
+      }
       .top-row {
         gap: 12px;
       }
