@@ -1,6 +1,6 @@
 # HA Cards (Lovelace)
 
-[![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=Brian+Fitzgerald&repository=https%3A%2F%2Fgithub.com%2Fbrantje%2Fha-cards&category=Lovelace)
+[![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=brantje&repository=https%3A%2F%2Fgithub.com%2Fbrantje%2Fha-cards&category=Lovelace)
 
 A small collection of **custom Lovelace cards** built with **Lit** and bundled into a single module: `ha-cards.js`.
 
@@ -30,6 +30,7 @@ type: module
 ## Cards
 
 ### `welcome-card`
+![welcome-card example](images/welcome-card.png)
 
 Greeting card with a **date/weather pill**, optional **temperature**, a **settings** button, and configurable **quick tabs**.
 
@@ -48,6 +49,7 @@ Greeting card with a **date/weather pill**, optional **temperature**, a **settin
   - **`tap_action`** (optional): Home Assistant action config (e.g. `navigate`, `more-info`, `call-service`, etc.)
 
 **Example**
+
 
 ```yaml
 type: custom:welcome-card
@@ -73,6 +75,7 @@ tabs:
 ---
 
 ### `room-card`
+![room-card example](images/room-card.png)
 
 Room tile for a **light** with a prominent **light action button** and up to **two sensor readouts**.
 
@@ -110,7 +113,7 @@ light_hold_action:
 ---
 
 ### `unavailable-devices-card`
-
+![unavailable-devices-card example](images/unavailable-devices-card.png)
 Lists **devices** that have **entities in “issue” states** (defaults to `unavailable`). Useful for quickly spotting flaky devices/integrations.
 
 Clicking a row navigates to the device page in Home Assistant.
