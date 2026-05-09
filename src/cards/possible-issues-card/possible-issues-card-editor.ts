@@ -3,7 +3,7 @@ import { fireEvent, HomeAssistant } from "custom-card-helpers";
 import { renderEntityPicker, renderTextField } from "../../shared/base-card";
 
 type RowDetailMode = "none" | "count" | "entities";
-type ValueCheckOperator = "equals" | "gt" | "lt" | "lte" | "gte" | "contains" | "not_contains";
+type ValueCheckOperator = "equals" | "not_equals" | "gt" | "lt" | "lte" | "gte" | "contains" | "not_contains";
 type ListConfigKey =
   | "domains"
   | "issue_states"
@@ -16,6 +16,8 @@ type ValueCheckConfig = {
   entity?: string;
   operator?: ValueCheckOperator;
   values?: string[] | string;
+  message?: string;
+  submessage?: string;
 };
 
 type PossibleIssuesCardEditorConfig = {
@@ -42,6 +44,7 @@ const COMMON_ISSUE_STATES = ["unavailable", "unknown", "none"];
 const DEFAULT_ROW_DETAIL: RowDetailMode = "none";
 const VALUE_CHECK_OPERATORS: Array<{ value: ValueCheckOperator; label: string }> = [
   { value: "equals", label: "Equals" },
+  { value: "not_equals", label: "Does not equal" },
   { value: "gt", label: "Greater than (>)" },
   { value: "lt", label: "Less than (<)" },
   { value: "lte", label: "Less than or equal (<=)" },
@@ -231,6 +234,26 @@ class PossibleIssuesCardEditor extends LitElement {
                       placeholder="error, jammed, offline"
                       @input=${(event: Event) =>
                         this.updateValueCheck(index, "values", this.parseList((event.target as HTMLInputElement).value))}
+                    />
+                  </label>
+
+                  <label>
+                    <span>Message</span>
+                    <input
+                      .value=${check.message || ""}
+                      placeholder="Washing machine issue"
+                      @input=${(event: Event) =>
+                        this.updateValueCheck(index, "message", (event.target as HTMLInputElement).value)}
+                    />
+                  </label>
+
+                  <label>
+                    <span>Submessage</span>
+                    <input
+                      .value=${check.submessage || ""}
+                      placeholder="Check the machine before starting a new cycle"
+                      @input=${(event: Event) =>
+                        this.updateValueCheck(index, "submessage", (event.target as HTMLInputElement).value)}
                     />
                   </label>
 

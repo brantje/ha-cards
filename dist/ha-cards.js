@@ -73,7 +73,7 @@ const { is: ie, defineProperty: se, getOwnPropertyDescriptor: ne, getOwnProperty
       }
   }
   return e;
-} }, Bt = (a, t) => !ie(a, t), Tt = { attribute: !0, type: String, converter: pt, reflect: !1, useDefault: !1, hasChanged: Bt };
+} }, qt = (a, t) => !ie(a, t), Tt = { attribute: !0, type: String, converter: pt, reflect: !1, useDefault: !1, hasChanged: qt };
 Symbol.metadata ?? (Symbol.metadata = Symbol("metadata")), b.litPropertyMetadata ?? (b.litPropertyMetadata = /* @__PURE__ */ new WeakMap());
 let S = class extends HTMLElement {
   static addInitializer(t) {
@@ -202,7 +202,7 @@ let S = class extends HTMLElement {
     var o;
     if (t !== void 0) {
       const l = this.constructor;
-      if (s === !1 && (n = this[t]), i ?? (i = l.getPropertyOptions(t)), !((i.hasChanged ?? Bt)(n, e) || i.useDefault && i.reflect && n === ((o = this._$Ej) == null ? void 0 : o.get(t)) && !this.hasAttribute(l._$Eu(t, i)))) return;
+      if (s === !1 && (n = this[t]), i ?? (i = l.getPropertyOptions(t)), !((i.hasChanged ?? qt)(n, e) || i.useDefault && i.reflect && n === ((o = this._$Ej) == null ? void 0 : o.get(t)) && !this.hasAttribute(l._$Eu(t, i)))) return;
       this.C(t, e, i);
     }
     this.isUpdatePending === !1 && (this._$ES = this._$EP());
@@ -284,7 +284,7 @@ S.elementStyles = [], S.shadowRootOptions = { mode: "open" }, S[D("elementProper
  * Copyright 2017 Google LLC
  * SPDX-License-Identifier: BSD-3-Clause
  */
-const N = globalThis, kt = (a) => a, B = N.trustedTypes, Lt = B ? B.createPolicy("lit-html", { createHTML: (a) => a }) : void 0, qt = "$lit$", m = `lit$${Math.random().toFixed(9).slice(2)}$`, Jt = "?" + m, ce = `<${Jt}>`, x = document, O = () => x.createComment(""), V = (a) => a === null || typeof a != "object" && typeof a != "function", wt = Array.isArray, he = (a) => wt(a) || typeof (a == null ? void 0 : a[Symbol.iterator]) == "function", tt = `[ 	
+const N = globalThis, kt = (a) => a, q = N.trustedTypes, Lt = q ? q.createPolicy("lit-html", { createHTML: (a) => a }) : void 0, Bt = "$lit$", m = `lit$${Math.random().toFixed(9).slice(2)}$`, Jt = "?" + m, ce = `<${Jt}>`, x = document, O = () => x.createComment(""), V = (a) => a === null || typeof a != "object" && typeof a != "function", wt = Array.isArray, he = (a) => wt(a) || typeof (a == null ? void 0 : a[Symbol.iterator]) == "function", tt = `[ 	
 \f\r]`, I = /<(?:(!--|\/[^a-zA-Z])|(\/?[a-zA-Z][^>\s]*)|(\/?$))/g, It = /-->/g, Dt = />/g, _ = RegExp(`>|${tt}(?:([^\\s"'>=/]+)(${tt}*=${tt}*(?:[^ 	
 \f\r"'\`<>=]|("|')|))|$)`, "g"), Nt = /'/g, Ot = /"/g, Gt = /^(?:script|style|textarea|title)$/i, de = (a) => (t, ...e) => ({ _$litType$: a, strings: t, values: e }), h = de(1), A = Symbol.for("lit-noChange"), p = Symbol.for("lit-nothing"), Vt = /* @__PURE__ */ new WeakMap(), y = x.createTreeWalker(x, 129);
 function Kt(a, t) {
@@ -299,7 +299,7 @@ const ue = (a, t) => {
     let c, d, u = -1, g = 0;
     for (; g < r.length && (o.lastIndex = g, d = o.exec(r), d !== null); ) g = o.lastIndex, o === I ? d[1] === "!--" ? o = It : d[1] !== void 0 ? o = Dt : d[2] !== void 0 ? (Gt.test(d[2]) && (s = RegExp("</" + d[2], "g")), o = _) : d[3] !== void 0 && (o = _) : o === _ ? d[0] === ">" ? (o = s ?? I, u = -1) : d[1] === void 0 ? u = -2 : (u = o.lastIndex - d[2].length, c = d[1], o = d[3] === void 0 ? _ : d[3] === '"' ? Ot : Nt) : o === Ot || o === Nt ? o = _ : o === It || o === Dt ? o = I : (o = _, s = void 0);
     const f = o === _ && a[l + 1].startsWith("/>") ? " " : "";
-    n += o === I ? r + ce : u >= 0 ? (i.push(c), r.slice(0, u) + qt + r.slice(u) + m + f) : r + m + (u === -2 ? l : f);
+    n += o === I ? r + ce : u >= 0 ? (i.push(c), r.slice(0, u) + Bt + r.slice(u) + m + f) : r + m + (u === -2 ? l : f);
   }
   return [Kt(a, n + (a[e] || "<?>") + (t === 2 ? "</svg>" : t === 3 ? "</math>" : "")), i];
 };
@@ -315,14 +315,14 @@ class U {
     }
     for (; (s = y.nextNode()) !== null && r.length < l; ) {
       if (s.nodeType === 1) {
-        if (s.hasAttributes()) for (const u of s.getAttributeNames()) if (u.endsWith(qt)) {
-          const g = d[o++], f = s.getAttribute(u).split(m), P = /([.?@])?(.*)/.exec(g);
-          r.push({ type: 1, index: n, name: P[2], strings: f, ctor: P[1] === "." ? ge : P[1] === "?" ? fe : P[1] === "@" ? me : Q }), s.removeAttribute(u);
+        if (s.hasAttributes()) for (const u of s.getAttributeNames()) if (u.endsWith(Bt)) {
+          const g = d[o++], f = s.getAttribute(u).split(m), z = /([.?@])?(.*)/.exec(g);
+          r.push({ type: 1, index: n, name: z[2], strings: f, ctor: z[1] === "." ? ge : z[1] === "?" ? fe : z[1] === "@" ? me : Q }), s.removeAttribute(u);
         } else u.startsWith(m) && (r.push({ type: 6, index: n }), s.removeAttribute(u));
         if (Gt.test(s.tagName)) {
           const u = s.textContent.split(m), g = u.length - 1;
           if (g > 0) {
-            s.textContent = B ? B.emptyScript : "";
+            s.textContent = q ? q.emptyScript : "";
             for (let f = 0; f < g; f++) s.append(u[f], O()), y.nextNode(), r.push({ type: 2, index: ++n });
             s.append(u[g], O());
           }
@@ -659,7 +659,7 @@ var Ae = function(a) {
   i = i || {}, e = e ?? {};
   var s = new Event(t, { bubbles: i.bubbles === void 0 || i.bubbles, cancelable: !!i.cancelable, composed: i.composed === void 0 || i.composed });
   return s.detail = e, a.dispatchEvent(s), s;
-}, z = function(a) {
+}, P = function(a) {
   C(window, "haptic", a);
 }, Te = function(a, t, e) {
   e === void 0 && (e = !1), e ? history.replaceState(null, "", t) : history.pushState(null, "", t), C(window, "location-changed", { replace: e });
@@ -683,7 +683,7 @@ var Ae = function(a) {
 }, E = function(a, t, e, i) {
   if (i || (i = { action: "more-info" }), !i.confirmation || i.confirmation.exemptions && i.confirmation.exemptions.some(function(n) {
     return n.user === t.user.id;
-  }) || (z("warning"), confirm(i.confirmation.text || "Are you sure you want to " + i.action + "?"))) switch (i.action) {
+  }) || (P("warning"), confirm(i.confirmation.text || "Are you sure you want to " + i.action + "?"))) switch (i.action) {
     case "more-info":
       (e.entity || e.camera_image) && C(a, "hass-more-info", { entityId: e.entity ? e.entity : e.camera_image });
       break;
@@ -694,12 +694,12 @@ var Ae = function(a) {
       i.url_path && window.open(i.url_path);
       break;
     case "toggle":
-      e.entity && (Le(t, e.entity), z("success"));
+      e.entity && (Le(t, e.entity), P("success"));
       break;
     case "call-service":
-      if (!i.service) return void z("failure");
+      if (!i.service) return void P("failure");
       var s = i.service.split(".", 2);
-      t.callService(s[0], s[1], i.service_data, i.target), z("success");
+      t.callService(s[0], s[1], i.service_data, i.target), P("success");
       break;
     case "fire-dom-event":
       C(a, "ll-custom", i);
@@ -771,7 +771,7 @@ function T(a) {
       </div>
     `;
 }
-function q(a) {
+function B(a) {
   const { label: t, value: e, placeholder: i = "", onInput: s } = a;
   return h`
     <label>
@@ -930,7 +930,7 @@ const Ne = [
     return h`
       <div class="editor">
         <div class="grid">
-          ${q({
+          ${B({
       label: "Name",
       value: String(this.config.name || ""),
       placeholder: "Living room",
@@ -1459,8 +1459,9 @@ window.customCards.push({
   name: "Room Card",
   description: "Room card with light actions and sensors"
 });
-const Rt = "Possible Issues", Pt = ["sensor", "light", "switch"], Oe = ["unavailable"], Ve = ["unavailable", "unknown", "none"], zt = "none", Ue = [
+const Rt = "Possible Issues", zt = ["sensor", "light", "switch"], Oe = ["unavailable"], Ve = ["unavailable", "unknown", "none"], Pt = "none", Ue = [
   { value: "equals", label: "Equals" },
+  { value: "not_equals", label: "Does not equal" },
   { value: "gt", label: "Greater than (>)" },
   { value: "lt", label: "Less than (<)" },
   { value: "lte", label: "Less than or equal (<=)" },
@@ -1477,13 +1478,13 @@ const Rt = "Possible Issues", Pt = ["sensor", "light", "switch"], Oe = ["unavail
   setConfig(t) {
     this.config = {
       title: Rt,
-      domains: Pt,
+      domains: zt,
       issue_states: Oe,
       ignored_entities: [],
       ignored_devices: [],
       ignored_integrations: [],
       ignored_name_patterns: [],
-      row_detail: zt,
+      row_detail: Pt,
       value_checks: [],
       ...t
     };
@@ -1498,13 +1499,13 @@ const Rt = "Possible Issues", Pt = ["sensor", "light", "switch"], Oe = ["unavail
     return h`
       <div class="editor">
         <div class="grid">
-          ${q({
+          ${B({
       label: "Title",
       value: String(this.config.title || ""),
       placeholder: Rt,
       onInput: (t) => this.updateConfigValue("title", t)
     })}
-          ${this.renderListField("Domains", "domains", Pt, "sensor, light, switch")}
+          ${this.renderListField("Domains", "domains", zt, "sensor, light, switch")}
           ${this.renderIssueStatesField()}
           ${this.renderValueChecksField()}
           ${this.renderListField("Ignored entity IDs or patterns", "ignored_entities", [], "sensor.openweathermap_weather")}
@@ -1517,7 +1518,7 @@ const Rt = "Possible Issues", Pt = ["sensor", "light", "switch"], Oe = ["unavail
     `;
   }
   renderListField(t, e, i, s) {
-    return q({
+    return B({
       label: t,
       value: this.formatList(this.config[e], i),
       placeholder: s,
@@ -1609,6 +1610,24 @@ const Rt = "Possible Issues", Pt = ["sensor", "light", "switch"], Oe = ["unavail
                     />
                   </label>
 
+                  <label>
+                    <span>Message</span>
+                    <input
+                      .value=${e.message || ""}
+                      placeholder="Washing machine issue"
+                      @input=${(s) => this.updateValueCheck(i, "message", s.target.value)}
+                    />
+                  </label>
+
+                  <label>
+                    <span>Submessage</span>
+                    <input
+                      .value=${e.submessage || ""}
+                      placeholder="Check the machine before starting a new cycle"
+                      @input=${(s) => this.updateValueCheck(i, "submessage", s.target.value)}
+                    />
+                  </label>
+
                   <button type="button" @click=${() => this.removeValueCheck(i)}>Remove check</button>
                 </div>
               `
@@ -1643,7 +1662,7 @@ const Rt = "Possible Issues", Pt = ["sensor", "light", "switch"], Oe = ["unavail
     `;
   }
   renderRowDetailField() {
-    const t = this.config.row_detail || zt;
+    const t = this.config.row_detail || Pt;
     return h`
       <label>
         <span>Row detail</span>
@@ -1973,7 +1992,7 @@ const lt = "Possible Issues", ct = ["sensor", "light", "switch"], ht = ["unavail
   }
   renderEntityRow(t) {
     var o;
-    const e = t.check.entity, i = this.getEntityName(e, t.entity), s = this.getValueCheckDetail(t), n = ((o = t.entity.attributes) == null ? void 0 : o.icon) || "mdi:alert-circle-outline";
+    const e = t.check.entity, i = t.check.message || this.getEntityName(e, t.entity), s = t.check.submessage || this.getValueCheckDetail(t), n = ((o = t.entity.attributes) == null ? void 0 : o.icon) || "mdi:alert-circle-outline";
     return h`
       <button class="device-row" type="button" @click=${() => this.openEntity(e)}>
         <ha-icon .icon=${n}></ha-icon>
@@ -2055,6 +2074,7 @@ const lt = "Possible Issues", ct = ["sensor", "light", "switch"], ht = ["unavail
   getOperatorLabel(t) {
     return {
       equals: "is",
+      not_equals: "is not",
       gt: ">",
       lt: "<",
       lte: "<=",
@@ -2089,11 +2109,16 @@ const lt = "Possible Issues", ct = ["sensor", "light", "switch"], ht = ["unavail
     return (this.config.value_checks || []).map((t) => ({
       entity: String(t.entity || "").trim(),
       operator: this.normalizeOperator(t.operator),
-      values: this.normalizeList(t.values)
+      values: this.normalizeList(t.values),
+      message: this.normalizeOptionalText(t.message),
+      submessage: this.normalizeOptionalText(t.submessage)
     })).filter((t) => t.entity && t.values.length);
   }
+  normalizeOptionalText(t) {
+    return String(t || "").trim() || void 0;
+  }
   normalizeOperator(t) {
-    return ["equals", "gt", "lt", "lte", "gte", "contains", "not_contains"].includes(t) ? t : "equals";
+    return ["equals", "not_equals", "gt", "lt", "lte", "gte", "contains", "not_contains"].includes(t) ? t : "equals";
   }
   getMatchedValue(t, e) {
     if (e.operator === "not_contains") {
@@ -2106,6 +2131,8 @@ const lt = "Possible Issues", ct = ["sensor", "light", "switch"], ht = ["unavail
     switch (i) {
       case "equals":
         return t === e;
+      case "not_equals":
+        return t !== e;
       case "contains":
         return t.toLowerCase().includes(e.toLowerCase());
       case "gt":
@@ -2330,7 +2357,7 @@ const Mt = "/config/dashboard", He = [
       disabled: !this.config.show_temperature,
       onValueChanged: (t) => this.updateConfigValue("temperature_entity", t)
     })}
-          ${q({
+          ${B({
       label: "Settings navigation path",
       value: String(this.config.settings_navigation_path || ""),
       placeholder: Mt,
@@ -2671,7 +2698,7 @@ Z.properties = {
   `;
 let vt = Z;
 customElements.define("welcome-card-editor", vt);
-const j = "/config/dashboard", Pe = { action: "none" }, ze = "welcome-card:collapsed", Ft = [
+const j = "/config/dashboard", ze = { action: "none" }, Pe = "welcome-card:collapsed", Ft = [
   {
     icon: "mdi:home",
     label: "Home",
@@ -2844,7 +2871,7 @@ const j = "/config/dashboard", Pe = { action: "none" }, ze = "welcome-card:colla
       ((i = this.config) == null ? void 0 : i.settings_navigation_path) || j,
       (((s = this.config) == null ? void 0 : s.tabs) || []).map((n) => n.label || "").join("|")
     ];
-    return `${ze}${t.join(":")}`;
+    return `${Pe}${t.join(":")}`;
   }
   loadCollapsedState() {
     try {
@@ -2875,7 +2902,7 @@ const j = "/config/dashboard", Pe = { action: "none" }, ze = "welcome-card:colla
     t && E(this, this.hass, { entity: t }, { action: "more-info" });
   }
   runTabAction(t) {
-    E(this, this.hass, {}, t.tap_action || Pe);
+    E(this, this.hass, {}, t.tap_action || ze);
   }
   getGreeting() {
     const t = this._now.getHours();

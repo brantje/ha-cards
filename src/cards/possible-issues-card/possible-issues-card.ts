@@ -4,18 +4,22 @@ import { BaseCard } from "../../shared/base-card";
 import "./possible-issues-card-editor";
 
 type RowDetailMode = "none" | "count" | "entities";
-type ValueCheckOperator = "equals" | "gt" | "lt" | "lte" | "gte" | "contains" | "not_contains";
+type ValueCheckOperator = "equals" | "not_equals" | "gt" | "lt" | "lte" | "gte" | "contains" | "not_contains";
 
 type ValueCheckConfig = {
   entity?: string;
   operator?: ValueCheckOperator;
   values?: string[] | string;
+  message?: string;
+  submessage?: string;
 };
 
 type NormalizedValueCheck = {
   entity: string;
   operator: ValueCheckOperator;
   values: string[];
+  message?: string;
+  submessage?: string;
 };
 
 type PossibleIssuesCardConfig = {
@@ -183,8 +187,8 @@ class PossibleIssuesCard extends BaseCard {
 
   private renderEntityRow(issue: IssueEntity) {
     const entityId = issue.check.entity;
-    const name = this.getEntityName(entityId, issue.entity);
-    const detail = this.getValueCheckDetail(issue);
+    const name = issue.check.message || this.getEntityName(entityId, issue.entity);
+    const detail = issue.check.submessage || this.getValueCheckDetail(issue);
     const icon = issue.entity.attributes?.icon || "mdi:alert-circle-outline";
 
     return html`
@@ -327,6 +331,7 @@ class PossibleIssuesCard extends BaseCard {
   private getOperatorLabel(operator: ValueCheckOperator) {
     const labels: Record<ValueCheckOperator, string> = {
       equals: "is",
+      not_equals: "is not",
       gt: ">",
       lt: "<",
       lte: "<=",
@@ -368,12 +373,19 @@ class PossibleIssuesCard extends BaseCard {
         entity: String(check.entity || "").trim(),
         operator: this.normalizeOperator(check.operator),
         values: this.normalizeList(check.values),
+        message: this.normalizeOptionalText(check.message),
+        submessage: this.normalizeOptionalText(check.submessage),
       }))
       .filter((check) => check.entity && check.values.length);
   }
 
+  private normalizeOptionalText(value?: string) {
+    const normalized = String(value || "").trim();
+    return normalized || undefined;
+  }
+
   private normalizeOperator(operator?: string): ValueCheckOperator {
-    const operators: ValueCheckOperator[] = ["equals", "gt", "lt", "lte", "gte", "contains", "not_contains"];
+    const operators: ValueCheckOperator[] = ["equals", "not_equals", "gt", "lt", "lte", "gte", "contains", "not_contains"];
     return operators.includes(operator as ValueCheckOperator) ? (operator as ValueCheckOperator) : "equals";
   }
 
@@ -390,6 +402,8 @@ class PossibleIssuesCard extends BaseCard {
     switch (operator) {
       case "equals":
         return state === value;
+      case "not_equals":
+        return state !== value;
       case "contains":
         return state.toLowerCase().includes(value.toLowerCase());
       case "gt":
