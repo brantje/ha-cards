@@ -71,6 +71,21 @@ export function renderEntityPicker(params: {
 }): TemplateResult {
   const { hass, label, value, domains, disabled = false, onValueChanged } = params;
 
+  if (!domains.length) {
+    return html`
+      <div class="field">
+        <ha-entity-picker
+          .hass=${hass}
+          .label=${label}
+          .value=${value}
+          ?disabled=${disabled}
+          allow-custom-entity
+          @value-changed=${(event: CustomEvent) => onValueChanged(event.detail.value)}
+        ></ha-entity-picker>
+      </div>
+    `;
+  }
+
   return html`
     <div class="field">
       <ha-entity-picker

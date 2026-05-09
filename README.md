@@ -112,18 +112,22 @@ light_hold_action:
 
 ---
 
-### `unavailable-devices-card`
-![unavailable-devices-card example](./images/unavailable-devices-card.png)
-Lists **devices** that have **entities in “issue” states** (defaults to `unavailable`). Useful for quickly spotting flaky devices/integrations.
+### `possible-issues-card`
+![possible-issues-card example](./images/unavailable-devices-card.png)
+Lists **devices** that have **entities in “issue” states** (defaults to `unavailable`) and **entities** that match custom value checks. Useful for quickly spotting flaky devices/integrations and known problem states.
 
-Clicking a row navigates to the device page in Home Assistant.
+Clicking a device row navigates to the device page in Home Assistant. Clicking an entity value-check row opens more info for that entity.
 
 **Config**
 
-- **`type`**: `custom:unavailable-devices-card`
+- **`type`**: `custom:possible-issues-card`
 - **`title`** (optional, default `Possible Issues`): Card title
 - **`domains`** (optional, default `["sensor","light","switch"]`): Domains to consider (array or comma-separated string)
 - **`issue_states`** (optional, default `["unavailable"]`): Entity states considered problematic (array or comma-separated string)
+- **`value_checks`** (optional): List of entity state checks. Each item supports:
+  - **`entity`**: Entity ID to check
+  - **`operator`**: `equals` | `gt` | `lt` | `lte` | `gte` | `contains` | `not_contains`
+  - **`values`**: One or more values (array or comma-separated string). Operators match if any value matches, except `not_contains`, which matches only when none of the values are contained.
 - **`ignored_entities`** (optional): Entity IDs or substrings to ignore (array or comma-separated string)
 - **`ignored_devices`** (optional): Device IDs or substrings to ignore (array or comma-separated string)
 - **`ignored_integrations`** (optional): Integration/platform identifiers to ignore (array or comma-separated string)
@@ -136,10 +140,19 @@ Clicking a row navigates to the device page in Home Assistant.
 **Example**
 
 ```yaml
-type: custom:unavailable-devices-card
+type: custom:possible-issues-card
 title: Possible Issues
 domains: sensor, light, switch
 issue_states: unavailable, unknown
+value_checks:
+  - entity: sensor.washing_machine_status
+    operator: contains
+    values:
+      - error
+      - jammed
+  - entity: sensor.freezer_temperature
+    operator: gt
+    values: "-12"
 ignored_integrations: openweathermap, hue
 ignored_name_patterns: Test device, Printer
 row_detail: count

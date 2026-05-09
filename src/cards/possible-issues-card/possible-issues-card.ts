@@ -1,11 +1,24 @@
 import { css, html, PropertyValues } from "lit";
 import { handleActionConfig, HomeAssistant } from "custom-card-helpers";
 import { BaseCard } from "../../shared/base-card";
-import "./unavailable-devices-card-editor";
+import "./possible-issues-card-editor";
 
 type RowDetailMode = "none" | "count" | "entities";
+type ValueCheckOperator = "equals" | "gt" | "lt" | "lte" | "gte" | "contains" | "not_contains";
 
-type UnavailableDevicesCardConfig = {
+type ValueCheckConfig = {
+  entity?: string;
+  operator?: ValueCheckOperator;
+  values?: string[] | string;
+};
+
+type NormalizedValueCheck = {
+  entity: string;
+  operator: ValueCheckOperator;
+  values: string[];
+};
+
+type PossibleIssuesCardConfig = {
   type: string;
   title?: string;
   domains?: string[] | string;
@@ -15,6 +28,7 @@ type UnavailableDevicesCardConfig = {
   ignored_integrations?: string[] | string;
   ignored_name_patterns?: string[] | string;
   row_detail?: RowDetailMode;
+  value_checks?: ValueCheckConfig[];
 };
 
 type HassEntity = {
@@ -43,13 +57,19 @@ type IssueDevice = {
   entities: EntityRegistryEntry[];
 };
 
+type IssueEntity = {
+  check: NormalizedValueCheck;
+  entity: HassEntity;
+  matchedValue?: string;
+};
+
 const DEFAULT_TITLE = "Possible Issues";
 const DEFAULT_DOMAINS = ["sensor", "light", "switch"];
 const DEFAULT_ISSUE_STATES = ["unavailable"];
 const DEFAULT_ROW_DETAIL: RowDetailMode = "none";
 
-class UnavailableDevicesCard extends BaseCard {
-  config!: UnavailableDevicesCardConfig;
+class PossibleIssuesCard extends BaseCard {
+  config!: PossibleIssuesCardConfig;
   hass!: HomeAssistant;
   private entityRegistry: EntityRegistryEntry[] = [];
   private deviceRegistry: DeviceRegistryEntry[] = [];
@@ -64,7 +84,7 @@ class UnavailableDevicesCard extends BaseCard {
   };
 
   static getConfigElement() {
-    return document.createElement("unavailable-devices-card-editor");
+    return document.createElement("possible-issues-card-editor");
   }
 
   static getStubConfig() {
@@ -77,10 +97,11 @@ class UnavailableDevicesCard extends BaseCard {
       ignored_integrations: [],
       ignored_name_patterns: [],
       row_detail: DEFAULT_ROW_DETAIL,
+      value_checks: [],
     };
   }
 
-  setConfig(config: UnavailableDevicesCardConfig) {
+  setConfig(config: PossibleIssuesCardConfig) {
     this.config = {
       title: DEFAULT_TITLE,
       domains: DEFAULT_DOMAINS,
@@ -90,6 +111,7 @@ class UnavailableDevicesCard extends BaseCard {
       ignored_integrations: [],
       ignored_name_patterns: [],
       row_detail: DEFAULT_ROW_DETAIL,
+      value_checks: [],
       ...config,
     };
   }
@@ -109,7 +131,7 @@ class UnavailableDevicesCard extends BaseCard {
         return false;
       }
 
-      const watched = this.getDomainEntityIds(this.hass);
+      const watched = this.getWatchedEntityIds(this.hass);
       return watched.some((entityId) => oldHass.states?.[entityId] !== this.hass.states?.[entityId]);
     }
 
@@ -124,8 +146,9 @@ class UnavailableDevicesCard extends BaseCard {
 
   render() {
     const devices = this.getIssueDevices();
+    const entities = this.getValueCheckIssues();
 
-    if (!devices.length) {
+    if (!devices.length && !entities.length) {
       return html``;
     }
 
@@ -133,7 +156,10 @@ class UnavailableDevicesCard extends BaseCard {
       <ha-card>
         <div class="card">
           <h2>${this.config.title || DEFAULT_TITLE}</h2>
-          <div class="devices">${devices.map((device) => this.renderDeviceRow(device))}</div>
+          <div class="devices">
+            ${devices.map((device) => this.renderDeviceRow(device))}
+            ${entities.map((issue) => this.renderEntityRow(issue))}
+          </div>
         </div>
       </ha-card>
     `;
@@ -150,6 +176,23 @@ class UnavailableDevicesCard extends BaseCard {
         <span class="row-text">
           <span class="name">${name}</span>
           ${detail ? html`<span class="detail">${detail}</span>` : ""}
+        </span>
+      </button>
+    `;
+  }
+
+  private renderEntityRow(issue: IssueEntity) {
+    const entityId = issue.check.entity;
+    const name = this.getEntityName(entityId, issue.entity);
+    const detail = this.getValueCheckDetail(issue);
+    const icon = issue.entity.attributes?.icon || "mdi:alert-circle-outline";
+
+    return html`
+      <button class="device-row" type="button" @click=${() => this.openEntity(entityId)}>
+        <ha-icon .icon=${icon}></ha-icon>
+        <span class="row-text">
+          <span class="name">${name}</span>
+          <span class="detail">${detail}</span>
         </span>
       </button>
     `;
@@ -206,9 +249,34 @@ class UnavailableDevicesCard extends BaseCard {
       .sort((a, b) => this.getDeviceName(a.device).localeCompare(this.getDeviceName(b.device)));
   }
 
+  private getValueCheckIssues(): IssueEntity[] {
+    if (!this.hass) {
+      return [];
+    }
+
+    return this.getValueChecks()
+      .map((check) => {
+        const entity = this.hass.states[check.entity] as HassEntity | undefined;
+        const matchedValue = entity ? this.getMatchedValue(entity.state, check) : undefined;
+
+        return entity && matchedValue !== undefined
+          ? {
+              check,
+              entity,
+              matchedValue,
+            }
+          : undefined;
+      })
+      .filter(Boolean) as IssueEntity[];
+  }
+
   private getDomainEntityIds(hass: HomeAssistant) {
     const domains = new Set(this.normalizeList(this.config?.domains, DEFAULT_DOMAINS));
     return Object.keys(hass.states || {}).filter((entityId) => domains.has(this.getDomain(entityId)));
+  }
+
+  private getWatchedEntityIds(hass: HomeAssistant) {
+    return [...new Set([...this.getDomainEntityIds(hass), ...this.getValueChecks().map((check) => check.entity)])];
   }
 
   private getDomain(entityId: string) {
@@ -217,6 +285,10 @@ class UnavailableDevicesCard extends BaseCard {
 
   private getDeviceName(device: DeviceRegistryEntry) {
     return device.name_by_user || device.name || "Unknown device";
+  }
+
+  private getEntityName(entityId: string, entity: HassEntity) {
+    return entity.attributes?.friendly_name || entityId;
   }
 
   private getIssueIcon(entry?: EntityRegistryEntry) {
@@ -244,6 +316,28 @@ class UnavailableDevicesCard extends BaseCard {
     return "";
   }
 
+  private getValueCheckDetail(issue: IssueEntity) {
+    const operator = this.getOperatorLabel(issue.check.operator);
+    const valueText =
+      issue.check.operator === "not_contains" ? issue.check.values.join(", ") : issue.matchedValue || issue.check.values.join(", ");
+
+    return `${issue.entity.state} ${operator} ${valueText}`;
+  }
+
+  private getOperatorLabel(operator: ValueCheckOperator) {
+    const labels: Record<ValueCheckOperator, string> = {
+      equals: "is",
+      gt: ">",
+      lt: "<",
+      lte: "<=",
+      gte: ">=",
+      contains: "contains",
+      not_contains: "does not contain",
+    };
+
+    return labels[operator];
+  }
+
   private openDevice(deviceId: string) {
     handleActionConfig(
       this,
@@ -254,6 +348,80 @@ class UnavailableDevicesCard extends BaseCard {
         navigation_path: `/config/devices/device/${deviceId}`,
       }
     );
+  }
+
+  private openEntity(entityId: string) {
+    handleActionConfig(
+      this,
+      this.hass,
+      {},
+      {
+        action: "more-info",
+        entity: entityId,
+      }
+    );
+  }
+
+  private getValueChecks(): NormalizedValueCheck[] {
+    return (this.config.value_checks || [])
+      .map((check) => ({
+        entity: String(check.entity || "").trim(),
+        operator: this.normalizeOperator(check.operator),
+        values: this.normalizeList(check.values),
+      }))
+      .filter((check) => check.entity && check.values.length);
+  }
+
+  private normalizeOperator(operator?: string): ValueCheckOperator {
+    const operators: ValueCheckOperator[] = ["equals", "gt", "lt", "lte", "gte", "contains", "not_contains"];
+    return operators.includes(operator as ValueCheckOperator) ? (operator as ValueCheckOperator) : "equals";
+  }
+
+  private getMatchedValue(state: string, check: NormalizedValueCheck) {
+    if (check.operator === "not_contains") {
+      const normalizedState = state.toLowerCase();
+      return check.values.every((value) => !normalizedState.includes(value.toLowerCase())) ? check.values.join(", ") : undefined;
+    }
+
+    return check.values.find((value) => this.matchesValue(state, value, check.operator));
+  }
+
+  private matchesValue(state: string, value: string, operator: ValueCheckOperator) {
+    switch (operator) {
+      case "equals":
+        return state === value;
+      case "contains":
+        return state.toLowerCase().includes(value.toLowerCase());
+      case "gt":
+      case "lt":
+      case "lte":
+      case "gte":
+        return this.matchesNumericValue(state, value, operator);
+      case "not_contains":
+        return false;
+    }
+  }
+
+  private matchesNumericValue(state: string, value: string, operator: ValueCheckOperator) {
+    const stateNumber = Number(state);
+    const valueNumber = Number(value);
+
+    if (!Number.isFinite(stateNumber) || !Number.isFinite(valueNumber)) {
+      return false;
+    }
+
+    switch (operator) {
+      case "gt":
+        return stateNumber > valueNumber;
+      case "lt":
+        return stateNumber < valueNumber;
+      case "lte":
+        return stateNumber <= valueNumber;
+      case "gte":
+        return stateNumber >= valueNumber;
+      default:
+        return false;
+    }
   }
 
   private normalizeList(value?: string[] | string, fallback: string[] = []) {
@@ -379,11 +547,11 @@ class UnavailableDevicesCard extends BaseCard {
   `;
 }
 
-customElements.define("unavailable-devices-card", UnavailableDevicesCard);
+customElements.define("possible-issues-card", PossibleIssuesCard);
 
 window.customCards = window.customCards || [];
 window.customCards.push({
-  type: "unavailable-devices-card",
-  name: "Unavailable Devices Card",
-  description: "Lists devices with unavailable entities across configurable domains",
+  type: "possible-issues-card",
+  name: "Possible Issues Card",
+  description: "Lists devices with unavailable entities and entities matching configurable value checks",
 });

@@ -1,10 +1,24 @@
 import { css, html, LitElement, PropertyValues } from "lit";
 import { fireEvent, HomeAssistant } from "custom-card-helpers";
-import { renderTextField } from "../../shared/base-card";
+import { renderEntityPicker, renderTextField } from "../../shared/base-card";
 
 type RowDetailMode = "none" | "count" | "entities";
+type ValueCheckOperator = "equals" | "gt" | "lt" | "lte" | "gte" | "contains" | "not_contains";
+type ListConfigKey =
+  | "domains"
+  | "issue_states"
+  | "ignored_entities"
+  | "ignored_devices"
+  | "ignored_integrations"
+  | "ignored_name_patterns";
 
-type UnavailableDevicesCardEditorConfig = {
+type ValueCheckConfig = {
+  entity?: string;
+  operator?: ValueCheckOperator;
+  values?: string[] | string;
+};
+
+type PossibleIssuesCardEditorConfig = {
   type?: string;
   title?: string;
   domains?: string[] | string;
@@ -14,6 +28,7 @@ type UnavailableDevicesCardEditorConfig = {
   ignored_integrations?: string[] | string;
   ignored_name_patterns?: string[] | string;
   row_detail?: RowDetailMode;
+  value_checks?: ValueCheckConfig[];
 };
 
 type EntityRegistryEntry = {
@@ -25,10 +40,19 @@ const DEFAULT_DOMAINS = ["sensor", "light", "switch"];
 const DEFAULT_ISSUE_STATES = ["unavailable"];
 const COMMON_ISSUE_STATES = ["unavailable", "unknown", "none"];
 const DEFAULT_ROW_DETAIL: RowDetailMode = "none";
+const VALUE_CHECK_OPERATORS: Array<{ value: ValueCheckOperator; label: string }> = [
+  { value: "equals", label: "Equals" },
+  { value: "gt", label: "Greater than (>)" },
+  { value: "lt", label: "Less than (<)" },
+  { value: "lte", label: "Less than or equal (<=)" },
+  { value: "gte", label: "Greater than or equal (>=)" },
+  { value: "contains", label: "Contains" },
+  { value: "not_contains", label: "Does not contain" },
+];
 
-class UnavailableDevicesCardEditor extends LitElement {
+class PossibleIssuesCardEditor extends LitElement {
   hass?: HomeAssistant;
-  config: UnavailableDevicesCardEditorConfig = {};
+  config: PossibleIssuesCardEditorConfig = {};
   private integrationOptions: string[] = [];
   private integrationsLoading = false;
   private integrationsVersion = 0;
@@ -39,7 +63,12 @@ class UnavailableDevicesCardEditor extends LitElement {
     integrationsVersion: { state: true },
   };
 
-  setConfig(config: UnavailableDevicesCardEditorConfig) {
+  connectedCallback() {
+    super.connectedCallback();
+    this.loadHomeAssistantPickers();
+  }
+
+  setConfig(config: PossibleIssuesCardEditorConfig) {
     this.config = {
       title: DEFAULT_TITLE,
       domains: DEFAULT_DOMAINS,
@@ -49,6 +78,7 @@ class UnavailableDevicesCardEditor extends LitElement {
       ignored_integrations: [],
       ignored_name_patterns: [],
       row_detail: DEFAULT_ROW_DETAIL,
+      value_checks: [],
       ...config,
     };
   }
@@ -84,6 +114,7 @@ class UnavailableDevicesCardEditor extends LitElement {
           })}
           ${this.renderListField("Domains", "domains", DEFAULT_DOMAINS, "sensor, light, switch")}
           ${this.renderIssueStatesField()}
+          ${this.renderValueChecksField()}
           ${this.renderListField("Ignored entity IDs or patterns", "ignored_entities", [], "sensor.openweathermap_weather")}
           ${this.renderListField("Ignored device IDs or patterns", "ignored_devices", [], "nuki, 65oled855")}
           ${this.renderIgnoredIntegrationsField()}
@@ -96,7 +127,7 @@ class UnavailableDevicesCardEditor extends LitElement {
 
   private renderListField(
     label: string,
-    key: keyof UnavailableDevicesCardEditorConfig,
+    key: ListConfigKey,
     fallback: string[],
     placeholder: string
   ) {
@@ -146,6 +177,68 @@ class UnavailableDevicesCardEditor extends LitElement {
               </div>
             `
           : ""}
+      </div>
+    `;
+  }
+
+  private renderValueChecksField() {
+    const checks = this.config.value_checks || [];
+
+    return html`
+      <div class="field-group">
+        <div class="section-header">
+          <span>Entity value checks</span>
+          <button type="button" @click=${() => this.addValueCheck()}>Add check</button>
+        </div>
+
+        ${checks.length
+          ? checks.map(
+              (check, index) => html`
+                <div class="value-check">
+                  ${renderEntityPicker({
+                    hass: this.hass,
+                    label: "Entity",
+                    value: String(check.entity || ""),
+                    domains: [],
+                    onValueChanged: (value) => this.updateValueCheck(index, "entity", value),
+                  })}
+
+                  <label>
+                    <span>Operator</span>
+                    <select
+                      .value=${check.operator || "equals"}
+                      @change=${(event: Event) =>
+                        this.updateValueCheck(
+                          index,
+                          "operator",
+                          (event.target as HTMLSelectElement).value as ValueCheckOperator
+                        )}
+                    >
+                      ${VALUE_CHECK_OPERATORS.map(
+                        (operator) => html`
+                          <option value=${operator.value} ?selected=${(check.operator || "equals") === operator.value}>
+                            ${operator.label}
+                          </option>
+                        `
+                      )}
+                    </select>
+                  </label>
+
+                  <label>
+                    <span>Values</span>
+                    <input
+                      .value=${this.formatList(check.values, [])}
+                      placeholder="error, jammed, offline"
+                      @input=${(event: Event) =>
+                        this.updateValueCheck(index, "values", this.parseList((event.target as HTMLInputElement).value))}
+                    />
+                  </label>
+
+                  <button type="button" @click=${() => this.removeValueCheck(index)}>Remove check</button>
+                </div>
+              `
+            )
+          : html`<p class="hint">Add checks to show an entity when its state matches one or more configured values.</p>`}
       </div>
     `;
   }
@@ -206,17 +299,44 @@ class UnavailableDevicesCardEditor extends LitElement {
     `;
   }
 
-  private updateConfigValue(key: keyof UnavailableDevicesCardEditorConfig, value: unknown) {
+  private updateConfigValue(key: keyof PossibleIssuesCardEditorConfig, value: unknown) {
     this.updateConfig({
       ...this.config,
       [key]: value === "" ? undefined : value,
     });
   }
 
-  private updateListValue(key: keyof UnavailableDevicesCardEditorConfig, value: string) {
+  private updateListValue(key: ListConfigKey, value: string) {
     this.updateConfig({
       ...this.config,
       [key]: this.parseList(value),
+    });
+  }
+
+  private addValueCheck() {
+    this.updateConfig({
+      ...this.config,
+      value_checks: [...(this.config.value_checks || []), { entity: "", operator: "equals", values: [] }],
+    });
+  }
+
+  private updateValueCheck(index: number, key: keyof ValueCheckConfig, value: unknown) {
+    const checks = [...(this.config.value_checks || [])];
+    checks[index] = {
+      ...checks[index],
+      [key]: value,
+    };
+
+    this.updateConfig({
+      ...this.config,
+      value_checks: checks,
+    });
+  }
+
+  private removeValueCheck(index: number) {
+    this.updateConfig({
+      ...this.config,
+      value_checks: (this.config.value_checks || []).filter((_, checkIndex) => checkIndex !== index),
     });
   }
 
@@ -327,9 +447,26 @@ class UnavailableDevicesCardEditor extends LitElement {
       .join(" ");
   }
 
-  private updateConfig(config: UnavailableDevicesCardEditorConfig) {
+  private updateConfig(config: PossibleIssuesCardEditorConfig) {
     this.config = config;
     fireEvent(this, "config-changed", { config });
+  }
+
+  private async loadHomeAssistantPickers() {
+    const loadCardHelpers = (window as any).loadCardHelpers;
+
+    if (customElements.get("ha-entity-picker") || !loadCardHelpers) {
+      return;
+    }
+
+    const helpers = await loadCardHelpers();
+    const entitiesCard = await helpers.createCardElement({
+      type: "entities",
+      entities: [],
+    });
+
+    await entitiesCard.constructor.getConfigElement();
+    this.requestUpdate();
   }
 
   private async loadIntegrationOptions() {
@@ -368,9 +505,31 @@ class UnavailableDevicesCardEditor extends LitElement {
       gap: 6px;
     }
 
+    .field {
+      display: block;
+    }
+
+    ha-entity-picker {
+      display: block;
+      width: 100%;
+    }
+
     .field-group {
       display: grid;
       gap: 8px;
+    }
+
+    .section-header {
+      align-items: center;
+      display: flex;
+      gap: 12px;
+      justify-content: space-between;
+    }
+
+    .section-header span {
+      color: var(--secondary-text-color);
+      font-size: 12px;
+      font-weight: 500;
     }
 
     label span {
@@ -410,6 +569,20 @@ class UnavailableDevicesCardEditor extends LitElement {
       grid-template-columns: minmax(0, 1fr) auto;
     }
 
+    .value-check {
+      border: 1px solid var(--divider-color, #ddd);
+      border-radius: 10px;
+      display: grid;
+      gap: 8px;
+      padding: 10px;
+    }
+
+    .hint {
+      color: var(--secondary-text-color);
+      font-size: 12px;
+      margin: 0;
+    }
+
     .chips {
       display: flex;
       flex-wrap: wrap;
@@ -438,4 +611,4 @@ class UnavailableDevicesCardEditor extends LitElement {
   `;
 }
 
-customElements.define("unavailable-devices-card-editor", UnavailableDevicesCardEditor);
+customElements.define("possible-issues-card-editor", PossibleIssuesCardEditor);
