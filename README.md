@@ -30,7 +30,7 @@ type: module
 ## Cards
 
 ### `welcome-card`
-![welcome-card example](images/welcome-card.png)
+![welcome-card example](./images/welcome-card.png)
 
 Greeting card with a **date/weather pill**, optional **temperature**, a **settings** button, and configurable **quick tabs**.
 
@@ -75,7 +75,7 @@ tabs:
 ---
 
 ### `room-card`
-![room-card example](images/room-card.png)
+![room-card example](./images/room-card.png)
 
 Room tile for a **light** with a prominent **light action button** and up to **two sensor readouts**.
 
@@ -113,7 +113,7 @@ light_hold_action:
 ---
 
 ### `unavailable-devices-card`
-![unavailable-devices-card example](images/unavailable-devices-card.png)
+![unavailable-devices-card example](./images/unavailable-devices-card.png)
 Lists **devices** that have **entities in “issue” states** (defaults to `unavailable`). Useful for quickly spotting flaky devices/integrations.
 
 Clicking a row navigates to the device page in Home Assistant.
