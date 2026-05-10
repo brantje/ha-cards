@@ -324,10 +324,12 @@ class PossibleIssuesCard extends BaseCard {
 
   private getValueCheckDetail(issue: IssueEntity) {
     const operator = this.getOperatorLabel(issue.check.operator);
-    const valueText =
+    const unitOfMeasurement = issue.entity.attributes?.unit_of_measurement || "";
+    const matchedValue =
       issue.check.operator === "not_contains" ? issue.check.values.join(", ") : issue.matchedValue || issue.check.values.join(", ");
-
-    return `${issue.entity.state} ${operator} ${valueText}`;
+    const issueValue = `${issue.entity.state} ${unitOfMeasurement ? `${unitOfMeasurement}` : ""}`;
+    const valueText = `${matchedValue} ${unitOfMeasurement ? `${unitOfMeasurement}` : ""}`;
+    return `${issueValue} ${operator} ${valueText}`;
   }
 
   private getOperatorLabel(operator: ValueCheckOperator) {
