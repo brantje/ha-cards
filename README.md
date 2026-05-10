@@ -1,6 +1,6 @@
 # HA Cards (Lovelace)
 
-[![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=brantje&repository=https%3A%2F%2Fgithub.com%2Fbrantje%2Fha-cards&category=Lovelace)
+[![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?repository=https%3A%2F%2Fgithub.com%2Fbrantje%2Fha-cards&category=Lovelace)
 
 A small collection of **custom Lovelace cards** built with **Lit** and bundled into a single module: `ha-cards.js`.
 
