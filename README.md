@@ -32,6 +32,7 @@ type: module
 
 ### `possible-issues-card`
 ![possible-issues-card example](./images/unavailable-devices-card.png)
+   
 Lists **devices** that have **entities in “issue” states** (defaults to `unavailable`) and **entities** that match custom value checks. Useful for quickly spotting flaky devices/integrations and known problem states.
 
 Clicking a device row navigates to the device page in Home Assistant. Clicking an entity value-check row opens more info for that entity.
@@ -84,6 +85,7 @@ row_detail: count
 
 ### `welcome-card`
 ![welcome-card example](./images/welcome_card.png)
+
 
 Greeting card with a **date/weather pill**, optional **temperature**, a **settings** button, and configurable **quick tabs**.
 
