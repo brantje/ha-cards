@@ -28,8 +28,62 @@ type: module
 
 ## Cards
 
+---
+
+### `possible-issues-card`
+![possible-issues-card example](./images/unavailable-devices-card.png)
+Lists **devices** that have **entities in “issue” states** (defaults to `unavailable`) and **entities** that match custom value checks. Useful for quickly spotting flaky devices/integrations and known problem states.
+
+Clicking a device row navigates to the device page in Home Assistant. Clicking an entity value-check row opens more info for that entity.
+
+**Config**
+
+- **`type`**: `custom:possible-issues-card`
+- **`title`** (optional, default `Possible Issues`): Card title
+- **`domains`** (optional, default `["sensor","light","switch"]`): Domains to consider (array or comma-separated string)
+- **`issue_states`** (optional, default `["unavailable"]`): Entity states considered problematic (array or comma-separated string)
+- **`value_checks`** (optional): List of entity state checks. Each item supports:
+  - **`entity`**: Entity ID to check
+  - **`operator`**: `equals` | `not_equals` | `gt` | `lt` | `lte` | `gte` | `contains` | `not_contains`
+  - **`values`**: One or more values (array or comma-separated string). Operators match if any value matches, except `not_contains`, which matches only when none of the values are contained.
+  - **`message`** (optional): Main row text to show instead of the entity friendly name
+  - **`submessage`** (optional): Secondary row text to show instead of the generated state/operator detail
+  - **`navigation_path`** (optional): Dashboard/path to navigate to when clicking the matching row. Defaults to opening more-info for the entity.
+- **`ignored_entities`** (optional): Entity IDs or substrings to ignore (array or comma-separated string)
+- **`ignored_devices`** (optional): Device IDs or substrings to ignore (array or comma-separated string)
+- **`ignored_integrations`** (optional): Integration/platform identifiers to ignore (array or comma-separated string)
+- **`ignored_name_patterns`** (optional): Substrings matched against device/entity names to ignore
+- **`row_detail`** (optional, default `none`): `none` | `count` | `entities`
+  - `none`: show only device name
+  - `count`: show affected entity count
+  - `entities`: show affected entity names
+
+**Example**
+
+```yaml
+type: custom:possible-issues-card
+title: Possible Issues
+domains: sensor, light, switch
+issue_states: unavailable, unknown
+value_checks:
+  - entity: sensor.washing_machine_status
+    operator: contains
+    values:
+      - error
+      - jammed
+    message: Washing machine issue
+    submessage: Check the machine before starting a new cycle
+    navigation_path: /lovelace/issues
+  - entity: sensor.freezer_temperature
+    operator: gt
+    values: "-12"
+ignored_integrations: openweathermap, hue
+ignored_name_patterns: Test device, Printer
+row_detail: count
+```
+
 ### `welcome-card`
-![welcome-card example](./images/welcome-card.png)
+![welcome-card example](./images/welcome_card.png)
 
 Greeting card with a **date/weather pill**, optional **temperature**, a **settings** button, and configurable **quick tabs**.
 
@@ -109,59 +163,6 @@ light_hold_action:
   action: more-info
 ```
 
----
-
-### `possible-issues-card`
-![possible-issues-card example](./images/unavailable-devices-card.png)
-Lists **devices** that have **entities in “issue” states** (defaults to `unavailable`) and **entities** that match custom value checks. Useful for quickly spotting flaky devices/integrations and known problem states.
-
-Clicking a device row navigates to the device page in Home Assistant. Clicking an entity value-check row opens more info for that entity.
-
-**Config**
-
-- **`type`**: `custom:possible-issues-card`
-- **`title`** (optional, default `Possible Issues`): Card title
-- **`domains`** (optional, default `["sensor","light","switch"]`): Domains to consider (array or comma-separated string)
-- **`issue_states`** (optional, default `["unavailable"]`): Entity states considered problematic (array or comma-separated string)
-- **`value_checks`** (optional): List of entity state checks. Each item supports:
-  - **`entity`**: Entity ID to check
-  - **`operator`**: `equals` | `not_equals` | `gt` | `lt` | `lte` | `gte` | `contains` | `not_contains`
-  - **`values`**: One or more values (array or comma-separated string). Operators match if any value matches, except `not_contains`, which matches only when none of the values are contained.
-  - **`message`** (optional): Main row text to show instead of the entity friendly name
-  - **`submessage`** (optional): Secondary row text to show instead of the generated state/operator detail
-  - **`navigation_path`** (optional): Dashboard/path to navigate to when clicking the matching row. Defaults to opening more-info for the entity.
-- **`ignored_entities`** (optional): Entity IDs or substrings to ignore (array or comma-separated string)
-- **`ignored_devices`** (optional): Device IDs or substrings to ignore (array or comma-separated string)
-- **`ignored_integrations`** (optional): Integration/platform identifiers to ignore (array or comma-separated string)
-- **`ignored_name_patterns`** (optional): Substrings matched against device/entity names to ignore
-- **`row_detail`** (optional, default `none`): `none` | `count` | `entities`
-  - `none`: show only device name
-  - `count`: show affected entity count
-  - `entities`: show affected entity names
-
-**Example**
-
-```yaml
-type: custom:possible-issues-card
-title: Possible Issues
-domains: sensor, light, switch
-issue_states: unavailable, unknown
-value_checks:
-  - entity: sensor.washing_machine_status
-    operator: contains
-    values:
-      - error
-      - jammed
-    message: Washing machine issue
-    submessage: Check the machine before starting a new cycle
-    navigation_path: /lovelace/issues
-  - entity: sensor.freezer_temperature
-    operator: gt
-    values: "-12"
-ignored_integrations: openweathermap, hue
-ignored_name_patterns: Test device, Printer
-row_detail: count
-```
 
 ## Development
 
