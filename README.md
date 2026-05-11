@@ -1,6 +1,5 @@
 # HA Cards (Lovelace)
 
-[![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=brantje&repository=https%3A%2F%2Fgithub.com%2Fbrantje%2Fha-cards)
 
 A small collection of **custom Lovelace cards** built with **Lit** and bundled into a single module: `ha-cards.js`.
 
@@ -8,14 +7,14 @@ A small collection of **custom Lovelace cards** built with **Lit** and bundled i
 
 ### HACS (recommended)
 
-1. Add this repository to HACS (click the button above).
-2. Install it as a **Lovelace** repository.
-3. Add the resource in Home Assistant:
+1. Open custom repositories in HACS
+2. Enter the following
+   Repository: brantje/ha-cards
+   Type: Dashboard
+3. Click Add
+4. Search for "HA Cards"
+5. Download
 
-```yaml
-url: /hacsfiles/ha-cards/ha-cards.js
-type: module
-```
 
 ### Manual
 
