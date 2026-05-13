@@ -7,6 +7,7 @@ type ValueCheckOperator = "equals" | "not_equals" | "gt" | "lt" | "lte" | "gte" 
 type ListConfigKey =
   | "domains"
   | "issue_states"
+  | "included_entities"
   | "ignored_entities"
   | "ignored_devices"
   | "ignored_integrations"
@@ -24,8 +25,10 @@ type ValueCheckConfig = {
 type PossibleIssuesCardEditorConfig = {
   type?: string;
   title?: string;
+  background_color?: string;
   domains?: string[] | string;
   issue_states?: string[] | string;
+  included_entities?: string[] | string;
   ignored_entities?: string[] | string;
   ignored_devices?: string[] | string;
   ignored_integrations?: string[] | string;
@@ -39,6 +42,7 @@ type EntityRegistryEntry = {
 };
 
 const DEFAULT_TITLE = "Possible Issues";
+const DEFAULT_BACKGROUND_COLOR = "#44739e";
 const DEFAULT_DOMAINS = ["sensor", "light", "switch"];
 const DEFAULT_ISSUE_STATES = ["unavailable"];
 const COMMON_ISSUE_STATES = ["unavailable", "unknown", "none"];
@@ -75,8 +79,10 @@ class PossibleIssuesCardEditor extends LitElement {
   setConfig(config: PossibleIssuesCardEditorConfig) {
     this.config = {
       title: DEFAULT_TITLE,
+      background_color: DEFAULT_BACKGROUND_COLOR,
       domains: DEFAULT_DOMAINS,
       issue_states: DEFAULT_ISSUE_STATES,
+      included_entities: [],
       ignored_entities: [],
       ignored_devices: [],
       ignored_integrations: [],
@@ -116,9 +122,11 @@ class PossibleIssuesCardEditor extends LitElement {
             placeholder: DEFAULT_TITLE,
             onInput: (value) => this.updateConfigValue("title", value),
           })}
+          ${this.renderColorInput("Background color", "background_color", DEFAULT_BACKGROUND_COLOR)}
           ${this.renderListField("Domains", "domains", DEFAULT_DOMAINS, "sensor, light, switch")}
           ${this.renderIssueStatesField()}
           ${this.renderValueChecksField()}
+          ${this.renderListField("Only include entity IDs or patterns", "included_entities", [], "sensor.temperature, light.kitchen")}
           ${this.renderListField("Ignored entity IDs or patterns", "ignored_entities", [], "sensor.openweathermap_weather")}
           ${this.renderListField("Ignored device IDs or patterns", "ignored_devices", [], "nuki, 65oled855")}
           ${this.renderIgnoredIntegrationsField()}
@@ -141,6 +149,21 @@ class PossibleIssuesCardEditor extends LitElement {
       placeholder,
       onInput: (value) => this.updateListValue(key, value),
     });
+  }
+
+  private renderColorInput(label: string, key: "background_color", fallback: string) {
+    const value = this.toColorInputValue(String(this.config[key] || fallback), fallback);
+
+    return html`
+      <label>
+        <span>${label}</span>
+        <input
+          type="color"
+          .value=${value}
+          @input=${(event: InputEvent) => this.updateConfigValue(key, (event.target as HTMLInputElement).value)}
+        />
+      </label>
+    `;
   }
 
   private renderIssueStatesField() {
@@ -257,6 +280,10 @@ class PossibleIssuesCardEditor extends LitElement {
                         this.updateValueCheck(index, "submessage", (event.target as HTMLInputElement).value)}
                     />
                   </label>
+                  <p class="hint">
+                    Message templates support {{ state }}, {{ name }}, {{ entity_id }}, {{ matched_value }},
+                    {{ unit }}, and {{ attributes.friendly_name }}.
+                  </p>
 
                   <label>
                     <span>Navigation path</span>
@@ -479,6 +506,10 @@ class PossibleIssuesCardEditor extends LitElement {
       .split("_")
       .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
       .join(" ");
+  }
+
+  private toColorInputValue(value: string, fallback: string) {
+    return /^#[0-9a-fA-F]{6}$/.test(value) ? value : fallback;
   }
 
   private updateConfig(config: PossibleIssuesCardEditorConfig) {

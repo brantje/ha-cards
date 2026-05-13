@@ -41,15 +41,17 @@ Clicking a device row navigates to the device page in Home Assistant. Clicking a
 
 - **`type`**: `custom:possible-issues-card`
 - **`title`** (optional, default `Possible Issues`): Card title
+- **`background_color`** (optional, default `#44739e`): Card background color
 - **`domains`** (optional, default `["sensor","light","switch"]`): Domains to consider (array or comma-separated string)
 - **`issue_states`** (optional, default `["unavailable"]`): Entity states considered problematic (array or comma-separated string)
 - **`value_checks`** (optional): List of entity state checks. Each item supports:
   - **`entity`**: Entity ID to check
   - **`operator`**: `equals` | `not_equals` | `gt` | `lt` | `lte` | `gte` | `contains` | `not_contains`
   - **`values`**: One or more values (array or comma-separated string). Operators match if any value matches, except `not_contains`, which matches only when none of the values are contained.
-  - **`message`** (optional): Main row text to show instead of the entity friendly name
-  - **`submessage`** (optional): Secondary row text to show instead of the generated state/operator detail
+  - **`message`** (optional): Main row text to show instead of the entity friendly name. Supports templates like `{{ state }}`, `{{ name }}`, `{{ entity_id }}`, `{{ matched_value }}`, `{{ unit }}`, and `{{ attributes.friendly_name }}`.
+  - **`submessage`** (optional): Secondary row text to show instead of the generated state/operator detail. Supports the same templates as `message`.
   - **`navigation_path`** (optional): Dashboard/path to navigate to when clicking the matching row. Defaults to opening more-info for the entity.
+- **`included_entities`** (optional): Entity IDs or substrings to exclusively include (array or comma-separated string)
 - **`ignored_entities`** (optional): Entity IDs or substrings to ignore (array or comma-separated string)
 - **`ignored_devices`** (optional): Device IDs or substrings to ignore (array or comma-separated string)
 - **`ignored_integrations`** (optional): Integration/platform identifiers to ignore (array or comma-separated string)
@@ -64,8 +66,10 @@ Clicking a device row navigates to the device page in Home Assistant. Clicking a
 ```yaml
 type: custom:possible-issues-card
 title: Possible Issues
+background_color: "#44739e"
 domains: sensor, light, switch
 issue_states: unavailable, unknown
+included_entities: sensor.door, switch.garage
 value_checks:
   - entity: sensor.washing_machine_status
     operator: contains
@@ -73,7 +77,7 @@ value_checks:
       - error
       - jammed
     message: Washing machine issue
-    submessage: Check the machine before starting a new cycle
+    submessage: "{{ name }} is {{ state }}"
     navigation_path: /lovelace/issues
   - entity: sensor.freezer_temperature
     operator: gt

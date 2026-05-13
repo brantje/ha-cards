@@ -1,4 +1,5 @@
 import { css, html, PropertyValues } from "lit";
+import { styleMap } from "lit/directives/style-map.js";
 import { handleActionConfig, HomeAssistant } from "custom-card-helpers";
 import { BaseCard } from "../../shared/base-card";
 import "./possible-issues-card-editor";
@@ -27,8 +28,10 @@ type NormalizedValueCheck = {
 type PossibleIssuesCardConfig = {
   type: string;
   title?: string;
+  background_color?: string;
   domains?: string[] | string;
   issue_states?: string[] | string;
+  included_entities?: string[] | string;
   ignored_entities?: string[] | string;
   ignored_devices?: string[] | string;
   ignored_integrations?: string[] | string;
@@ -70,6 +73,7 @@ type IssueEntity = {
 };
 
 const DEFAULT_TITLE = "Possible Issues";
+const DEFAULT_BACKGROUND_COLOR = "#44739e";
 const DEFAULT_DOMAINS = ["sensor", "light", "switch"];
 const DEFAULT_ISSUE_STATES = ["unavailable"];
 const DEFAULT_ROW_DETAIL: RowDetailMode = "none";
@@ -96,8 +100,10 @@ class PossibleIssuesCard extends BaseCard {
   static getStubConfig() {
     return {
       title: DEFAULT_TITLE,
+      background_color: DEFAULT_BACKGROUND_COLOR,
       domains: DEFAULT_DOMAINS,
       issue_states: DEFAULT_ISSUE_STATES,
+      included_entities: [],
       ignored_entities: [],
       ignored_devices: [],
       ignored_integrations: [],
@@ -110,8 +116,10 @@ class PossibleIssuesCard extends BaseCard {
   setConfig(config: PossibleIssuesCardConfig) {
     this.config = {
       title: DEFAULT_TITLE,
+      background_color: DEFAULT_BACKGROUND_COLOR,
       domains: DEFAULT_DOMAINS,
       issue_states: DEFAULT_ISSUE_STATES,
+      included_entities: [],
       ignored_entities: [],
       ignored_devices: [],
       ignored_integrations: [],
@@ -153,13 +161,16 @@ class PossibleIssuesCard extends BaseCard {
   render() {
     const devices = this.getIssueDevices();
     const entities = this.getValueCheckIssues();
+    const styles = {
+      "--possible-issues-card-background": this.config.background_color || DEFAULT_BACKGROUND_COLOR,
+    };
 
     if (!devices.length && !entities.length) {
       return html``;
     }
 
     return html`
-      <ha-card>
+      <ha-card style=${styleMap(styles)}>
         <div class="card">
           <h2>${this.config.title || DEFAULT_TITLE}</h2>
           <div class="devices">
@@ -189,8 +200,12 @@ class PossibleIssuesCard extends BaseCard {
 
   private renderEntityRow(issue: IssueEntity) {
     const entityId = issue.check.entity;
-    const name = issue.check.message || this.getEntityName(entityId, issue.entity);
-    const detail = issue.check.submessage || this.getValueCheckDetail(issue);
+    const name = issue.check.message
+      ? this.renderValueCheckTemplate(issue.check.message, issue)
+      : this.getEntityName(entityId, issue.entity);
+    const detail = issue.check.submessage
+      ? this.renderValueCheckTemplate(issue.check.submessage, issue)
+      : this.getValueCheckDetail(issue);
     const icon = issue.entity.attributes?.icon || "mdi:alert-circle-outline";
 
     return html`
@@ -210,6 +225,7 @@ class PossibleIssuesCard extends BaseCard {
     }
 
     const issueStates = new Set(this.normalizeList(this.config.issue_states, DEFAULT_ISSUE_STATES));
+    const includedEntities = this.normalizeList(this.config.included_entities);
     const ignoredEntities = this.normalizeList(this.config.ignored_entities);
     const ignoredDevices = this.normalizeList(this.config.ignored_devices);
     const ignoredIntegrations = new Set(
@@ -232,7 +248,11 @@ class PossibleIssuesCard extends BaseCard {
         continue;
       }
 
-      if (this.isIgnored(entry.entity_id, ignoredEntities) || this.isIgnored(deviceId, ignoredDevices)) {
+      if (includedEntities.length && !this.matchesPattern(entry.entity_id, includedEntities)) {
+        continue;
+      }
+
+      if (this.matchesPattern(entry.entity_id, ignoredEntities) || this.matchesPattern(deviceId, ignoredDevices)) {
         continue;
       }
 
@@ -240,7 +260,7 @@ class PossibleIssuesCard extends BaseCard {
         .filter(Boolean)
         .join(" ");
 
-      if (this.isIgnored(searchableName, ignoredNames)) {
+      if (this.matchesPattern(searchableName, ignoredNames)) {
         continue;
       }
 
@@ -278,7 +298,13 @@ class PossibleIssuesCard extends BaseCard {
 
   private getDomainEntityIds(hass: HomeAssistant) {
     const domains = new Set(this.normalizeList(this.config?.domains, DEFAULT_DOMAINS));
-    return Object.keys(hass.states || {}).filter((entityId) => domains.has(this.getDomain(entityId)));
+    const includedEntities = this.normalizeList(this.config?.included_entities);
+
+    return Object.keys(hass.states || {}).filter(
+      (entityId) =>
+        domains.has(this.getDomain(entityId)) &&
+        (!includedEntities.length || this.matchesPattern(entityId, includedEntities))
+    );
   }
 
   private getWatchedEntityIds(hass: HomeAssistant) {
@@ -345,6 +371,73 @@ class PossibleIssuesCard extends BaseCard {
     };
 
     return labels[operator];
+  }
+
+  private renderValueCheckTemplate(template: string, issue: IssueEntity) {
+    return template.replace(/\{\{\s*([a-zA-Z0-9_.]+)\s*\}\}/g, (match, key: string) => {
+      const value = this.getValueCheckTemplateValue(key, issue);
+      return value === undefined ? match : value;
+    });
+  }
+
+  private getValueCheckTemplateValue(key: string, issue: IssueEntity) {
+    const matchedValue =
+      issue.check.operator === "not_contains" ? issue.check.values.join(", ") : issue.matchedValue || issue.check.values.join(", ");
+    const unitOfMeasurement = issue.entity.attributes?.unit_of_measurement || "";
+
+    switch (key) {
+      case "entity":
+      case "entity_id":
+        return issue.check.entity;
+      case "name":
+        return this.getEntityName(issue.check.entity, issue.entity);
+      case "state":
+        return issue.entity.state;
+      case "matched":
+      case "matched_value":
+        return matchedValue;
+      case "operator":
+        return issue.check.operator;
+      case "operator_label":
+        return this.getOperatorLabel(issue.check.operator);
+      case "unit":
+      case "unit_of_measurement":
+        return unitOfMeasurement;
+      case "values":
+        return issue.check.values.join(", ");
+      default:
+        return this.getValueCheckAttributeTemplateValue(key, issue.entity);
+    }
+  }
+
+  private getValueCheckAttributeTemplateValue(key: string, entity: HassEntity) {
+    const attributePrefix = key.startsWith("attributes.") ? "attributes." : key.startsWith("attribute.") ? "attribute." : "";
+
+    if (!attributePrefix) {
+      return undefined;
+    }
+
+    return this.formatTemplateValue(entity.attributes?.[key.slice(attributePrefix.length)]);
+  }
+
+  private formatTemplateValue(value: unknown) {
+    if (value === undefined || value === null) {
+      return "";
+    }
+
+    if (Array.isArray(value)) {
+      return value.join(", ");
+    }
+
+    if (typeof value === "object") {
+      try {
+        return JSON.stringify(value);
+      } catch {
+        return "";
+      }
+    }
+
+    return String(value);
   }
 
   private openDevice(deviceId: string) {
@@ -467,9 +560,9 @@ class PossibleIssuesCard extends BaseCard {
     return values.map((item) => String(item).trim()).filter(Boolean);
   }
 
-  private isIgnored(value: string, ignoredPatterns: string[]) {
+  private matchesPattern(value: string, patterns: string[]) {
     const normalizedValue = value.toLowerCase();
-    return ignoredPatterns.some((pattern) => normalizedValue.includes(pattern.toLowerCase()));
+    return patterns.some((pattern) => normalizedValue.includes(pattern.toLowerCase()));
   }
 
   private async loadRegistries() {
@@ -497,7 +590,7 @@ class PossibleIssuesCard extends BaseCard {
 
   static styles = css`
     ha-card {
-      background: rgba(68, 115, 158, 1);
+      background: var(--possible-issues-card-background);
       border: none;
       border-radius: 20px;
       color: white;
