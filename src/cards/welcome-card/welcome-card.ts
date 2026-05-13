@@ -14,6 +14,7 @@ type WelcomeTabConfig = {
 type WelcomeCardConfig = {
   type: string;
   weather_entity?: string;
+  weather_tap_action?: ActionConfig;
   show_temperature?: boolean;
   use_ha_weather_icons?: boolean;
   temperature_entity?: string;
@@ -27,6 +28,7 @@ type HassEntity = {
 };
 
 const DEFAULT_SETTINGS_NAVIGATION_PATH = "/config/dashboard";
+const DEFAULT_WEATHER_TAP_ACTION: ActionConfig = { action: "more-info" };
 const DEFAULT_TAB_ACTION: ActionConfig = { action: "none" };
 const COLLAPSED_STORAGE_PREFIX = "welcome-card:collapsed";
 
@@ -114,6 +116,7 @@ class WelcomeCard extends BaseCard {
   static getStubConfig() {
     return {
       weather_entity: "",
+      weather_tap_action: DEFAULT_WEATHER_TAP_ACTION,
       show_temperature: true,
       use_ha_weather_icons: false,
       settings_navigation_path: DEFAULT_SETTINGS_NAVIGATION_PATH,
@@ -123,6 +126,7 @@ class WelcomeCard extends BaseCard {
 
   setConfig(config: WelcomeCardConfig) {
     this.config = {
+      weather_tap_action: DEFAULT_WEATHER_TAP_ACTION,
       show_temperature: true,
       use_ha_weather_icons: false,
       settings_navigation_path: DEFAULT_SETTINGS_NAVIGATION_PATH,
@@ -279,13 +283,14 @@ class WelcomeCard extends BaseCard {
   }
 
   private handleWeatherTap() {
-    const entity = this.config.weather_entity || this.config.temperature_entity;
+    const actionConfig = this.config.weather_tap_action || DEFAULT_WEATHER_TAP_ACTION;
+    const entity = (actionConfig as any).entity || this.config.weather_entity || this.config.temperature_entity;
 
-    if (!entity) {
+    if (!entity && actionConfig.action === "more-info") {
       return;
     }
 
-    handleActionConfig(this, this.hass, { entity }, { action: "more-info" });
+    handleActionConfig(this, this.hass, entity ? { entity } : {}, actionConfig);
   }
 
   private runTabAction(tab: WelcomeTabConfig) {
