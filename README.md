@@ -165,6 +165,59 @@ light_hold_action:
   action: more-info
 ```
 
+---
+
+### `thermostat-card`
+![thermostat-card example](./images/thermostat-card.png)
+
+Thermostat card for a **climate** entity with current temperature, setpoint controls, optional HVAC mode buttons, optional preset buttons, fan mode cycling, heating/cooling color states, and icon-tap collapse.
+
+**Config**
+
+- **`type`**: `custom:thermostat-card`
+- **`entity`**: Required climate entity (`climate.*`)
+- **`name`** (optional): Display name (falls back to the climate friendly name)
+- **`icon`** (optional, default `mdi:thermostat`): Header icon
+- **`compact`** (optional, default `false`): Always show header only
+- **`collapsed_by_default`** (optional, default `false`): Start collapsed; tap the icon to expand/collapse
+- **`show_controls`** (optional, default `true`): Show temperature `-` / `+` controls
+- **`step_amount`** (optional): Override the entity `target_temp_step`
+- **`show_modes`** (optional, default `false`): Show configured HVAC mode buttons
+- **`modes`** (optional): HVAC modes to show, e.g. `heat`, `cool`, `heat_cool`
+- **`show_off_mode`** (optional, default `false`): Include an `off` mode button when supported
+- **`show_presets`** (optional, default `false`): Show configured preset mode buttons
+- **`presets`** (optional): Preset modes to show, e.g. `eco`, `comfort`, `away`
+- **`show_fan_mode`** (optional, default `false`): Show a fan mode button when the entity supports fan modes
+- **`dual_setpoint_layout`** (optional, default `two_rows`): `two_rows` | `single_row_toggle` | `side_by_side`
+- **`heating_color`** (optional, default `#fbb73c`): Background color while heating is active
+- **`cooling_color`** (optional, default `#3a8dde`): Background color while cooling is active
+
+**Example**
+
+```yaml
+type: custom:thermostat-card
+entity: climate.living_room
+name: Living room
+icon: mdi:thermostat
+collapsed_by_default: false
+show_controls: true
+step_amount: 0.5
+show_modes: true
+modes:
+  - heat
+  - cool
+  - heat_cool
+show_off_mode: true
+show_presets: true
+presets:
+  - eco
+  - comfort
+show_fan_mode: true
+dual_setpoint_layout: two_rows
+heating_color: "#fbb73c"
+cooling_color: "#3a8dde"
+```
+
 
 ## Development
 
