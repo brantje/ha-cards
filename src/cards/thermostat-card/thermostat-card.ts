@@ -195,7 +195,7 @@ class ThermostatCard extends BaseCard {
       return this.renderDualControls(entity);
     }
 
-    const value = this.asNumber(entity.attributes.temperature);
+    const value = this.getTargetTemperature(entity);
     if (value === undefined) {
       return "";
     }
@@ -394,7 +394,7 @@ class ThermostatCard extends BaseCard {
     event.stopPropagation();
 
     const currentValue = target === "single"
-      ? this.asNumber(entity.attributes.temperature)
+      ? this.getTargetTemperature(entity)
       : this.asNumber(entity.attributes[target === "low" ? "target_temp_low" : "target_temp_high"]);
 
     if (currentValue === undefined) {
@@ -554,6 +554,15 @@ class ThermostatCard extends BaseCard {
     return step && step > 0 ? step : 0.5;
   }
 
+  private getTargetTemperature(entity: HassEntity) {
+    const targetTemperature = this.asNumber(entity.attributes.temperature);
+    if (targetTemperature !== undefined) {
+      return targetTemperature;
+    }
+
+    return this.isIdle(entity) ? this.asNumber(entity.attributes.current_temperature) : undefined;
+  }
+
   private getOptimisticState() {
     return this.optimisticState?.entityId === this.config.entity ? this.optimisticState : undefined;
   }
@@ -639,6 +648,10 @@ class ThermostatCard extends BaseCard {
 
   private isCooling(entity?: HassEntity) {
     return entity?.attributes?.hvac_action === "cooling" || entity?.state === "cool";
+  }
+
+  private isIdle(entity?: HassEntity) {
+    return entity?.attributes?.hvac_action === "idle" || entity?.state === "idle";
   }
 
   private asNumber(value: unknown): number | undefined {
