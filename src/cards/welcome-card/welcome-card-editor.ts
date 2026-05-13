@@ -16,6 +16,7 @@ type WelcomeTabConfig = {
 type WelcomeCardEditorConfig = {
   type?: string;
   weather_entity?: string;
+  weather_tap_action?: ActionConfig;
   show_temperature?: boolean;
   use_ha_weather_icons?: boolean;
   temperature_entity?: string;
@@ -81,6 +82,7 @@ class WelcomeCardEditor extends LitElement {
 
   setConfig(config: WelcomeCardEditorConfig) {
     this.config = {
+      weather_tap_action: { action: "more-info" },
       show_temperature: true,
       use_ha_weather_icons: false,
       settings_navigation_path: DEFAULT_SETTINGS_NAVIGATION_PATH,
@@ -132,6 +134,8 @@ class WelcomeCardEditor extends LitElement {
             onInput: (value) => this.updateConfigValue("settings_navigation_path", value),
           })}
         </div>
+
+        ${this.renderWeatherActionEditor("Weather tap action", this.config.weather_tap_action || { action: "more-info" })}
 
         <section>
           <div class="section-header">
@@ -235,6 +239,22 @@ class WelcomeCardEditor extends LitElement {
     });
   }
 
+  private renderWeatherActionEditor(label: string, actionConfig: ActionConfig) {
+    const errorKey = this.getWeatherServiceDataErrorKey();
+
+    return renderSharedActionEditor<ActionType>({
+      label,
+      className: "action-editor",
+      actionConfig: actionConfig as any,
+      actionOptions: ACTION_OPTIONS as any,
+      onActionTypeChanged: (action) => this.updateWeatherActionType(action),
+      onActionValueChanged: (property, value) => this.updateWeatherActionValue(property, value),
+      onServiceDataChanged: (value) => this.updateWeatherServiceData(value),
+      formatJson: (value) => this.formatJson(value),
+      serviceDataError: this.serviceDataErrors[errorKey],
+    });
+  }
+
   private updateConfigValue(key: keyof WelcomeCardEditorConfig, value: unknown) {
     const nextConfig = {
       ...this.config,
@@ -254,7 +274,14 @@ class WelcomeCardEditor extends LitElement {
   private updateTabActionType(index: number, action: ActionType) {
     this.updateTab(index, {
       ...this.getTab(index),
-      tap_action: { action },
+      tap_action: { action } as ActionConfig,
+    });
+  }
+
+  private updateWeatherActionType(action: ActionType) {
+    this.updateConfig({
+      ...this.config,
+      weather_tap_action: { action } as ActionConfig,
     });
   }
 
@@ -263,6 +290,16 @@ class WelcomeCardEditor extends LitElement {
       ...this.getTab(index),
       tap_action: {
         ...(this.getTab(index).tap_action || { action: "none" }),
+        [property]: value || undefined,
+      },
+    });
+  }
+
+  private updateWeatherActionValue(property: string, value: string) {
+    this.updateConfig({
+      ...this.config,
+      weather_tap_action: {
+        ...(this.config.weather_tap_action || { action: "more-info" }),
         [property]: value || undefined,
       },
     });
@@ -286,7 +323,36 @@ class WelcomeCardEditor extends LitElement {
         tap_action: {
           ...(this.getTab(index).tap_action || { action: "call-service" }),
           service_data: serviceData,
-        },
+        } as ActionConfig,
+      });
+    } catch {
+      this.serviceDataErrors = {
+        ...this.serviceDataErrors,
+        [errorKey]: "Service data must be valid JSON.",
+      };
+      this.requestUpdate();
+    }
+  }
+
+  private updateWeatherServiceData(value: string) {
+    const trimmedValue = value.trim();
+    const errorKey = this.getWeatherServiceDataErrorKey();
+
+    if (!trimmedValue) {
+      this.serviceDataErrors = { ...this.serviceDataErrors, [errorKey]: undefined };
+      this.updateWeatherActionValue("service_data", "");
+      return;
+    }
+
+    try {
+      const serviceData = JSON.parse(trimmedValue);
+      this.serviceDataErrors = { ...this.serviceDataErrors, [errorKey]: undefined };
+      this.updateConfig({
+        ...this.config,
+        weather_tap_action: {
+          ...(this.config.weather_tap_action || { action: "call-service" }),
+          service_data: serviceData,
+        } as ActionConfig,
       });
     } catch {
       this.serviceDataErrors = {
@@ -350,6 +416,10 @@ class WelcomeCardEditor extends LitElement {
 
   private getServiceDataErrorKey(index: number) {
     return `tab-${index}`;
+  }
+
+  private getWeatherServiceDataErrorKey() {
+    return "weather";
   }
 
   private formatJson(value: unknown) {
