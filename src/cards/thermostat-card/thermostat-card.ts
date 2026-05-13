@@ -643,15 +643,15 @@ class ThermostatCard extends BaseCard {
   }
 
   private isHeating(entity?: HassEntity) {
-    return entity?.attributes?.hvac_action === "heating" || entity?.state === "heat";
+    return entity?.attributes?.hvac_action === "heating";
   }
 
   private isCooling(entity?: HassEntity) {
-    return entity?.attributes?.hvac_action === "cooling" || entity?.state === "cool";
+    return entity?.attributes?.hvac_action === "cooling";
   }
 
   private isIdle(entity?: HassEntity) {
-    return entity?.attributes?.hvac_action === "idle" || entity?.state === "idle";
+    return entity?.attributes?.hvac_action === "idle";
   }
 
   private asNumber(value: unknown): number | undefined {

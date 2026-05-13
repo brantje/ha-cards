@@ -3977,15 +3977,15 @@ const ft = "mdi:thermostat", bt = "#fbb73c", vt = "#3a8dde", _t = "two_rows", ei
   }
   isHeating(t) {
     var e;
-    return ((e = t == null ? void 0 : t.attributes) == null ? void 0 : e.hvac_action) === "heating" || (t == null ? void 0 : t.state) === "heat";
+    return ((e = t == null ? void 0 : t.attributes) == null ? void 0 : e.hvac_action) === "heating";
   }
   isCooling(t) {
     var e;
-    return ((e = t == null ? void 0 : t.attributes) == null ? void 0 : e.hvac_action) === "cooling" || (t == null ? void 0 : t.state) === "cool";
+    return ((e = t == null ? void 0 : t.attributes) == null ? void 0 : e.hvac_action) === "cooling";
   }
   isIdle(t) {
     var e;
-    return ((e = t == null ? void 0 : t.attributes) == null ? void 0 : e.hvac_action) === "idle" || (t == null ? void 0 : t.state) === "idle";
+    return ((e = t == null ? void 0 : t.attributes) == null ? void 0 : e.hvac_action) === "idle";
   }
   asNumber(t) {
     const e = Number(t);
