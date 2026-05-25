@@ -1,5 +1,6 @@
 import { html, LitElement, PropertyValues, type TemplateResult } from "lit";
 import type { ActionConfig, HomeAssistant } from "custom-card-helpers";
+import "./jinja-code-editor";
 
 type HassLike = {
   states?: Record<string, unknown>;
@@ -97,6 +98,64 @@ export function renderEntityPicker(params: {
         allow-custom-entity
         @value-changed=${(event: CustomEvent) => onValueChanged(event.detail.value)}
       ></ha-entity-picker>
+    </div>
+  `;
+}
+
+export function renderJinjaCodeEditor(params: {
+  hass?: HomeAssistant;
+  label: string;
+  fieldName: string;
+  value: string;
+  onValueChanged: (value: string) => void;
+}): TemplateResult {
+  const { hass, label, fieldName, value, onValueChanged } = params;
+
+  return html`
+    <ha-cards-jinja-editor
+      .hass=${hass}
+      .label=${label}
+      .fieldName=${fieldName}
+      .value=${value}
+      @value-changed=${(event: CustomEvent) => onValueChanged(event.detail.value ?? "")}
+    ></ha-cards-jinja-editor>
+  `;
+}
+
+export function renderTemplateSelector(params: {
+  hass?: HomeAssistant;
+  label: string;
+  value: string;
+  helper?: string;
+  onValueChanged: (value: string) => void;
+}): TemplateResult {
+  const { hass, label, value, helper, onValueChanged } = params;
+
+  if (!customElements.get("ha-selector-template")) {
+    return html`
+      <label>
+        <span>${label}</span>
+        <textarea
+          .value=${value}
+          rows="3"
+          @input=${(event: InputEvent) => onValueChanged((event.target as HTMLTextAreaElement).value)}
+        ></textarea>
+        ${helper ? html`<span class="hint">${helper}</span>` : ""}
+      </label>
+    `;
+  }
+
+  return html`
+    <div class="field template-field">
+      <ha-selector-template
+        .hass=${hass}
+        .selector=${{ preview: true }}
+        .value=${value}
+        .label=${label}
+        .helper=${helper}
+        ?required=${false}
+        @value-changed=${(event: CustomEvent) => onValueChanged(event.detail.value ?? "")}
+      ></ha-selector-template>
     </div>
   `;
 }

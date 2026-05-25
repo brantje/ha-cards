@@ -2,6 +2,8 @@ import { css, html, PropertyValues } from "lit";
 import { styleMap } from "lit/directives/style-map.js";
 import { handleActionConfig, HomeAssistant } from "custom-card-helpers";
 import { BaseCard } from "../../shared/base-card";
+import { buildValueCheckTemplateVariables } from "../../shared/template-text";
+import "../../shared/template-text";
 import "./possible-issues-card-editor";
 
 type RowDetailMode = "none" | "count" | "entities";
@@ -66,11 +68,23 @@ type IssueDevice = {
   entities: EntityRegistryEntry[];
 };
 
-type IssueEntity = {
+type BaseIssueEntity = {
+  entityId: string;
+  entity: HassEntity;
+  registryEntry?: EntityRegistryEntry;
+};
+
+type StateIssueEntity = BaseIssueEntity & {
+  issueState: string;
+};
+
+type ValueCheckIssueEntity = BaseIssueEntity & {
   check: NormalizedValueCheck;
   entity: HassEntity;
-  matchedValue?: string;
+  matchedValue: string;
 };
+
+type IssueEntity = StateIssueEntity | ValueCheckIssueEntity;
 
 const DEFAULT_TITLE = "Possible Issues";
 const DEFAULT_BACKGROUND_COLOR = "#44739e";
@@ -160,7 +174,7 @@ class PossibleIssuesCard extends BaseCard {
 
   render() {
     const devices = this.getIssueDevices();
-    const entities = this.getValueCheckIssues();
+    const entities = [...this.getStateIssueEntities(), ...this.getValueCheckIssues()];
     const styles = {
       "--possible-issues-card-background": this.config.background_color || DEFAULT_BACKGROUND_COLOR,
     };
@@ -188,7 +202,7 @@ class PossibleIssuesCard extends BaseCard {
     const detail = this.getRowDetail(issueDevice);
 
     return html`
-      <button class="device-row" type="button" @click=${() => this.openDevice(issueDevice.device.id)}>
+      <button class="device-row" type="button" @click=${() => this.openIssueDevice(issueDevice)}>
         <ha-icon .icon=${icon}></ha-icon>
         <span class="row-text">
           <span class="name">${name}</span>
@@ -199,21 +213,43 @@ class PossibleIssuesCard extends BaseCard {
   }
 
   private renderEntityRow(issue: IssueEntity) {
-    const entityId = issue.check.entity;
-    const name = issue.check.message
-      ? this.renderValueCheckTemplate(issue.check.message, issue)
-      : this.getEntityName(entityId, issue.entity);
-    const detail = issue.check.submessage
-      ? this.renderValueCheckTemplate(issue.check.submessage, issue)
-      : this.getValueCheckDetail(issue);
-    const icon = issue.entity.attributes?.icon || "mdi:alert-circle-outline";
+    const entityId = issue.entityId;
+    const isValueCheckIssue = this.isValueCheckIssue(issue);
+    const nameFallback = this.getEntityName(entityId, issue.entity);
+    const detailFallback = isValueCheckIssue
+      ? this.getValueCheckDetail(issue)
+      : this.getStateIssueDetail(issue);
+    const templateVariables = isValueCheckIssue
+      ? buildValueCheckTemplateVariables(issue, (id, entity) => this.getEntityName(id, entity))
+      : undefined;
+    const icon = issue.entity.attributes?.icon || issue.registryEntry?.icon || issue.registryEntry?.original_icon || "mdi:alert-circle-outline";
 
     return html`
-      <button class="device-row" type="button" @click=${() => this.openValueCheckIssue(issue)}>
+      <button class="device-row" type="button" @click=${() => this.openIssueEntity(issue)}>
         <ha-icon .icon=${icon}></ha-icon>
         <span class="row-text">
-          <span class="name">${name}</span>
-          <span class="detail">${detail}</span>
+          <span class="name">
+            ${isValueCheckIssue && issue.check.message
+              ? html`<ha-cards-template-text
+                  .hass=${this.hass}
+                  .template=${issue.check.message}
+                  .variables=${templateVariables}
+                  .entityIds=${[issue.check.entity]}
+                  .fallback=${nameFallback}
+                ></ha-cards-template-text>`
+              : nameFallback}
+          </span>
+          <span class="detail">
+            ${isValueCheckIssue && issue.check.submessage
+              ? html`<ha-cards-template-text
+                  .hass=${this.hass}
+                  .template=${issue.check.submessage}
+                  .variables=${templateVariables}
+                  .entityIds=${[issue.check.entity]}
+                  .fallback=${detailFallback}
+                ></ha-cards-template-text>`
+              : detailFallback}
+          </span>
         </span>
       </button>
     `;
@@ -224,6 +260,7 @@ class PossibleIssuesCard extends BaseCard {
       return [];
     }
 
+    const domains = new Set(this.normalizeList(this.config.domains, DEFAULT_DOMAINS));
     const issueStates = new Set(this.normalizeList(this.config.issue_states, DEFAULT_ISSUE_STATES));
     const includedEntities = this.normalizeList(this.config.included_entities);
     const ignoredEntities = this.normalizeList(this.config.ignored_entities);
@@ -240,7 +277,7 @@ class PossibleIssuesCard extends BaseCard {
       const deviceId = entry.device_id || "";
       const device = deviceById.get(deviceId);
 
-      if (!entity || !device || !issueStates.has(entity.state)) {
+      if (!entity || !device || !domains.has(this.getDomain(entry.entity_id)) || !issueStates.has(entity.state)) {
         continue;
       }
 
@@ -275,7 +312,98 @@ class PossibleIssuesCard extends BaseCard {
       .sort((a, b) => this.getDeviceName(a.device).localeCompare(this.getDeviceName(b.device)));
   }
 
-  private getValueCheckIssues(): IssueEntity[] {
+  private getStateIssueEntities(): StateIssueEntity[] {
+    if (!this.hass || (!this.registryError && !this.registryVersion)) {
+      return [];
+    }
+
+    const domains = new Set(this.normalizeList(this.config.domains, DEFAULT_DOMAINS));
+    const issueStates = new Set(this.normalizeList(this.config.issue_states, DEFAULT_ISSUE_STATES));
+    const includedEntities = this.normalizeList(this.config.included_entities);
+    const ignoredEntities = this.normalizeList(this.config.ignored_entities);
+    const ignoredDevices = this.normalizeList(this.config.ignored_devices);
+    const ignoredIntegrations = new Set(
+      this.normalizeList(this.config.ignored_integrations).map((integration) => integration.toLowerCase())
+    );
+    const ignoredNames = this.normalizeList(this.config.ignored_name_patterns);
+    const deviceById = new Map(this.deviceRegistry.map((device) => [device.id, device]));
+    const registeredEntityIds = new Set(this.entityRegistry.map((entry) => entry.entity_id));
+
+    const registryIssues = this.entityRegistry
+      .map((entry): StateIssueEntity | undefined => {
+        const entity = this.hass.states[entry.entity_id] as HassEntity | undefined;
+        const deviceId = entry.device_id || "";
+        const device = deviceById.get(deviceId);
+
+        if (!entity || device || !domains.has(this.getDomain(entry.entity_id)) || !issueStates.has(entity.state)) {
+          return undefined;
+        }
+
+        if (entry.platform && ignoredIntegrations.has(entry.platform.toLowerCase())) {
+          return undefined;
+        }
+
+        if (includedEntities.length && !this.matchesPattern(entry.entity_id, includedEntities)) {
+          return undefined;
+        }
+
+        if (this.matchesPattern(entry.entity_id, ignoredEntities) || this.matchesPattern(deviceId, ignoredDevices)) {
+          return undefined;
+        }
+
+        const searchableName = [entity.attributes?.friendly_name, entry.name, entry.original_name].filter(Boolean).join(" ");
+
+        if (this.matchesPattern(searchableName, ignoredNames)) {
+          return undefined;
+        }
+
+        return {
+          entityId: entry.entity_id,
+          entity,
+          issueState: entity.state,
+          registryEntry: entry,
+        };
+      })
+      .filter((issue): issue is StateIssueEntity => Boolean(issue));
+
+    const stateOnlyIssues = (Object.entries(this.hass.states || {}) as [string, HassEntity][])
+      .map(([entityId, entity]): StateIssueEntity | undefined => {
+        if (
+          registeredEntityIds.has(entityId) ||
+          !domains.has(this.getDomain(entityId)) ||
+          !issueStates.has(entity.state)
+        ) {
+          return undefined;
+        }
+
+        if (includedEntities.length && !this.matchesPattern(entityId, includedEntities)) {
+          return undefined;
+        }
+
+        if (this.matchesPattern(entityId, ignoredEntities)) {
+          return undefined;
+        }
+
+        const searchableName = [entity.attributes?.friendly_name].filter(Boolean).join(" ");
+
+        if (this.matchesPattern(searchableName, ignoredNames)) {
+          return undefined;
+        }
+
+        return {
+          entityId,
+          entity,
+          issueState: entity.state,
+        };
+      })
+      .filter((issue): issue is StateIssueEntity => Boolean(issue));
+
+    return [...registryIssues, ...stateOnlyIssues].sort((a, b) =>
+      this.getEntityName(a.entityId, a.entity).localeCompare(this.getEntityName(b.entityId, b.entity))
+    );
+  }
+
+  private getValueCheckIssues(): ValueCheckIssueEntity[] {
     if (!this.hass) {
       return [];
     }
@@ -287,13 +415,14 @@ class PossibleIssuesCard extends BaseCard {
 
         return entity && matchedValue !== undefined
           ? {
+              entityId: check.entity,
               check,
               entity,
               matchedValue,
             }
           : undefined;
       })
-      .filter(Boolean) as IssueEntity[];
+      .filter((issue): issue is ValueCheckIssueEntity => Boolean(issue));
   }
 
   private getDomainEntityIds(hass: HomeAssistant) {
@@ -348,7 +477,11 @@ class PossibleIssuesCard extends BaseCard {
     return "";
   }
 
-  private getValueCheckDetail(issue: IssueEntity) {
+  private getStateIssueDetail(issue: StateIssueEntity) {
+    return `State is ${issue.issueState}`;
+  }
+
+  private getValueCheckDetail(issue: ValueCheckIssueEntity) {
     const operator = this.getOperatorLabel(issue.check.operator);
     const unitOfMeasurement = issue.entity.attributes?.unit_of_measurement || "";
     const matchedValue =
@@ -373,73 +506,6 @@ class PossibleIssuesCard extends BaseCard {
     return labels[operator];
   }
 
-  private renderValueCheckTemplate(template: string, issue: IssueEntity) {
-    return template.replace(/\{\{\s*([a-zA-Z0-9_.]+)\s*\}\}/g, (match, key: string) => {
-      const value = this.getValueCheckTemplateValue(key, issue);
-      return value === undefined ? match : value;
-    });
-  }
-
-  private getValueCheckTemplateValue(key: string, issue: IssueEntity) {
-    const matchedValue =
-      issue.check.operator === "not_contains" ? issue.check.values.join(", ") : issue.matchedValue || issue.check.values.join(", ");
-    const unitOfMeasurement = issue.entity.attributes?.unit_of_measurement || "";
-
-    switch (key) {
-      case "entity":
-      case "entity_id":
-        return issue.check.entity;
-      case "name":
-        return this.getEntityName(issue.check.entity, issue.entity);
-      case "state":
-        return issue.entity.state;
-      case "matched":
-      case "matched_value":
-        return matchedValue;
-      case "operator":
-        return issue.check.operator;
-      case "operator_label":
-        return this.getOperatorLabel(issue.check.operator);
-      case "unit":
-      case "unit_of_measurement":
-        return unitOfMeasurement;
-      case "values":
-        return issue.check.values.join(", ");
-      default:
-        return this.getValueCheckAttributeTemplateValue(key, issue.entity);
-    }
-  }
-
-  private getValueCheckAttributeTemplateValue(key: string, entity: HassEntity) {
-    const attributePrefix = key.startsWith("attributes.") ? "attributes." : key.startsWith("attribute.") ? "attribute." : "";
-
-    if (!attributePrefix) {
-      return undefined;
-    }
-
-    return this.formatTemplateValue(entity.attributes?.[key.slice(attributePrefix.length)]);
-  }
-
-  private formatTemplateValue(value: unknown) {
-    if (value === undefined || value === null) {
-      return "";
-    }
-
-    if (Array.isArray(value)) {
-      return value.join(", ");
-    }
-
-    if (typeof value === "object") {
-      try {
-        return JSON.stringify(value);
-      } catch {
-        return "";
-      }
-    }
-
-    return String(value);
-  }
-
   private openDevice(deviceId: string) {
     handleActionConfig(
       this,
@@ -452,20 +518,30 @@ class PossibleIssuesCard extends BaseCard {
     );
   }
 
+  private openIssueDevice(issueDevice: IssueDevice) {
+    const [singleEntity] = issueDevice.entities;
+
+    if (singleEntity && issueDevice.entities.length === 1 && !singleEntity.device_id) {
+      this.openEntity(singleEntity.entity_id);
+      return;
+    }
+
+    this.openDevice(issueDevice.device.id);
+  }
+
   private openEntity(entityId: string) {
     handleActionConfig(
       this,
       this.hass,
-      {},
+      { entity: entityId },
       {
         action: "more-info",
-        entity: entityId,
       }
     );
   }
 
-  private openValueCheckIssue(issue: IssueEntity) {
-    if (issue.check.navigation_path) {
+  private openIssueEntity(issue: IssueEntity) {
+    if (this.isValueCheckIssue(issue) && issue.check.navigation_path) {
       handleActionConfig(
         this,
         this.hass,
@@ -478,7 +554,11 @@ class PossibleIssuesCard extends BaseCard {
       return;
     }
 
-    this.openEntity(issue.check.entity);
+    this.openEntity(issue.entityId);
+  }
+
+  private isValueCheckIssue(issue: IssueEntity): issue is ValueCheckIssueEntity {
+    return "check" in issue;
   }
 
   private getValueChecks(): NormalizedValueCheck[] {

@@ -1,6 +1,7 @@
 import { css, html, LitElement, PropertyValues } from "lit";
 import { fireEvent, HomeAssistant } from "custom-card-helpers";
-import { renderEntityPicker, renderTextField } from "../../shared/base-card";
+import { renderEntityPicker, renderJinjaCodeEditor, renderTextField } from "../../shared/base-card";
+import { loadHaEditorComponents } from "../../shared/ha-component-loader";
 
 type RowDetailMode = "none" | "count" | "entities";
 type ValueCheckOperator = "equals" | "not_equals" | "gt" | "lt" | "lte" | "gte" | "contains" | "not_contains";
@@ -64,11 +65,13 @@ class PossibleIssuesCardEditor extends LitElement {
   private integrationOptions: string[] = [];
   private integrationsLoading = false;
   private integrationsVersion = 0;
+  private haComponentsVersion = 0;
 
   static properties = {
     hass: { attribute: false },
     config: { attribute: false },
     integrationsVersion: { state: true },
+    haComponentsVersion: { state: true },
   };
 
   connectedCallback() {
@@ -94,7 +97,7 @@ class PossibleIssuesCardEditor extends LitElement {
   }
 
   shouldUpdate(changedProperties: PropertyValues): boolean {
-    if (changedProperties.has("config") || changedProperties.has("integrationsVersion")) {
+    if (changedProperties.has("config") || changedProperties.has("integrationsVersion") || changedProperties.has("haComponentsVersion")) {
       return true;
     }
 
@@ -261,28 +264,25 @@ class PossibleIssuesCardEditor extends LitElement {
                     />
                   </label>
 
-                  <label>
-                    <span>Message</span>
-                    <input
-                      .value=${check.message || ""}
-                      placeholder="Washing machine issue"
-                      @input=${(event: Event) =>
-                        this.updateValueCheck(index, "message", (event.target as HTMLInputElement).value)}
-                    />
-                  </label>
+                  ${renderJinjaCodeEditor({
+                    hass: this.hass,
+                    label: "Message",
+                    fieldName: "message",
+                    value: check.message || "",
+                    onValueChanged: (value) => this.updateValueCheck(index, "message", value),
+                  })}
 
-                  <label>
-                    <span>Submessage</span>
-                    <input
-                      .value=${check.submessage || ""}
-                      placeholder="Check the machine before starting a new cycle"
-                      @input=${(event: Event) =>
-                        this.updateValueCheck(index, "submessage", (event.target as HTMLInputElement).value)}
-                    />
-                  </label>
+                  ${renderJinjaCodeEditor({
+                    hass: this.hass,
+                    label: "Submessage",
+                    fieldName: "submessage",
+                    value: check.submessage || "",
+                    onValueChanged: (value) => this.updateValueCheck(index, "submessage", value),
+                  })}
                   <p class="hint">
-                    Message templates support {{ state }}, {{ name }}, {{ entity_id }}, {{ matched_value }},
-                    {{ unit }}, and {{ attributes.friendly_name }}.
+                    Supports Home Assistant templating (<a href="https://www.home-assistant.io/docs/templating/" target="_blank" rel="noopener noreferrer">docs</a>).
+                    Card variables: entity_id, name, state, matched_value, unit, operator, operator_label, values, attributes.
+                    Example: <code>{{ name }}</code> or <code>{{ state_attr(entity_id, 'icon') }}</code>.
                   </p>
 
                   <label>
@@ -518,20 +518,14 @@ class PossibleIssuesCardEditor extends LitElement {
   }
 
   private async loadHomeAssistantPickers() {
-    const loadCardHelpers = (window as any).loadCardHelpers;
-
-    if (customElements.get("ha-entity-picker") || !loadCardHelpers) {
-      return;
+    try {
+      const loaded = await loadHaEditorComponents();
+      if (loaded) {
+        this.haComponentsVersion += 1;
+      }
+    } catch (error) {
+      console.warn("possible-issues-card: Failed to load Home Assistant pickers", error);
     }
-
-    const helpers = await loadCardHelpers();
-    const entitiesCard = await helpers.createCardElement({
-      type: "entities",
-      entities: [],
-    });
-
-    await entitiesCard.constructor.getConfigElement();
-    this.requestUpdate();
   }
 
   private async loadIntegrationOptions() {
@@ -579,6 +573,15 @@ class PossibleIssuesCardEditor extends LitElement {
       width: 100%;
     }
 
+    .hint code {
+      font-family: var(--code-font-family, monospace);
+      font-size: 11px;
+    }
+
+    .hint a {
+      color: var(--primary-color);
+    }
+
     .field-group {
       display: grid;
       gap: 8px;
@@ -605,6 +608,7 @@ class PossibleIssuesCardEditor extends LitElement {
 
     input,
     select,
+    textarea,
     button {
       background: var(--card-background-color, #fff);
       border: 1px solid var(--divider-color, #ddd);
