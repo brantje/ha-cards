@@ -222,6 +222,57 @@ heating_color: "#fbb73c"
 cooling_color: "#3a8dde"
 ```
 
+---
+
+### `assist-debug-card`
+
+![assist-debug-card example](./images/assist-debug-card.png)
+
+Shows Home Assistant **Assist pipeline debug runs** (STT → intent → TTS), including raw events and (optionally) live “thinking” updates while a run is in progress.
+
+**Config**
+
+- **`type`**: `custom:assist-debug-card` or `custom:conversation-debug-card`
+- **`title`** (optional, default `Assist debug`): Card title
+- **`pipeline_id`** (optional, default `preferred`): Assist pipeline id to show runs for
+- **`run_count`** (optional, default `5`): How many recent runs to list
+- **`minimalistic_mode`** (optional, default `false`): Compact header / less chrome
+- **`visualization_only`** (optional, default `false`): Only show the audio visualization
+- **`conversation_only`** (optional, default `false`): Only show the conversation view
+- **`show_conversation`** (optional, default `false`): Show conversation bubbles in the full view
+- **`metadata_mode`** (optional, default `compact`): `hidden` | `compact` | `full`
+- **`show_raw`** (optional, default `true`): Show collapsible raw JSON events
+- **`show_thinking`** (optional, default `true`): Show “thinking” (and live-refresh while a run is active)
+- **`show_summary`** (optional, default `true`): Show run summary section
+- **`show_stt`** (optional, default `true`): Show speech-to-text stage
+- **`show_intent`** (optional, default `true`): Show intent/NLP stage
+- **`show_tts`** (optional, default `true`): Show text-to-speech stage
+- **`mask_transcripts`** (optional, default `false`): Mask raw text/transcripts in the UI
+- **`audio_visualization`** (optional, default `false`): Enable audio visualization
+- **`audio_visualization_type`** (optional, default `waveform`): `waveform` | `spectrum` | `meter` | `glow` | `ulysse31`
+- **`audio_visualization_position`** (optional, default `below_chat`): `background` | `top` | `between` | `below_chat`
+- **`audio_visualization_height`** (optional, default `56`): Visualization height in pixels
+- **`audio_visualization_color`** (optional): Primary visualization color
+- **`audio_visualization_secondary_color`** (optional): Secondary visualization color
+- **`audio_visualization_background`** (optional): Visualization background color
+- **`audio_visualization_opacity`** (optional, default `0.75`): Visualization opacity
+- **`audio_visualization_start_delay`** (optional, default `0`): Delay before starting visualization (ms)
+
+**Example**
+
+```yaml
+type: custom:assist-debug-card
+title: Assist debug
+pipeline_id: preferred
+run_count: 10
+show_conversation: true
+show_raw: true
+show_thinking: true
+audio_visualization: true
+audio_visualization_type: waveform
+audio_visualization_position: below_chat
+```
+
 
 ## Development
 
