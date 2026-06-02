@@ -2173,7 +2173,13 @@ class AssistDebugCard extends BaseCard {
   }
 
   private getStageDuration(key: "stt" | "intent" | "tts") {
-    const start = this.runModel?.events.find((event) => event.type === `${key}-start`)?.timestamp;
+    // Match HA assist debug: STT time is transcription after the user stops speaking,
+    // not including time spent speaking (stt-start → stt-end would include that).
+    const startEventType = key === "stt" ? "stt-vad-end" : `${key}-start`;
+    let start = this.runModel?.events.find((event) => event.type === startEventType)?.timestamp;
+    if (key === "stt" && !start) {
+      start = this.runModel?.events.find((event) => event.type === "stt-start")?.timestamp;
+    }
     const end = this.runModel?.events.find((event) => event.type === `${key}-end`)?.timestamp;
     return this.formatDuration(start ? new Date(start) : undefined, end ? new Date(end) : undefined);
   }

@@ -5011,10 +5011,6 @@ const Pt = "Assist debug", j = "preferred", q = 5, Ht = "compact", Bt = "wavefor
       ...t
     };
   }
-  getWatchedEntities() {
-    var t;
-    return (t = this.config) != null && t.refresh_entity ? [this.config.refresh_entity] : [];
-  }
   connectedCallback() {
     super.connectedCallback(), this.setupAudioVisibilityTracking(), this.syncConversationRefreshTimer();
   }
@@ -5048,10 +5044,10 @@ const Pt = "Assist debug", j = "preferred", q = 5, Ht = "compact", Bt = "wavefor
                     <p>${e || this.resolvedPipelineId || "Preferred pipeline"}</p>
                   </div>
                   <div class="actions">
-                    <button class="icon-button" type="button" title="Refresh" @click=${this.handleRefresh}>
+                    <button class="icon-button" type="button" title="Refresh" aria-label="Refresh" @click=${this.handleRefresh}>
                       <ha-icon icon="mdi:refresh"></ha-icon>
                     </button>
-                    <button class="icon-button" type="button" title="Open debug" @click=${this.openDebugPage}>
+                    <button class="icon-button" type="button" title="Open debug" aria-label="Open debug" @click=${this.openDebugPage}>
                       <ha-icon icon="mdi:open-in-new"></ha-icon>
                     </button>
                   </div>
@@ -5381,8 +5377,7 @@ const Pt = "Assist debug", j = "preferred", q = 5, Ht = "compact", Bt = "wavefor
     var s, a;
     const e = JSON.stringify({
       pipeline_id: this.config.pipeline_id || j,
-      run_count: this.config.run_count || q,
-      refresh_entity: this.config.refresh_entity || ""
+      run_count: this.config.run_count || q
     });
     if (!t && e === this.lastLoadKey && this.runModel)
       return;
@@ -6012,9 +6007,12 @@ const Pt = "Assist debug", j = "preferred", q = 5, Ht = "compact", Bt = "wavefor
     return e ? ((i = this.runModel) == null ? void 0 : i.stage) === "error" && !e.done ? "error" : e.done ? "done" : ((s = this.runModel) == null ? void 0 : s.stage) === t ? "running" : "idle" : "idle";
   }
   getStageDuration(t) {
-    var s, a, o, r;
-    const e = (a = (s = this.runModel) == null ? void 0 : s.events.find((l) => l.type === `${t}-start`)) == null ? void 0 : a.timestamp, i = (r = (o = this.runModel) == null ? void 0 : o.events.find((l) => l.type === `${t}-end`)) == null ? void 0 : r.timestamp;
-    return this.formatDuration(e ? new Date(e) : void 0, i ? new Date(i) : void 0);
+    var a, o, r, l, u, p;
+    const e = t === "stt" ? "stt-vad-end" : `${t}-start`;
+    let i = (o = (a = this.runModel) == null ? void 0 : a.events.find((h) => h.type === e)) == null ? void 0 : o.timestamp;
+    t === "stt" && !i && (i = (l = (r = this.runModel) == null ? void 0 : r.events.find((h) => h.type === "stt-start")) == null ? void 0 : l.timestamp);
+    const s = (p = (u = this.runModel) == null ? void 0 : u.events.find((h) => h.type === `${t}-end`)) == null ? void 0 : p.timestamp;
+    return this.formatDuration(i ? new Date(i) : void 0, s ? new Date(s) : void 0);
   }
   getStatusIcon(t) {
     switch (t) {
