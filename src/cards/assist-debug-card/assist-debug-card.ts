@@ -350,10 +350,10 @@ class AssistDebugCard extends BaseCard {
                     <p>${pipelineName || this.resolvedPipelineId || "Preferred pipeline"}</p>
                   </div>
                   <div class="actions">
-                    <button class="icon-button" type="button" title="Refresh" @click=${this.handleRefresh}>
+                    <button class="icon-button" type="button" title="Refresh" aria-label="Refresh" @click=${this.handleRefresh}>
                       <ha-icon icon="mdi:refresh"></ha-icon>
                     </button>
-                    <button class="icon-button" type="button" title="Open debug" @click=${this.openDebugPage}>
+                    <button class="icon-button" type="button" title="Open debug" aria-label="Open debug" @click=${this.openDebugPage}>
                       <ha-icon icon="mdi:open-in-new"></ha-icon>
                     </button>
                   </div>
