@@ -25,7 +25,6 @@ type AssistDebugCardConfig = {
   show_intent?: boolean;
   show_tts?: boolean;
   mask_transcripts?: boolean;
-  refresh_entity?: string;
   background_color?: string;
   surface_color?: string;
   text_color?: string;
@@ -245,10 +244,6 @@ class AssistDebugCard extends BaseCard {
       audio_visualization_position: DEFAULT_AUDIO_VISUALIZATION_POSITION,
       ...config,
     };
-  }
-
-  protected getWatchedEntities(): string[] {
-    return this.config?.refresh_entity ? [this.config.refresh_entity] : [];
   }
 
   connectedCallback() {
@@ -844,7 +839,6 @@ class AssistDebugCard extends BaseCard {
     const loadKey = JSON.stringify({
       pipeline_id: this.config.pipeline_id || DEFAULT_PIPELINE_ID,
       run_count: this.config.run_count || DEFAULT_RUN_COUNT,
-      refresh_entity: this.config.refresh_entity || "",
     });
 
     if (!force && loadKey === this.lastLoadKey && this.runModel) {
