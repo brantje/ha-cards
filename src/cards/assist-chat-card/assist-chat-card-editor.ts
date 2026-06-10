@@ -3,6 +3,7 @@ import { fireEvent, HomeAssistant } from "custom-card-helpers";
 import {
   clampNumber,
   renderCheckbox,
+  renderEntityPicker,
   renderJinjaCodeEditor,
   renderTextField,
   sharedEditorStyles,
@@ -117,6 +118,18 @@ class AssistChatCardEditor extends LitElement {
           ${this.renderCheckbox("Enable audio playback", "enable_audio_playback")}
           <p class="hint">
             When enabled, runs the TTS pipeline stage and plays reply audio for text and voice input.
+          </p>
+          ${renderEntityPicker({
+            hass: this.hass,
+            label: "TTS media player (optional)",
+            value: String(this.config.tts_media_player || ""),
+            domains: ["media_player"],
+            disabled: !this.getValue("enable_audio_playback"),
+            onValueChanged: (value) => this.updateConfigValue("tts_media_player", value),
+          })}
+          <p class="hint">
+            When set, reply audio plays on this speaker instead of the browser. Useful for tablets
+            that should hear responses on a room speaker.
           </p>
           ${this.renderCheckbox(
             "Continue listening for follow-up questions",

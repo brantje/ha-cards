@@ -251,7 +251,7 @@ class AssistChatCard extends BaseCard {
     this.clearConversationRefreshTimer();
     this.stopActiveRun();
     void this.audioRecorder?.close();
-    this.audioController.unload();
+    this.audioController.unload(this.hass);
   }
 
   shouldUpdate(changedProperties: PropertyValues): boolean {
@@ -735,7 +735,7 @@ class AssistChatCard extends BaseCard {
     }
 
     this.stopActiveRun();
-    this.audioController.unload();
+    this.audioController.unload(this.hass);
     this.error = "";
     this.processing = true;
     this.listening = true;
@@ -1308,7 +1308,7 @@ class AssistChatCard extends BaseCard {
     }
 
     this.messages = finalizeCancelledMessages(this.messages);
-    this.audioController.unload();
+    this.audioController.unload(this.hass);
     this.continueConversationAfterRun = false;
     this.stopActiveRun();
     this.refreshHistoryAfterRun();
@@ -1328,7 +1328,7 @@ class AssistChatCard extends BaseCard {
     this.stopListening(false);
     this.removeUnprocessedSttMessages();
     this.refreshHistoryAfterRun();
-    this.maybeContinueConversationAfterRun(!this.audioController.getAudioElement());
+    this.maybeContinueConversationAfterRun(!this.audioController.isPlaying());
   }
 
   private refreshHistoryAfterRun() {
@@ -1341,7 +1341,12 @@ class AssistChatCard extends BaseCard {
   }
 
   private playTtsAudio(url?: string) {
-    this.audioController.playTts(url, Boolean(this.config.enable_audio_playback));
+    this.audioController.playTts(
+      this.hass,
+      url,
+      Boolean(this.config.enable_audio_playback),
+      this.config.tts_media_player || undefined
+    );
   }
 
   private shouldOfferFollowUpConversation() {
@@ -1357,7 +1362,7 @@ class AssistChatCard extends BaseCard {
   }
 
   private maybeContinueConversationAfterRun(skipWhenAudioPlaying = false) {
-    if (skipWhenAudioPlaying && this.audioController.getAudioElement()) {
+    if (skipWhenAudioPlaying && this.audioController.isPlaying()) {
       return;
     }
 

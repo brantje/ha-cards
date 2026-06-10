@@ -15,6 +15,7 @@ export type AssistChatCardConfig = {
   session_conversation?: boolean;
   disable_speech?: boolean;
   enable_audio_playback?: boolean;
+  tts_media_player?: string;
   speech_rms_threshold?: number;
   show_process?: boolean;
   show_thinking_until_response?: boolean;
@@ -49,6 +50,7 @@ export const ASSIST_CHAT_CARD_DEFAULTS = {
   session_conversation: true,
   disable_speech: false,
   enable_audio_playback: false,
+  tts_media_player: "",
   speech_rms_threshold: DEFAULT_SPEECH_RMS_THRESHOLD,
   show_process: true,
   show_thinking_until_response: false,
