@@ -87,6 +87,10 @@ export function hasOnlySttProcessActivity(process: AssistProcessModel): boolean 
   return hasStt && !hasIntent && !hasTts && process.toolCalls.length === 0;
 }
 
+export function isListeningPlaceholderMessage(message: AssistChatMessage): boolean {
+  return message.role === "assistant" && message.status === "listening";
+}
+
 /**
  * Assistant messages from voice runs that captured audio but never produced
  * an intent (mic opened, nothing recognized). These are noise in the chat.
@@ -96,8 +100,8 @@ export function isUnprocessedSttAssistantMessage(message: AssistChatMessage): bo
     return false;
   }
 
-  if (message.status === "listening") {
-    return true;
+  if (isListeningPlaceholderMessage(message)) {
+    return false;
   }
 
   if (!message.process || !hasOnlySttProcessActivity(message.process)) {
@@ -257,12 +261,13 @@ export function buildMessagesFromRuns(
         status: "done",
         timestamp: run.timestamp,
       });
-    } else if (isListening && isLatestRun && options.active) {
+    } else if (isListening && isLatestRun) {
       messages.push({
         id: `${run.pipeline_run_id}-assistant-listening`,
         role: "assistant",
         text: "",
         status: "listening",
+        process: conversation.process,
       });
     }
 
@@ -336,7 +341,7 @@ export function getRunsSnapshot(runs: AssistChatRun[]): string {
 }
 
 function isHistoryListeningMessage(message: AssistChatMessage): boolean {
-  return message.role === "assistant" && message.status === "listening";
+  return isListeningPlaceholderMessage(message);
 }
 
 function shouldKeepLocalMessage(message: AssistChatMessage, dropPersistLocal: boolean): boolean {
@@ -503,7 +508,7 @@ export function mergeHistoryMessages(
 export function finalizeCancelledMessages(messages: AssistChatMessage[]): AssistChatMessage[] {
   return messages
     .map((message) => {
-      if (isUnprocessedSttAssistantMessage(message)) {
+      if (isListeningPlaceholderMessage(message) || isUnprocessedSttAssistantMessage(message)) {
         return undefined;
       }
 

@@ -18,4 +18,16 @@ describe("AssistPollController", () => {
     controller.stop();
     expect(true).toBe(true);
   });
+
+  it("requestSoon is a no-op when shouldPoll is false", () => {
+    const controller = new AssistPollController({
+      intervalMs: 1000,
+      shouldPoll: () => false,
+      onPoll: async () => true,
+    });
+
+    controller.requestSoon(0);
+    controller.stop();
+    expect(true).toBe(true);
+  });
 });

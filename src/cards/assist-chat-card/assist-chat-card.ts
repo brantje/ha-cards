@@ -52,6 +52,7 @@ import {
   finalizeCancelledMessages,
   getRunsSnapshot,
   isRunFinished,
+  isListeningPlaceholderMessage,
   isUnprocessedSttAssistantMessage,
   mergeHistoryMessages,
 } from "./assist-chat-messages";
@@ -65,8 +66,9 @@ import "./assist-chat-card-editor";
 type ProcessModel = AssistProcessModel;
 
 const DEFAULTS = ASSIST_CHAT_CARD_DEFAULTS;
-const CONVERSATION_REFRESH_MS = 2000;
-const CONVERSATION_REFRESH_MAX_MS = 60000;
+const CONVERSATION_REFRESH_MS = 1000;
+const CONVERSATION_REFRESH_MAX_MS = 30000;
+const IN_PROGRESS_HISTORY_POLL_MS = 400;
 const MESSAGES_SCROLL_BOTTOM_THRESHOLD = 48;
 
 /**
@@ -170,6 +172,7 @@ class AssistChatCard extends BaseCard {
   private conversationClearedAt: number | null = null;
   private lastSeenRunTimestamp = 0;
   private historyPollController?: AssistPollController;
+  private hasInProgressHistoryRun = false;
   private historyDisabled = false;
   private historyErrorLogged = false;
   private runCache = new AssistRunCache();
@@ -745,6 +748,13 @@ class AssistChatCard extends BaseCard {
     this.stickThinkingToBottom = true;
     let assistant: AssistChatMessage | undefined;
     let voiceProcess = createAssistProcessModel();
+    this.removeListeningPlaceholder();
+    const listeningPlaceholder = this.addMessage({
+      role: "assistant",
+      text: "",
+      status: "listening",
+      process: voiceProcess,
+    });
 
     setLastUsedPipelineId(pipeline.id);
 
@@ -759,8 +769,10 @@ class AssistChatCard extends BaseCard {
         this.hass,
         (event) => {
           voiceProcess = this.applyProcessEvent(voiceProcess, event);
+          listeningPlaceholder.process = voiceProcess;
 
           if (event.type === "stt-end") {
+            this.removeListeningPlaceholder();
             const transcript = String(event.data?.stt_output?.text || "").trim();
             if (transcript) {
               this.addMessage({ role: "user", text: transcript, status: "done" });
@@ -782,6 +794,8 @@ class AssistChatCard extends BaseCard {
             this.removeUnprocessedSttMessages();
             this.error = String(event.data?.message || this.text("run_failed"));
             this.finishRun();
+          } else {
+            this.messages = [...this.messages];
           }
 
           if (event.type === "run-start") {
@@ -975,9 +989,11 @@ class AssistChatCard extends BaseCard {
 
       const snapshot = getRunsSnapshot(runs);
       const hasRunChanges = snapshot !== this.lastRunsSnapshot;
+      this.hasInProgressHistoryRun = runs.some((run) => !isRunFinished(run.events || []));
 
       if (!hasRunChanges && !preserveLocalMessages) {
         this.lastHistoryKey = historyKey;
+        this.scheduleInProgressHistoryPoll();
         return true;
       }
 
@@ -990,10 +1006,18 @@ class AssistChatCard extends BaseCard {
             dropPersistLocal: this.httpsWarningDismissed,
           })
         : messages;
+
+      // A history poll started while idle can finish after the user starts a voice
+      // run; never overwrite live session state with stale debug history.
+      if (this.processing || this.listening) {
+        return true;
+      }
+
       this.messages = mergedMessages.filter((message) => !isUnprocessedSttAssistantMessage(message));
       this.conversationId = this.resolveConversationId(conversationId, preserveLocalMessages);
       this.lastRunsSnapshot = snapshot;
       this.lastHistoryKey = historyKey;
+      this.scheduleInProgressHistoryPoll();
       return true;
     } catch (error) {
       if (token !== this.loadToken) {
@@ -1036,8 +1060,18 @@ class AssistChatCard extends BaseCard {
     return fetchRecentAssistRunsWithCache(this.hass, pipelineId, runCount, this.runCache, isRunFinished);
   }
 
+  private removeListeningPlaceholder() {
+    const nextMessages = this.messages.filter((message) => !isListeningPlaceholderMessage(message));
+
+    if (nextMessages.length !== this.messages.length) {
+      this.messages = nextMessages;
+    }
+  }
+
   private removeUnprocessedSttMessages() {
-    const nextMessages = this.messages.filter((message) => !isUnprocessedSttAssistantMessage(message));
+    const nextMessages = this.messages.filter(
+      (message) => !isListeningPlaceholderMessage(message) && !isUnprocessedSttAssistantMessage(message)
+    );
 
     if (nextMessages.length !== this.messages.length) {
       this.messages = nextMessages;
@@ -1075,7 +1109,9 @@ class AssistChatCard extends BaseCard {
       return;
     }
 
-    this.getHistoryPollController().sync();
+    const controller = this.getHistoryPollController();
+    controller.reset();
+    controller.sync();
   }
 
   private shouldLiveRefresh() {
@@ -1092,6 +1128,14 @@ class AssistChatCard extends BaseCard {
 
   private clearConversationRefreshTimer() {
     this.historyPollController?.stop();
+  }
+
+  private scheduleInProgressHistoryPoll() {
+    if (!this.hasInProgressHistoryRun || !this.shouldLiveRefresh()) {
+      return;
+    }
+
+    this.historyPollController?.requestSoon(IN_PROGRESS_HISTORY_POLL_MS);
   }
 
   private handleVisibilityChange = () => {

@@ -32,8 +32,13 @@ export class AssistPollController {
       return;
     }
 
-    if (this.timer !== undefined || this.active) {
+    if (this.active) {
       return;
+    }
+
+    if (this.timer !== undefined) {
+      window.clearTimeout(this.timer);
+      this.timer = undefined;
     }
 
     this.delay = this.intervalMs;
@@ -50,6 +55,21 @@ export class AssistPollController {
   reset() {
     this.stop();
     this.delay = this.intervalMs;
+  }
+
+  /** Schedule the next poll soon, clearing any backed-off timer. */
+  requestSoon(delay = 0) {
+    if (!this.shouldPoll() || this.active) {
+      return;
+    }
+
+    if (this.timer !== undefined) {
+      window.clearTimeout(this.timer);
+      this.timer = undefined;
+    }
+
+    this.delay = this.intervalMs;
+    this.schedule(delay);
   }
 
   private schedule(delay: number) {

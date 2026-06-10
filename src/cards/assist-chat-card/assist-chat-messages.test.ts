@@ -12,6 +12,7 @@ import {
   finalizeCancelledMessages,
   getRunsSnapshot,
   isLoadingMessage,
+  isListeningPlaceholderMessage,
   isUnprocessedSttAssistantMessage,
   mergeHistoryMessages,
 } from "./assist-chat-messages";
@@ -106,15 +107,23 @@ describe("buildMessagesFromRuns", () => {
     expect(isLoadingMessage(messages[1])).toBe(true);
   });
 
-  it("only shows a listening placeholder while the card itself is active", () => {
+  it("shows a listening placeholder for the latest in-progress stt run", () => {
     const runs = [listeningRun("r1", T(0))];
 
-    const idle = buildMessagesFromRuns(runs, { active: false, clearedAt: null });
-    expect(idle.messages).toHaveLength(0);
+    const { messages } = buildMessagesFromRuns(runs, { active: false, clearedAt: null });
+    expect(messages).toHaveLength(1);
+    expect(messages[0].status).toBe("listening");
+    expect(messages[0].process?.stage).toBe("stt");
+  });
 
-    const active = buildMessagesFromRuns(runs, { active: true, clearedAt: null });
-    expect(active.messages).toHaveLength(1);
-    expect(active.messages[0].status).toBe("listening");
+  it("does not show listening placeholders for older runs", () => {
+    const runs = [
+      listeningRun("r1", T(0)),
+      completedTextRun("r2", T(5), "hi", "hello"),
+    ];
+
+    const { messages } = buildMessagesFromRuns(runs, { active: false, clearedAt: null });
+    expect(messages.some((message) => message.status === "listening")).toBe(false);
   });
 
   it("hides runs at or before the conversation clear timestamp", () => {
@@ -177,9 +186,12 @@ describe("isUnprocessedSttAssistantMessage", () => {
     return process;
   };
 
-  it("flags listening placeholders", () => {
+  it("does not flag active listening placeholders as unprocessed stt noise", () => {
     expect(
       isUnprocessedSttAssistantMessage(message({ id: "1", role: "assistant", status: "listening" }))
+    ).toBe(false);
+    expect(
+      isListeningPlaceholderMessage(message({ id: "1", role: "assistant", status: "listening" }))
     ).toBe(true);
   });
 
