@@ -90,7 +90,7 @@ class AssistChatCardEditor extends LitElement {
   render() {
     return html`
       <div class="editor">
-        ${this.renderNonAdminNotice()}
+        ${this.renderAdminNotice()}
         <div class="grid">
           ${renderTextField({
             label: "Title",
@@ -100,7 +100,19 @@ class AssistChatCardEditor extends LitElement {
           })}
           ${this.renderCheckbox("Show header (title, pipeline, status)", "show_header")}
           ${this.renderPipelineField()}
-          ${this.renderNumberInput("Recent runs", "run_count", DEFAULTS.run_count, 0, 20)}
+          ${this.renderCheckbox("Show only messages from this card", "card_only_history")}
+          <p class="hint">
+            Hides external and wake-word conversations by skipping Assist debug history. Thinking and
+            process details still appear for messages you send from this card.
+          </p>
+          ${this.renderNumberInput(
+            "Recent runs",
+            "run_count",
+            DEFAULTS.run_count,
+            0,
+            20,
+            this.getValue("card_only_history")
+          )}
         </div>
 
         <fieldset>
@@ -199,29 +211,28 @@ class AssistChatCardEditor extends LitElement {
     return Boolean(this.hass?.user && !this.hass.user.is_admin);
   }
 
-  private renderNonAdminNotice() {
-    if (!this.isNonAdminUser()) {
-      return "";
-    }
-
+  private renderAdminNotice() {
     return html`
       <div class="notice" role="note">
-        <strong>Limited for non-admin users</strong>
+        <strong>Note for admin users</strong>
         <p>
-          You are signed in without administrator access. Home Assistant only allows admins to use the
+          Home Assistant only allows admins to use the
           Assist pipeline debug APIs (<code>assist_pipeline/pipeline_debug/*</code>).
         </p>
-        <p>The following will not work on this card:</p>
+        <p>The following will not work on this card if you are not an admin:</p>
         <ul>
           <li>Recent run history (<code>run_count</code>)</li>
           <li>Live updates from external or wake-word conversations</li>
-          <li>Reloading past messages, thinking text, or process chips after a refresh</li>
         </ul>
         <p>The following still works:</p>
         <ul>
           <li>Live text chat in the current browser session</li>
           <li>Voice input and playback while you are actively using the card</li>
           <li>Thinking and process details for conversations you start yourself</li>
+          <li>
+            <strong>Show only messages from this card</strong> — same live behavior without debug API
+            access
+          </li>
         </ul>
       </div>
     `;
@@ -315,7 +326,8 @@ class AssistChatCardEditor extends LitElement {
     key: "run_count",
     fallback: number,
     min: number,
-    max: number
+    max: number,
+    disabled = false
   ) {
     const value = Number(this.getValue(key));
 
@@ -326,6 +338,7 @@ class AssistChatCardEditor extends LitElement {
           type="number"
           min=${String(min)}
           max=${String(max)}
+          ?disabled=${disabled}
           .value=${String(Number.isFinite(value) ? value : fallback)}
           @change=${(event: Event) =>
             this.updateNumberValue(key, (event.target as HTMLInputElement).value, fallback, min, max)}
