@@ -1,7 +1,13 @@
 import { css, html, LitElement, PropertyValues } from "lit";
 import { fireEvent, HomeAssistant } from "custom-card-helpers";
-import { renderEntityPicker, renderJinjaCodeEditor, renderTextField } from "../../shared/base-card";
+import {
+  renderEntityPicker,
+  renderJinjaCodeEditor,
+  renderTextField,
+  toColorInputValue,
+} from "../../shared/base-card";
 import { loadHaEditorComponents } from "../../shared/ha-component-loader";
+import { DEFAULT_ACCENT_BLUE } from "../../shared/card-colors";
 
 type RowDetailMode = "none" | "count" | "entities";
 type ValueCheckOperator = "equals" | "not_equals" | "gt" | "lt" | "lte" | "gte" | "contains" | "not_contains";
@@ -43,7 +49,7 @@ type EntityRegistryEntry = {
 };
 
 const DEFAULT_TITLE = "Possible Issues";
-const DEFAULT_BACKGROUND_COLOR = "#44739e";
+const DEFAULT_BACKGROUND_COLOR = DEFAULT_ACCENT_BLUE;
 const DEFAULT_DOMAINS = ["sensor", "light", "switch"];
 const DEFAULT_ISSUE_STATES = ["unavailable"];
 const COMMON_ISSUE_STATES = ["unavailable", "unknown", "none"];
@@ -155,7 +161,7 @@ class PossibleIssuesCardEditor extends LitElement {
   }
 
   private renderColorInput(label: string, key: "background_color", fallback: string) {
-    const value = this.toColorInputValue(String(this.config[key] || fallback), fallback);
+    const value = toColorInputValue(String(this.config[key] || fallback), fallback);
 
     return html`
       <label>
@@ -506,10 +512,6 @@ class PossibleIssuesCardEditor extends LitElement {
       .split("_")
       .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
       .join(" ");
-  }
-
-  private toColorInputValue(value: string, fallback: string) {
-    return /^#[0-9a-fA-F]{6}$/.test(value) ? value : fallback;
   }
 
   private updateConfig(config: PossibleIssuesCardEditorConfig) {

@@ -4,6 +4,7 @@ import {
   renderEntityPicker,
   renderIconPicker,
   renderTextField,
+  toColorInputValue,
 } from "../../shared/base-card";
 
 type DualSetpointLayout = "two_rows" | "single_row_toggle" | "side_by_side";
@@ -194,7 +195,7 @@ class ThermostatCardEditor extends LitElement {
   }
 
   private renderColorInput(label: string, key: "heating_color" | "cooling_color", fallback: string) {
-    const value = this.toColorInputValue(String(this.config[key] || fallback), fallback);
+    const value = toColorInputValue(String(this.config[key] || fallback), fallback);
 
     return html`
       <label>
@@ -310,10 +311,6 @@ class ThermostatCardEditor extends LitElement {
 
   private asStringArray(value: unknown): string[] {
     return Array.isArray(value) ? value.filter((item): item is string => typeof item === "string") : [];
-  }
-
-  private toColorInputValue(value: string, fallback: string) {
-    return /^#[0-9a-f]{6}$/i.test(value) ? value : fallback;
   }
 
   private toLabel(value: string) {

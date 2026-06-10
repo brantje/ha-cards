@@ -1,100 +1,61 @@
 import { css, html, LitElement, PropertyValues } from "lit";
 import { fireEvent, HomeAssistant } from "custom-card-helpers";
-import { renderTextField } from "../../shared/base-card";
+import {
+  clampNumber,
+  renderAssistPipelinePicker,
+  renderCheckbox,
+  renderTextField,
+  sharedEditorStyles,
+  toColorInputValue,
+} from "../../shared/base-card";
+import { formatAssistError } from "../../shared/assist-format";
+import { AssistPipeline, listAssistPipelines } from "../../shared/assist-pipeline";
+import {
+  ASSIST_DEBUG_CARD_DEFAULTS,
+  ASSIST_DEBUG_CARD_EDITOR_COLOR_INPUT,
+  type AssistDebugCardConfig,
+  type AudioVisualizationColorKey,
+  type AudioVisualizationPosition,
+  type AudioVisualizationType,
+  type MetadataMode,
+  getDebugConfigValue,
+} from "./assist-debug-card-config";
 
-type MetadataMode = "hidden" | "compact" | "full";
-type AudioVisualizationType = "waveform" | "spectrum" | "meter" | "glow" | "ulysse31";
-type AudioVisualizationPosition = "background" | "top" | "between" | "below_chat";
-type AudioVisualizationColorKey =
-  | "audio_visualization_color"
-  | "audio_visualization_secondary_color"
-  | "audio_visualization_background";
-
-type AssistDebugCardEditorConfig = {
-  type?: string;
-  title?: string;
-  pipeline_id?: string;
-  run_count?: number;
-  minimalistic_mode?: boolean;
-  visualization_only?: boolean;
-  conversation_only?: boolean;
-  show_conversation?: boolean;
-  metadata_mode?: MetadataMode;
-  show_raw?: boolean;
-  show_thinking?: boolean;
-  show_summary?: boolean;
-  show_stt?: boolean;
-  show_intent?: boolean;
-  show_tts?: boolean;
-  mask_transcripts?: boolean;
-  audio_visualization?: boolean;
-  audio_visualization_type?: AudioVisualizationType;
-  audio_visualization_position?: AudioVisualizationPosition;
-  audio_visualization_height?: number;
-  audio_visualization_color?: string;
-  audio_visualization_secondary_color?: string;
-  audio_visualization_background?: string;
-  audio_visualization_opacity?: number;
-  audio_visualization_start_delay?: number;
-};
-
-const DEFAULT_TITLE = "Assist debug";
-const DEFAULT_PIPELINE_ID = "preferred";
-const DEFAULT_RUN_COUNT = 5;
-const DEFAULT_METADATA_MODE: MetadataMode = "compact";
-const DEFAULT_AUDIO_VISUALIZATION_TYPE: AudioVisualizationType = "waveform";
-const DEFAULT_AUDIO_VISUALIZATION_POSITION: AudioVisualizationPosition = "below_chat";
-const DEFAULT_AUDIO_VISUALIZATION_HEIGHT = 56;
-const DEFAULT_AUDIO_VISUALIZATION_COLOR = "var(--primary-color)";
-const DEFAULT_AUDIO_VISUALIZATION_SECONDARY_COLOR = "var(--secondary-text-color)";
-const DEFAULT_AUDIO_VISUALIZATION_BACKGROUND = "transparent";
-const DEFAULT_AUDIO_VISUALIZATION_COLOR_INPUT = "#03a9f4";
-const DEFAULT_AUDIO_VISUALIZATION_SECONDARY_COLOR_INPUT = "#727272";
-const DEFAULT_AUDIO_VISUALIZATION_BACKGROUND_INPUT = "#000000";
-const DEFAULT_AUDIO_VISUALIZATION_OPACITY = 0.75;
-const DEFAULT_AUDIO_VISUALIZATION_START_DELAY = 0;
+const DEFAULTS = ASSIST_DEBUG_CARD_DEFAULTS;
 
 class AssistDebugCardEditor extends LitElement {
   hass?: HomeAssistant;
-  config: AssistDebugCardEditorConfig = {};
+  config: AssistDebugCardConfig = {};
+  private pipelines: AssistPipeline[] = [];
+  private pipelinesLoading = false;
+  private pipelineError = "";
 
   static properties = {
     hass: { attribute: false },
     config: { attribute: false },
+    pipelines: { state: true },
+    pipelinesLoading: { state: true },
+    pipelineError: { state: true },
   };
 
-  setConfig(config: AssistDebugCardEditorConfig) {
-    this.config = {
-      title: DEFAULT_TITLE,
-      pipeline_id: DEFAULT_PIPELINE_ID,
-      run_count: DEFAULT_RUN_COUNT,
-      minimalistic_mode: false,
-      visualization_only: false,
-      conversation_only: false,
-      show_conversation: false,
-      metadata_mode: DEFAULT_METADATA_MODE,
-      show_raw: true,
-      show_thinking: true,
-      show_summary: true,
-      show_stt: true,
-      show_intent: true,
-      show_tts: true,
-      mask_transcripts: false,
-      audio_visualization: false,
-      audio_visualization_type: DEFAULT_AUDIO_VISUALIZATION_TYPE,
-      audio_visualization_position: DEFAULT_AUDIO_VISUALIZATION_POSITION,
-      audio_visualization_height: DEFAULT_AUDIO_VISUALIZATION_HEIGHT,
-      audio_visualization_color: DEFAULT_AUDIO_VISUALIZATION_COLOR,
-      audio_visualization_secondary_color: DEFAULT_AUDIO_VISUALIZATION_SECONDARY_COLOR,
-      audio_visualization_background: DEFAULT_AUDIO_VISUALIZATION_BACKGROUND,
-      audio_visualization_opacity: DEFAULT_AUDIO_VISUALIZATION_OPACITY,
-      audio_visualization_start_delay: DEFAULT_AUDIO_VISUALIZATION_START_DELAY,
-      ...config,
-    };
+  setConfig(config: AssistDebugCardConfig) {
+    this.config = config || {};
+  }
+
+  private getValue<K extends keyof typeof DEFAULTS>(key: K): (typeof DEFAULTS)[K] {
+    return getDebugConfigValue(this.config, key);
   }
 
   shouldUpdate(changedProperties: PropertyValues): boolean {
     if (changedProperties.has("config")) {
+      return true;
+    }
+
+    if (
+      changedProperties.has("pipelines") ||
+      changedProperties.has("pipelinesLoading") ||
+      changedProperties.has("pipelineError")
+    ) {
       return true;
     }
 
@@ -106,6 +67,31 @@ class AssistDebugCardEditor extends LitElement {
     return false;
   }
 
+  updated(changedProperties: PropertyValues) {
+    const firstHass = changedProperties.has("hass") && !changedProperties.get("hass");
+    if (firstHass) {
+      void this.loadPipelines();
+    }
+  }
+
+  private async loadPipelines() {
+    if (!this.hass || this.pipelinesLoading) {
+      return;
+    }
+
+    this.pipelinesLoading = true;
+    this.pipelineError = "";
+
+    try {
+      const response = await listAssistPipelines(this.hass);
+      this.pipelines = response.pipelines || [];
+    } catch (error) {
+      this.pipelineError = formatAssistError(error, { fallback: "Unable to load pipelines." });
+    } finally {
+      this.pipelinesLoading = false;
+    }
+  }
+
   render() {
     return html`
       <div class="editor">
@@ -113,16 +99,19 @@ class AssistDebugCardEditor extends LitElement {
           ${renderTextField({
             label: "Title",
             value: String(this.config.title || ""),
-            placeholder: DEFAULT_TITLE,
+            placeholder: DEFAULTS.title,
             onInput: (value) => this.updateConfigValue("title", value),
           })}
-          ${renderTextField({
-            label: "Pipeline ID",
-            value: String(this.config.pipeline_id || DEFAULT_PIPELINE_ID),
-            placeholder: "preferred or a pipeline id",
-            onInput: (value) => this.updateConfigValue("pipeline_id", value || DEFAULT_PIPELINE_ID),
+          ${renderAssistPipelinePicker({
+            hass: this.hass,
+            label: "Pipeline",
+            value: String(this.getValue("pipeline_id")),
+            pipelines: this.pipelines,
+            loading: this.pipelinesLoading,
+            error: this.pipelineError,
+            onChange: (value) => this.updateConfigValue("pipeline_id", value),
           })}
-          ${this.renderNumberField("Recent runs", "run_count", DEFAULT_RUN_COUNT, 1, 20)}
+          ${this.renderNumberField("Recent runs", "run_count", DEFAULTS.run_count, 1, 20)}
           ${this.renderMetadataModeField()}
         </div>
 
@@ -150,26 +139,26 @@ class AssistDebugCardEditor extends LitElement {
           ${this.renderCheckbox("Enable audio visualization", "audio_visualization")}
           ${this.renderAudioVisualizationTypeField()}
           ${this.config.audio_visualization_type === "glow" ? "" : this.renderAudioVisualizationPositionField()}
-          ${this.renderNumberField("Height", "audio_visualization_height", DEFAULT_AUDIO_VISUALIZATION_HEIGHT, 24, 180)}
-          ${this.renderNumberField("Visualization start delay (ms)", "audio_visualization_start_delay", DEFAULT_AUDIO_VISUALIZATION_START_DELAY, 0, 10000)}
-          ${this.renderDecimalField("Opacity", "audio_visualization_opacity", DEFAULT_AUDIO_VISUALIZATION_OPACITY, 0.05, 1, 0.05)}
+          ${this.renderNumberField("Height", "audio_visualization_height", DEFAULTS.audio_visualization_height, 24, 180)}
+          ${this.renderNumberField("Visualization start delay (ms)", "audio_visualization_start_delay", DEFAULTS.audio_visualization_start_delay, 0, 10000)}
+          ${this.renderDecimalField("Opacity", "audio_visualization_opacity", DEFAULTS.audio_visualization_opacity, 0.05, 1, 0.05)}
           ${this.renderColorInput(
             "Primary color",
             "audio_visualization_color",
-            DEFAULT_AUDIO_VISUALIZATION_COLOR,
-            DEFAULT_AUDIO_VISUALIZATION_COLOR_INPUT
+            DEFAULTS.audio_visualization_color,
+            ASSIST_DEBUG_CARD_EDITOR_COLOR_INPUT.audio_visualization_color
           )}
           ${this.renderColorInput(
             "Secondary color",
             "audio_visualization_secondary_color",
-            DEFAULT_AUDIO_VISUALIZATION_SECONDARY_COLOR,
-            DEFAULT_AUDIO_VISUALIZATION_SECONDARY_COLOR_INPUT
+            DEFAULTS.audio_visualization_secondary_color,
+            ASSIST_DEBUG_CARD_EDITOR_COLOR_INPUT.audio_visualization_secondary_color
           )}
           ${this.renderColorInput(
             "Background",
             "audio_visualization_background",
-            DEFAULT_AUDIO_VISUALIZATION_BACKGROUND,
-            DEFAULT_AUDIO_VISUALIZATION_BACKGROUND_INPUT
+            DEFAULTS.audio_visualization_background,
+            ASSIST_DEBUG_CARD_EDITOR_COLOR_INPUT.audio_visualization_background
           )}
         </fieldset>
       </div>
@@ -230,7 +219,7 @@ class AssistDebugCardEditor extends LitElement {
     fallback: string,
     colorInputFallback: string
   ) {
-    const value = this.toColorInputValue(String(this.config[key] || fallback), colorInputFallback);
+    const value = toColorInputValue(String(this.config[key] || fallback), colorInputFallback);
 
     return html`
       <label>
@@ -245,7 +234,7 @@ class AssistDebugCardEditor extends LitElement {
   }
 
   private renderMetadataModeField() {
-    const value = this.config.metadata_mode || DEFAULT_METADATA_MODE;
+    const value = this.getValue("metadata_mode");
 
     return html`
       <label>
@@ -260,7 +249,7 @@ class AssistDebugCardEditor extends LitElement {
   }
 
   private renderAudioVisualizationTypeField() {
-    const value = this.config.audio_visualization_type || DEFAULT_AUDIO_VISUALIZATION_TYPE;
+    const value = this.getValue("audio_visualization_type");
 
     return html`
       <label>
@@ -277,7 +266,7 @@ class AssistDebugCardEditor extends LitElement {
   }
 
   private renderAudioVisualizationPositionField() {
-    const value = this.config.audio_visualization_position || DEFAULT_AUDIO_VISUALIZATION_POSITION;
+    const value = this.getValue("audio_visualization_position");
 
     return html`
       <label>
@@ -292,35 +281,15 @@ class AssistDebugCardEditor extends LitElement {
     `;
   }
 
-  private renderCheckbox(
-    label: string,
-    key:
-      | "minimalistic_mode"
-      | "visualization_only"
-      | "conversation_only"
-      | "show_conversation"
-      | "show_raw"
-      | "show_thinking"
-      | "show_summary"
-      | "show_stt"
-      | "show_intent"
-      | "show_tts"
-      | "mask_transcripts"
-      | "audio_visualization"
-  ) {
-    return html`
-      <label class="checkbox">
-        <input
-          type="checkbox"
-          .checked=${Boolean(this.config[key])}
-          @change=${(event: Event) => this.updateConfigValue(key, (event.target as HTMLInputElement).checked)}
-        />
-        <span>${label}</span>
-      </label>
-    `;
+  private renderCheckbox(label: string, key: keyof typeof DEFAULTS) {
+    return renderCheckbox({
+      label,
+      checked: Boolean(this.getValue(key)),
+      onChange: (checked) => this.updateConfigValue(key, checked),
+    });
   }
 
-  private updateConfigValue(key: keyof AssistDebugCardEditorConfig, value: unknown) {
+  private updateConfigValue(key: keyof AssistDebugCardConfig, value: unknown) {
     this.updateConfig({
       ...this.config,
       [key]: value === "" ? undefined : value,
@@ -334,12 +303,7 @@ class AssistDebugCardEditor extends LitElement {
     min: number,
     max: number
   ) {
-    const parsed = Number(rawValue);
-    const value = Number.isFinite(parsed)
-      ? Math.min(Math.max(Math.round(parsed), min), max)
-      : fallback;
-
-    this.updateConfigValue(key, value);
+    this.updateConfigValue(key, clampNumber(rawValue, fallback, min, max));
   }
 
   private updateDecimalValue(
@@ -355,11 +319,7 @@ class AssistDebugCardEditor extends LitElement {
     this.updateConfigValue(key, value);
   }
 
-  private toColorInputValue(value: string, fallback: string) {
-    return /^#[0-9a-fA-F]{6}$/.test(value) ? value : fallback;
-  }
-
-  private updateConfig(config: AssistDebugCardEditorConfig) {
+  private updateConfig(config: AssistDebugCardConfig) {
     this.config = config;
     fireEvent(this, "config-changed", { config });
   }

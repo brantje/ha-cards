@@ -111,6 +111,12 @@ Use these helpers in editors instead of re-implementing them:
 * `renderActionEditor`
 * `renderActionFields`
 * `renderActionInput`
+* `renderCheckbox`
+* `renderNumberField`
+* `toColorInputValue`
+* `clampNumber`
+* `renderAssistPipelinePicker`
+* `sharedEditorStyles`
 
 When creating or updating an editor (`getConfigElement`), prefer importing these helpers and wiring them to your editor’s `updateConfigValue` / `updateActionValue` handlers.
 
@@ -127,6 +133,7 @@ Home Assistant replaces the entire `hass` object on **every state change for any
   * On `hass` changes, re-renders only when one of the entity ids returned by `getWatchedEntities()` actually changed (reference equality on the per-entity state object — that's what HA replaces).
 * **Override `getWatchedEntities()`** in any card that reads more than `config.entity`. List every entity id the render path depends on (primary entity + each sensor/secondary entity). The default returns `[config.entity]`, which is wrong for cards that also display sensors.
 * Don't add ad-hoc reactive properties for derived state — derive it inside `render()` so `shouldUpdate` stays the single source of truth for re-render decisions.
+* **Non-entity / WS-driven cards** (e.g. Assist Chat) do not read entity state. Override `shouldUpdate` with `shouldUpdateNonEntityCard(changedProperties, extraStateKeys)` from `BaseCard`, listing every `@state` property the card uses. Do not re-render on subsequent `hass` swaps.
 
 ### Rules for editors (`getConfigElement`)
 

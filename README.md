@@ -224,6 +224,59 @@ cooling_color: "#3a8dde"
 
 ---
 
+### `assist-chat-card`
+
+Dashboard chat card for **Home Assistant Assist**. It runs the Assist pipeline directly, defaults to text chat, can optionally enable voice input, fetches recent Assist debug runs as chat history, and shows process/timing chips inside the active assistant response. Tool visibility is limited to tool names by default.
+
+**Config**
+
+- **`type`**: `custom:assist-chat-card`
+- **`title`** (optional, default `Assist`): Card title / storage label
+- **`pipeline_id`** (optional, default `preferred`): Assist pipeline id, `preferred`, or `last_used`
+- **`run_count`** (optional, default `5`, max `20`): How many recent Assist debug runs to show as chat history; set to `0` to start empty
+- **`show_header`** (optional, default `true`): Show the title, pipeline name and status pill
+- **`text_input`** (optional, default `true`): Enable text input
+- **`voice_input`** (optional, default `false`): Enable microphone input
+- **`continue_conversation`** (optional, default `false`): Continue listening when Assist asks a follow-up
+- **`always_continue_conversation`** (optional, default `false`): Always continue listening after voice replies
+- **`session_conversation`** (optional, default `true`): Keep the conversation id local to this card (like the built-in Assist dialog) instead of reusing the one from history
+- **`disable_speech`** (optional, default `false`): Disable speech controls even when voice input is enabled
+- **`enable_audio_playback`** (optional, default `false`): Run the TTS pipeline stage and play reply audio for text and voice input
+- **`speech_rms_threshold`** (optional, default `0.01`): Minimum audio level (0–1) before microphone audio is sent to speech-to-text
+- **`show_process`** (optional, default `true`): Show STT/intent/TTS timing chips and tool names
+- **`show_thinking_until_response`** (optional, default `false`): Keep the thinking section expanded until the response arrives
+- **`show_message_time`** (optional, default `false`): Show a timestamp on each message
+- **`suggested_prompts`** (optional): Newline-separated prompt chips; supports Home Assistant templating
+- **`show_suggested_prompts`** (optional, default `true`): Show prompt chips when the chat is empty
+- **`always_show_suggested_prompts`** (optional, default `false`): Keep showing prompt chips once the conversation has messages
+- **`background_color`** / **`surface_color`** (optional): Card and input/process surface colors
+- **`user_chat_color`** / **`user_chat_text_color`** (optional): User bubble colors
+- **`assistant_chat_color`** / **`assistant_chat_text_color`** (optional): Assistant bubble colors
+
+Colors default to the active theme (`--card-background-color`, `--primary-color`, …); setting any color option overrides the theme for that element.
+
+Chat history uses the admin-only `assist_pipeline/pipeline_debug` API. For non-admin users the card automatically disables history (live chat still works); history polling also pauses while the tab is hidden and backs off on errors.
+
+In sections views, card height follows dashboard layout via `grid_options.rows` (for example `rows: 12`). Messages scroll inside the allocated area while the input row stays at the bottom.
+
+**Example**
+
+```yaml
+type: custom:assist-chat-card
+title: Assist
+pipeline_id: preferred
+run_count: 5
+text_input: true
+voice_input: false
+show_process: true
+show_thinking_until_response: false
+grid_options:
+  columns: 12
+  rows: 12
+```
+
+---
+
 ### `assist-debug-card`
 
 ![assist-debug-card example](./images/assist-debug-card.png)

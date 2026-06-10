@@ -1,6 +1,7 @@
 import { css, html, LitElement, PropertyValues } from "lit";
 import { ActionConfig, fireEvent, HomeAssistant } from "custom-card-helpers";
 import {
+  renderCheckbox,
   renderSharedActionEditor,
   renderEntityPicker,
   renderTextField,
@@ -179,17 +180,11 @@ class WelcomeCardEditor extends LitElement {
   }
 
   private renderCheckbox(label: string, key: keyof WelcomeCardEditorConfig) {
-    return html`
-      <label class="checkbox">
-        <input
-          type="checkbox"
-          .checked=${Boolean(this.config[key])}
-          @change=${(event: Event) =>
-            this.updateConfigValue(key, (event.target as HTMLInputElement).checked)}
-        />
-        <span>${label}</span>
-      </label>
-    `;
+    return renderCheckbox({
+      label,
+      checked: Boolean(this.config[key]),
+      onChange: (checked) => this.updateConfigValue(key, checked),
+    });
   }
 
   private renderTabIconPicker(index: number, fallback: string) {
