@@ -5161,13 +5161,13 @@ const Qi = _`
   }
 
   .assistant .bubble.loading,
-  .assistant .bubble.cancelled-bubble,
   .bubble.loading {
-    align-items: center;
     color: var(--assist-secondary-text, var(--secondary-text-color));
-    display: inline-flex;
-    flex-direction: row;
-    gap: 8px;
+  }
+
+  .assistant .bubble.cancelled-bubble,
+  .bubble.cancelled-bubble {
+    color: var(--assist-secondary-text, var(--secondary-text-color));
   }
 
   .error-bubble {
@@ -5177,7 +5177,18 @@ const Qi = _`
   .loading-status {
     align-items: center;
     display: inline-flex;
+    flex: 0 0 auto;
+    flex-shrink: 0;
     gap: 8px;
+    max-width: 100%;
+  }
+
+  .loading-status > span {
+    white-space: nowrap;
+  }
+
+  .bubble.cancelled-bubble > span:first-child {
+    white-space: nowrap;
   }
 `, ts = _`
   .typing-dots {
@@ -5710,8 +5721,10 @@ const tt = Oe, vi = 2e3, fa = 48, ma = /* @__PURE__ */ new Set([
           ${s}
           <div class="conversation conversation-only">
             <div class="bubble assistant loading">
-              ${ct()}
-              <span>${this.loading ? "Loading conversation..." : "Waiting for a conversation..."}</span>
+              <div class="loading-status">
+                ${ct()}
+                <span>${this.loading ? "Loading conversation..." : "Waiting for a conversation..."}</span>
+              </div>
             </div>
           </div>
         </div>
@@ -5727,8 +5740,10 @@ const tt = Oe, vi = 2e3, fa = 48, ma = /* @__PURE__ */ new Set([
           ${this.renderAudioVisualization("between")}
           ${c ? d`<div class="bubble assistant">${l}</div>` : p ? d`<div class="bubble assistant error-bubble">${((h = t.error) == null ? void 0 : h.message) || "The assistant run failed."}</div>` : d`
                   <div class="bubble assistant loading">
-                    ${ct()}
-                    <span>${this.getConversationLoadingText(t, u)}</span>
+                    <div class="loading-status">
+                      ${ct()}
+                      <span>${this.getConversationLoadingText(t, u)}</span>
+                    </div>
                   </div>
                 `}
         </div>
@@ -7776,17 +7791,25 @@ function Xa(a, t) {
   const e = a.status === "cancelled", i = Object.values(a.process.stages).filter((n) => n.status !== "idle"), s = a.process.toolCalls.filter((n) => n.tool_name);
   return !i.length && !s.length ? "" : d`
     <div class="process">
-      ${i.map((n) => {
+      ${i.length ? d`
+            <div class="process-stages">
+              ${i.map((n) => {
     var c;
     const o = Ba(n.status, e), r = n.ended || (o === "cancelled" ? (c = a.process) == null ? void 0 : c.finished : void 0), l = $t(n.started, r);
     return d`
-          <span class=${`process-chip ${o}`}>
-            <ha-icon icon=${Ie(o)}></ha-icon>
-            ${n.label}${l ? d` · ${l}` : ""}
-          </span>
-        `;
+                  <span class=${`process-chip ${o}`}>
+                    <ha-icon icon=${Ie(o)}></ha-icon>
+                    ${n.label}${l ? d` · ${l}` : ""}
+                  </span>
+                `;
   })}
-      ${s.map((n) => Ya(n, t))}
+            </div>
+          ` : ""}
+      ${s.length ? d`
+            <div class="process-tools">
+              ${s.map((n) => Ya(n, t))}
+            </div>
+          ` : ""}
     </div>
   `;
 }
@@ -8649,11 +8672,11 @@ const w = ns, tn = 2e3, en = 6e4, sn = 48, an = {
   }
   handleRunEvent(t, e) {
     var i, s, n, o, r, l, c, p;
-    e.process = this.applyProcessEvent(e.process, t), t.type === "intent-progress" && ((i = t.data) != null && i.chat_log_delta) ? this.applyIntentDelta(e, t.data.chat_log_delta) : t.type === "intent-end" ? (this.conversationId = ((n = (s = t.data) == null ? void 0 : s.intent_output) == null ? void 0 : n.conversation_id) || this.conversationId, this.continueConversationAfterRun = !!((r = (o = t.data) == null ? void 0 : o.intent_output) != null && r.continue_conversation), this.applyIntentEnd(e, t), this.getPipelineEndStage() === "intent" && this.finishRun()) : t.type === "tts-end" ? this.playTtsAudio((c = (l = t.data) == null ? void 0 : l.tts_output) == null ? void 0 : c.url) : t.type === "run-end" ? this.finishRun() : t.type === "error" && (this.setAssistantError(e, String(((p = t.data) == null ? void 0 : p.message) || this.text("run_failed"))), this.finishRun()), this.requestUpdate();
+    e.process = this.applyProcessEvent(e.process, t), t.type === "intent-progress" && ((i = t.data) != null && i.chat_log_delta) ? this.applyIntentDelta(e, t.data.chat_log_delta) : t.type === "intent-end" ? (this.conversationId = ((n = (s = t.data) == null ? void 0 : s.intent_output) == null ? void 0 : n.conversation_id) || this.conversationId, this.continueConversationAfterRun = !!((r = (o = t.data) == null ? void 0 : o.intent_output) != null && r.continue_conversation), this.applyIntentEnd(e, t), this.getPipelineEndStage() === "intent" && this.finishRun()) : t.type === "tts-end" ? this.playTtsAudio((c = (l = t.data) == null ? void 0 : l.tts_output) == null ? void 0 : c.url) : t.type === "run-end" ? this.finishRun() : t.type === "error" && (this.setAssistantError(e, String(((p = t.data) == null ? void 0 : p.message) || this.text("run_failed"))), this.finishRun()), this.messages = [...this.messages];
   }
   applyIntentDelta(t, e) {
     var i;
-    this.chatLogAccumulator.assistantText = t.text || "", this.chatLogAccumulator.thinking = t.thinking || "", this.chatLogAccumulator.toolCalls = ((i = t.process) == null ? void 0 : i.toolCalls) || [], Wi(this.chatLogAccumulator, e), this.chatLogAccumulator.assistantText && (t.text = this.chatLogAccumulator.assistantText, t.status = "streaming"), this.chatLogAccumulator.thinking && (t.thinking = this.chatLogAccumulator.thinking), t.process && (t.process.toolCalls = this.chatLogAccumulator.toolCalls);
+    this.chatLogAccumulator.assistantText = t.text || "", this.chatLogAccumulator.thinking = t.thinking || "", this.chatLogAccumulator.toolCalls = ((i = t.process) == null ? void 0 : i.toolCalls) || [], Wi(this.chatLogAccumulator, e), this.chatLogAccumulator.assistantText && (t.text = this.chatLogAccumulator.assistantText, t.status = "streaming"), this.chatLogAccumulator.thinking && (t.thinking = this.chatLogAccumulator.thinking, this.chatLogAccumulator.assistantText || (t.status = "thinking")), t.process && (t.process.toolCalls = this.chatLogAccumulator.toolCalls);
   }
   applyIntentEnd(t, e) {
     var n, o;
@@ -9173,10 +9196,10 @@ Nt.properties = {
       gap: 6px;
       max-width: 100%;
       min-width: 0;
+      width: fit-content;
     }
 
     .tool-call-chip[open] {
-      flex: 1 1 100%;
       width: 100%;
     }
 
@@ -9236,8 +9259,10 @@ Nt.properties = {
 
     .message-time {
       align-self: flex-end;
+      flex-shrink: 0;
       font-size: 12px;
       line-height: 1;
+      white-space: nowrap;
     }
 
     .user .bubble .message-time {
@@ -9304,10 +9329,24 @@ Nt.properties = {
     }
 
     .process {
+      align-self: stretch;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      min-width: 0;
+      width: 100%;
+    }
+
+    .process-stages,
+    .process-tools {
       display: flex;
       flex-wrap: wrap;
       gap: 6px;
       min-width: 0;
+    }
+
+    .process-tools {
+      align-items: flex-start;
       width: 100%;
     }
 
@@ -9317,6 +9356,7 @@ Nt.properties = {
       border-radius: 999px;
       color: var(--secondary-text-color);
       display: inline-flex;
+      flex: 0 1 auto;
       font-size: 12px;
       gap: 4px;
       max-width: 100%;
@@ -9350,6 +9390,7 @@ Nt.properties = {
     }
 
     .thinking {
+      align-self: stretch;
       max-width: 100%;
       min-width: 0;
       width: 100%;
@@ -9359,6 +9400,7 @@ Nt.properties = {
       color: var(--secondary-text-color);
       cursor: pointer;
       font-size: 13px;
+      white-space: nowrap;
     }
 
     .thinking pre {
@@ -9370,6 +9412,7 @@ Nt.properties = {
       margin: 8px 0 0;
       max-height: 220px;
       overflow: auto;
+      overflow-wrap: break-word;
       padding: 10px;
       white-space: pre-wrap;
       width: 100%;

@@ -36,13 +36,13 @@ export const assistConversationBubbleStyles = css`
   }
 
   .assistant .bubble.loading,
-  .assistant .bubble.cancelled-bubble,
   .bubble.loading {
-    align-items: center;
     color: var(--assist-secondary-text, var(--secondary-text-color));
-    display: inline-flex;
-    flex-direction: row;
-    gap: 8px;
+  }
+
+  .assistant .bubble.cancelled-bubble,
+  .bubble.cancelled-bubble {
+    color: var(--assist-secondary-text, var(--secondary-text-color));
   }
 
   .error-bubble {
@@ -52,7 +52,18 @@ export const assistConversationBubbleStyles = css`
   .loading-status {
     align-items: center;
     display: inline-flex;
+    flex: 0 0 auto;
+    flex-shrink: 0;
     gap: 8px;
+    max-width: 100%;
+  }
+
+  .loading-status > span {
+    white-space: nowrap;
+  }
+
+  .bubble.cancelled-bubble > span:first-child {
+    white-space: nowrap;
   }
 `;
 

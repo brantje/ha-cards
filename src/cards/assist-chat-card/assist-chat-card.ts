@@ -835,7 +835,7 @@ class AssistChatCard extends BaseCard {
       this.finishRun();
     }
 
-    this.requestUpdate();
+    this.messages = [...this.messages];
   }
 
   private applyIntentDelta(assistant: AssistChatMessage, delta: AssistChatLogDelta) {
@@ -852,6 +852,9 @@ class AssistChatCard extends BaseCard {
 
     if (this.chatLogAccumulator.thinking) {
       assistant.thinking = this.chatLogAccumulator.thinking;
+      if (!this.chatLogAccumulator.assistantText) {
+        assistant.status = "thinking";
+      }
     }
 
     if (assistant.process) {
@@ -1643,10 +1646,10 @@ class AssistChatCard extends BaseCard {
       gap: 6px;
       max-width: 100%;
       min-width: 0;
+      width: fit-content;
     }
 
     .tool-call-chip[open] {
-      flex: 1 1 100%;
       width: 100%;
     }
 
@@ -1706,8 +1709,10 @@ class AssistChatCard extends BaseCard {
 
     .message-time {
       align-self: flex-end;
+      flex-shrink: 0;
       font-size: 12px;
       line-height: 1;
+      white-space: nowrap;
     }
 
     .user .bubble .message-time {
@@ -1774,10 +1779,24 @@ class AssistChatCard extends BaseCard {
     }
 
     .process {
+      align-self: stretch;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      min-width: 0;
+      width: 100%;
+    }
+
+    .process-stages,
+    .process-tools {
       display: flex;
       flex-wrap: wrap;
       gap: 6px;
       min-width: 0;
+    }
+
+    .process-tools {
+      align-items: flex-start;
       width: 100%;
     }
 
@@ -1787,6 +1806,7 @@ class AssistChatCard extends BaseCard {
       border-radius: 999px;
       color: var(--secondary-text-color);
       display: inline-flex;
+      flex: 0 1 auto;
       font-size: 12px;
       gap: 4px;
       max-width: 100%;
@@ -1820,6 +1840,7 @@ class AssistChatCard extends BaseCard {
     }
 
     .thinking {
+      align-self: stretch;
       max-width: 100%;
       min-width: 0;
       width: 100%;
@@ -1829,6 +1850,7 @@ class AssistChatCard extends BaseCard {
       color: var(--secondary-text-color);
       cursor: pointer;
       font-size: 13px;
+      white-space: nowrap;
     }
 
     .thinking pre {
@@ -1840,6 +1862,7 @@ class AssistChatCard extends BaseCard {
       margin: 8px 0 0;
       max-height: 220px;
       overflow: auto;
+      overflow-wrap: break-word;
       padding: 10px;
       white-space: pre-wrap;
       width: 100%;

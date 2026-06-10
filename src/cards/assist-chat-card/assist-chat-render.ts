@@ -195,20 +195,33 @@ export function renderAssistChatProcess(
 
   return html`
     <div class="process">
-      ${stages.map((stage) => {
-        const displayStatus = getProcessStageDisplayStatus(stage.status, cancelled);
-        const ended =
-          stage.ended || (displayStatus === "cancelled" ? message.process?.finished : undefined);
-        const duration = formatAssistDuration(stage.started, ended);
+      ${stages.length
+        ? html`
+            <div class="process-stages">
+              ${stages.map((stage) => {
+                const displayStatus = getProcessStageDisplayStatus(stage.status, cancelled);
+                const ended =
+                  stage.ended ||
+                  (displayStatus === "cancelled" ? message.process?.finished : undefined);
+                const duration = formatAssistDuration(stage.started, ended);
 
-        return html`
-          <span class=${`process-chip ${displayStatus}`}>
-            <ha-icon icon=${getAssistStageIcon(displayStatus)}></ha-icon>
-            ${stage.label}${duration ? html` · ${duration}` : ""}
-          </span>
-        `;
-      })}
-      ${toolCalls.map((toolCall) => renderAssistChatToolCall(toolCall, ctx))}
+                return html`
+                  <span class=${`process-chip ${displayStatus}`}>
+                    <ha-icon icon=${getAssistStageIcon(displayStatus)}></ha-icon>
+                    ${stage.label}${duration ? html` · ${duration}` : ""}
+                  </span>
+                `;
+              })}
+            </div>
+          `
+        : ""}
+      ${toolCalls.length
+        ? html`
+            <div class="process-tools">
+              ${toolCalls.map((toolCall) => renderAssistChatToolCall(toolCall, ctx))}
+            </div>
+          `
+        : ""}
     </div>
   `;
 }

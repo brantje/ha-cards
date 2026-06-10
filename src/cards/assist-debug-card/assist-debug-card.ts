@@ -401,8 +401,10 @@ class AssistDebugCard extends BaseCard {
           ${backgroundVisualization}
           <div class="conversation conversation-only">
             <div class="bubble assistant loading">
-              ${renderAssistTypingDots()}
-              <span>${this.loading ? "Loading conversation..." : "Waiting for a conversation..."}</span>
+              <div class="loading-status">
+                ${renderAssistTypingDots()}
+                <span>${this.loading ? "Loading conversation..." : "Waiting for a conversation..."}</span>
+              </div>
             </div>
           </div>
         </div>
@@ -428,8 +430,10 @@ class AssistDebugCard extends BaseCard {
               ? html`<div class="bubble assistant error-bubble">${run.error?.message || "The assistant run failed."}</div>`
               : html`
                   <div class="bubble assistant loading">
-                    ${renderAssistTypingDots()}
-                    <span>${this.getConversationLoadingText(run, isProcessing)}</span>
+                    <div class="loading-status">
+                      ${renderAssistTypingDots()}
+                      <span>${this.getConversationLoadingText(run, isProcessing)}</span>
+                    </div>
                   </div>
                 `}
         </div>
