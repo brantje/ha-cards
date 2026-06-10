@@ -68,6 +68,7 @@ export class AssistAudioRecorder {
   private worklet?: AudioWorkletNode;
   private stream?: MediaStream;
   private workletUrl?: string;
+  private closing?: Promise<void>;
   private readonly onChunk: AudioChunkCallback;
 
   active = false;
@@ -110,10 +111,112 @@ export class AssistAudioRecorder {
   }
 
   async start() {
+    if (this.closing) {
+      await this.closing;
+    }
+
     if (this.active) {
       return;
     }
 
+    if (this.canReuse()) {
+      this.stream!.getTracks().forEach((track) => {
+        track.enabled = true;
+      });
+
+      if (this.audioContext!.state === "suspended") {
+        await this.audioContext!.resume();
+      }
+
+      this.active = true;
+      return;
+    }
+
+    if (this.hasOpenResources()) {
+      await this.close();
+    }
+
+    await this.initialize();
+  }
+
+  stop() {
+    if (!this.stream && !this.processor && !this.worklet && !this.source) {
+      return;
+    }
+
+    this.active = false;
+    this.stream?.getTracks().forEach((track) => {
+      track.enabled = false;
+    });
+
+    if (this.audioContext?.state === "running") {
+      void this.audioContext.suspend();
+    }
+  }
+
+  async close() {
+    if (this.closing) {
+      return this.closing;
+    }
+
+    this.closing = this.closeInternal();
+
+    try {
+      await this.closing;
+    } finally {
+      this.closing = undefined;
+    }
+  }
+
+  private hasOpenResources() {
+    return Boolean(
+      this.audioContext ||
+        this.stream ||
+        this.source ||
+        this.analyser ||
+        this.worklet ||
+        this.processor ||
+        this.workletUrl
+    );
+  }
+
+  private async closeInternal() {
+    this.active = false;
+
+    const context = this.audioContext;
+    this.audioContext = undefined;
+    this.sampleRate = undefined;
+
+    this.teardownNodes();
+
+    if (this.workletUrl) {
+      URL.revokeObjectURL(this.workletUrl);
+      this.workletUrl = undefined;
+    }
+
+    if (!context || context.state === "closed") {
+      return;
+    }
+
+    try {
+      await context.close();
+    } catch {
+      // The runtime may already have closed the context after node teardown.
+    }
+  }
+
+  private canReuse() {
+    return Boolean(
+      this.audioContext &&
+        this.audioContext.state !== "closed" &&
+        this.stream &&
+        this.source &&
+        this.analyser &&
+        (this.worklet || this.processor)
+    );
+  }
+
+  private async initialize() {
     if (!navigator.mediaDevices?.getUserMedia) {
       throw new DOMException(
         "Microphone access is not available in this browser.",
@@ -122,11 +225,12 @@ export class AssistAudioRecorder {
     }
 
     const AudioContextConstructor = window.AudioContext || (window as any).webkitAudioContext;
-    this.audioContext = new AudioContextConstructor();
-    this.sampleRate = this.audioContext.sampleRate;
+    const audioContext = new AudioContextConstructor();
+    this.audioContext = audioContext;
+    this.sampleRate = audioContext.sampleRate;
 
-    if (this.audioContext.state === "suspended") {
-      await this.audioContext.resume();
+    if (audioContext.state === "suspended") {
+      await audioContext.resume();
     }
 
     this.stream = await navigator.mediaDevices.getUserMedia({
@@ -136,7 +240,14 @@ export class AssistAudioRecorder {
         autoGainControl: true,
       },
     });
-    this.source = this.audioContext.createMediaStreamSource(this.stream);
+
+    if (this.audioContext !== audioContext || audioContext.state === "closed") {
+      this.stream.getTracks().forEach((track) => track.stop());
+      this.stream = undefined;
+      throw new DOMException("Audio recorder was closed.", "AbortError");
+    }
+
+    this.source = audioContext.createMediaStreamSource(this.stream);
     this.setupAnalyser();
 
     if (await this.startWorkletRecorder()) {
@@ -148,12 +259,7 @@ export class AssistAudioRecorder {
     this.active = true;
   }
 
-  stop() {
-    if (!this.active && !this.stream && !this.processor && !this.worklet && !this.source) {
-      return;
-    }
-
-    this.active = false;
+  private teardownNodes() {
     this.processor?.disconnect();
     this.worklet?.disconnect();
     this.analyser?.disconnect();
@@ -164,22 +270,6 @@ export class AssistAudioRecorder {
     this.source = undefined;
     this.stream?.getTracks().forEach((track) => track.stop());
     this.stream = undefined;
-  }
-
-  async close() {
-    this.stop();
-
-    if (this.audioContext && this.audioContext.state !== "closed") {
-      await this.audioContext.close();
-    }
-
-    if (this.workletUrl) {
-      URL.revokeObjectURL(this.workletUrl);
-      this.workletUrl = undefined;
-    }
-
-    this.audioContext = undefined;
-    this.sampleRate = undefined;
   }
 
   private setupAnalyser() {

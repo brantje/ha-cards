@@ -286,8 +286,8 @@ W.elementStyles = [], W.shadowRootOptions = { mode: "open" }, W[nt("elementPrope
  */
 const ot = globalThis, Je = (a) => a, $t = ot.trustedTypes, Ye = $t ? $t.createPolicy("lit-html", { createHTML: (a) => a }) : void 0, zi = "$lit$", T = `lit$${Math.random().toFixed(9).slice(2)}$`, Ii = "?" + T, bs = `<${Ii}>`, H = document, rt = () => H.createComment(""), lt = (a) => a === null || typeof a != "object" && typeof a != "function", Ne = Array.isArray, vs = (a) => Ne(a) || typeof (a == null ? void 0 : a[Symbol.iterator]) == "function", Jt = `[ 	
 \f\r]`, X = /<(?:(!--|\/[^a-zA-Z])|(\/?[a-zA-Z][^>\s]*)|(\/?$))/g, Xe = /-->/g, Ze = />/g, M = RegExp(`>|${Jt}(?:([^\\s"'>=/]+)(${Jt}*=${Jt}*(?:[^ 	
-\f\r"'\`<>=]|("|')|))|$)`, "g"), Qe = /'/g, ti = /"/g, Li = /^(?:script|style|textarea|title)$/i, ys = (a) => (t, ...e) => ({ _$litType$: a, strings: t, values: e }), d = ys(1), L = Symbol.for("lit-noChange"), y = Symbol.for("lit-nothing"), ei = /* @__PURE__ */ new WeakMap(), N = H.createTreeWalker(H, 129);
-function Ri(a, t) {
+\f\r"'\`<>=]|("|')|))|$)`, "g"), Qe = /'/g, ti = /"/g, Ri = /^(?:script|style|textarea|title)$/i, ys = (a) => (t, ...e) => ({ _$litType$: a, strings: t, values: e }), d = ys(1), R = Symbol.for("lit-noChange"), y = Symbol.for("lit-nothing"), ei = /* @__PURE__ */ new WeakMap(), N = H.createTreeWalker(H, 129);
+function Li(a, t) {
   if (!Ne(a) || !a.hasOwnProperty("raw")) throw Error("invalid template strings array");
   return Ye !== void 0 ? Ye.createHTML(t) : t;
 }
@@ -297,11 +297,11 @@ const _s = (a, t) => {
   for (let r = 0; r < e; r++) {
     const l = a[r];
     let c, p, u = -1, h = 0;
-    for (; h < l.length && (o.lastIndex = h, p = o.exec(l), p !== null); ) h = o.lastIndex, o === X ? p[1] === "!--" ? o = Xe : p[1] !== void 0 ? o = Ze : p[2] !== void 0 ? (Li.test(p[2]) && (s = RegExp("</" + p[2], "g")), o = M) : p[3] !== void 0 && (o = M) : o === M ? p[0] === ">" ? (o = s ?? X, u = -1) : p[1] === void 0 ? u = -2 : (u = o.lastIndex - p[2].length, c = p[1], o = p[3] === void 0 ? M : p[3] === '"' ? ti : Qe) : o === ti || o === Qe ? o = M : o === Xe || o === Ze ? o = X : (o = M, s = void 0);
+    for (; h < l.length && (o.lastIndex = h, p = o.exec(l), p !== null); ) h = o.lastIndex, o === X ? p[1] === "!--" ? o = Xe : p[1] !== void 0 ? o = Ze : p[2] !== void 0 ? (Ri.test(p[2]) && (s = RegExp("</" + p[2], "g")), o = M) : p[3] !== void 0 && (o = M) : o === M ? p[0] === ">" ? (o = s ?? X, u = -1) : p[1] === void 0 ? u = -2 : (u = o.lastIndex - p[2].length, c = p[1], o = p[3] === void 0 ? M : p[3] === '"' ? ti : Qe) : o === ti || o === Qe ? o = M : o === Xe || o === Ze ? o = X : (o = M, s = void 0);
     const g = o === M && a[r + 1].startsWith("/>") ? " " : "";
     n += o === X ? l + bs : u >= 0 ? (i.push(c), l.slice(0, u) + zi + l.slice(u) + T + g) : l + T + (u === -2 ? r : g);
   }
-  return [Ri(a, n + (a[e] || "<?>") + (t === 2 ? "</svg>" : t === 3 ? "</math>" : "")), i];
+  return [Li(a, n + (a[e] || "<?>") + (t === 2 ? "</svg>" : t === 3 ? "</math>" : "")), i];
 };
 let ye = class Vi {
   constructor({ strings: t, _$litType$: e }, i) {
@@ -319,7 +319,7 @@ let ye = class Vi {
           const h = p[o++], g = s.getAttribute(u).split(T), f = /([.?@])?(.*)/.exec(h);
           l.push({ type: 1, index: n, name: f[2], strings: g, ctor: f[1] === "." ? xs : f[1] === "?" ? $s : f[1] === "@" ? Ss : Ut }), s.removeAttribute(u);
         } else u.startsWith(T) && (l.push({ type: 6, index: n }), s.removeAttribute(u));
-        if (Li.test(s.tagName)) {
+        if (Ri.test(s.tagName)) {
           const u = s.textContent.split(T), h = u.length - 1;
           if (h > 0) {
             s.textContent = $t ? $t.emptyScript : "";
@@ -342,7 +342,7 @@ let ye = class Vi {
 };
 function K(a, t, e = a, i) {
   var o, r;
-  if (t === L) return t;
+  if (t === R) return t;
   let s = i !== void 0 ? (o = e._$Co) == null ? void 0 : o[i] : e._$Cl;
   const n = lt(t) ? void 0 : t._$litDirective$;
   return (s == null ? void 0 : s.constructor) !== n && ((r = s == null ? void 0 : s._$AO) == null || r.call(s, !1), n === void 0 ? s = void 0 : (s = new n(a), s._$AT(a, e, i)), i !== void 0 ? (e._$Co ?? (e._$Co = []))[i] = s : e._$Cl = s), s !== void 0 && (t = K(a, s._$AS(a, t.values), s, i)), t;
@@ -395,7 +395,7 @@ class G {
     return this._$AB;
   }
   _$AI(t, e = this) {
-    t = K(this, t, e), lt(t) ? t === y || t == null || t === "" ? (this._$AH !== y && this._$AR(), this._$AH = y) : t !== this._$AH && t !== L && this._(t) : t._$litType$ !== void 0 ? this.$(t) : t.nodeType !== void 0 ? this.T(t) : vs(t) ? this.k(t) : this._(t);
+    t = K(this, t, e), lt(t) ? t === y || t == null || t === "" ? (this._$AH !== y && this._$AR(), this._$AH = y) : t !== this._$AH && t !== R && this._(t) : t._$litType$ !== void 0 ? this.$(t) : t.nodeType !== void 0 ? this.T(t) : vs(t) ? this.k(t) : this._(t);
   }
   O(t) {
     return this._$AA.parentNode.insertBefore(t, this._$AB);
@@ -408,7 +408,7 @@ class G {
   }
   $(t) {
     var n;
-    const { values: e, _$litType$: i } = t, s = typeof i == "number" ? this._$AC(t) : (i.el === void 0 && (i.el = ye.createElement(Ri(i.h, i.h[0]), this.options)), i);
+    const { values: e, _$litType$: i } = t, s = typeof i == "number" ? this._$AC(t) : (i.el === void 0 && (i.el = ye.createElement(Li(i.h, i.h[0]), this.options)), i);
     if (((n = this._$AH) == null ? void 0 : n._$AD) === s) this._$AH.p(e);
     else {
       const o = new ws(s, this), r = o.u(this.options);
@@ -451,11 +451,11 @@ let Ut = class {
   _$AI(t, e = this, i, s) {
     const n = this.strings;
     let o = !1;
-    if (n === void 0) t = K(this, t, e, 0), o = !lt(t) || t !== this._$AH && t !== L, o && (this._$AH = t);
+    if (n === void 0) t = K(this, t, e, 0), o = !lt(t) || t !== this._$AH && t !== R, o && (this._$AH = t);
     else {
       const r = t;
       let l, c;
-      for (t = n[0], l = 0; l < n.length - 1; l++) c = K(this, r[i + l], e, l), c === L && (c = this._$AH[l]), o || (o = !lt(c) || c !== this._$AH[l]), c === y ? t = y : t !== y && (t += (c ?? "") + n[l + 1]), this._$AH[l] = c;
+      for (t = n[0], l = 0; l < n.length - 1; l++) c = K(this, r[i + l], e, l), c === R && (c = this._$AH[l]), o || (o = !lt(c) || c !== this._$AH[l]), c === y ? t = y : t !== y && (t += (c ?? "") + n[l + 1]), this._$AH[l] = c;
     }
     o && !s && this.j(t);
   }
@@ -484,7 +484,7 @@ class Ss extends Ut {
     super(t, e, i, s, n), this.type = 5;
   }
   _$AI(t, e = this) {
-    if ((t = K(this, t, e, 0) ?? y) === L) return;
+    if ((t = K(this, t, e, 0) ?? y) === R) return;
     const i = this._$AH, s = t === y && i !== y || t.capture !== i.capture || t.once !== i.once || t.passive !== i.passive, n = t !== y && (i === y || s);
     s && this.element.removeEventListener(this.name, this, i), n && this.element.addEventListener(this.name, this, t), this._$AH = t;
   }
@@ -543,7 +543,7 @@ let x = class extends W {
     super.disconnectedCallback(), (t = this._$Do) == null || t.setConnected(!1);
   }
   render() {
-    return L;
+    return R;
   }
 };
 var ki;
@@ -601,7 +601,7 @@ const Ni = "important", Ts = " !" + Ni, J = Di(class extends Pi {
         i.includes("-") || n ? e.setProperty(i, n ? s.slice(0, -11) : s, n ? Ni : "") : e[i] = s;
       }
     }
-    return L;
+    return R;
   }
 });
 var U, j;
@@ -630,10 +630,10 @@ function Ui() {
     return a;
   }).apply(this, arguments);
 }
-function Ls(a) {
+function Rs(a) {
   return a.substr(0, a.indexOf("."));
 }
-var Rs = function(a) {
+var Ls = function(a) {
   switch (a.number_format) {
     case U.comma_decimal:
       return ["en-US", "en"];
@@ -649,7 +649,7 @@ var Rs = function(a) {
 }, Vs = function(a, t) {
   return t === void 0 && (t = 2), Math.round(a * Math.pow(10, t)) / Math.pow(10, t);
 }, Oi = function(a, t, e) {
-  var i = t ? Rs(t) : void 0;
+  var i = t ? Ls(t) : void 0;
   if (Number.isNaN = Number.isNaN || function s(n) {
     return typeof n == "number" && s(n);
   }, (t == null ? void 0 : t.number_format) !== U.none && !Number.isNaN(Number(a)) && Intl) try {
@@ -676,7 +676,7 @@ var Rs = function(a) {
   e === void 0 && (e = !1), e ? history.replaceState(null, "", t) : history.pushState(null, "", t), S(window, "location-changed", { replace: e });
 }, Ps = function(a, t, e) {
   e === void 0 && (e = !0);
-  var i, s = Ls(t), n = s === "group" ? "homeassistant" : s;
+  var i, s = Rs(t), n = s === "group" ? "homeassistant" : s;
   switch (s) {
     case "lock":
       i = e ? "unlock" : "lock";
@@ -848,7 +848,7 @@ Be.properties = {
   hass: { attribute: !1 },
   config: { attribute: !1 }
 };
-let R = Be;
+let L = Be;
 function I(a) {
   const { hass: t, label: e, value: i, domains: s, disabled: n = !1, onValueChanged: o } = a;
   return s.length ? d`
@@ -1364,7 +1364,7 @@ Tt.properties = {
   `;
 let $e = Tt;
 customElements.define("room-card-editor", $e);
-const gt = { action: "more-info" }, Zt = { action: "toggle" }, Qt = { action: "more-info" }, te = "mdi:thermometer", ee = "mdi:water-percent", We = class We extends R {
+const gt = { action: "more-info" }, Zt = { action: "toggle" }, Qt = { action: "more-info" }, te = "mdi:thermometer", ee = "mdi:water-percent", We = class We extends L {
   constructor() {
     super(...arguments), this.lightHoldTriggered = !1;
   }
@@ -2338,7 +2338,7 @@ zt.properties = {
   `;
 let Ce = zt;
 customElements.define("possible-issues-card-editor", Ce);
-const ie = "Possible Issues", se = Ht, Z = ["sensor", "light", "switch"], ft = ["unavailable"], ae = "none", It = class It extends R {
+const ie = "Possible Issues", se = Ht, Z = ["sensor", "light", "switch"], ft = ["unavailable"], ae = "none", It = class It extends L {
   constructor() {
     super(...arguments), this.entityRegistry = [], this.deviceRegistry = [], this.registryLoading = !1, this.registryError = !1, this.registryVersion = 0;
   }
@@ -2473,12 +2473,12 @@ const ie = "Possible Issues", se = Ht, Z = ["sensor", "light", "switch"], ft = [
     const t = new Set(this.normalizeList(this.config.domains, Z)), e = new Set(this.normalizeList(this.config.issue_states, ft)), i = this.normalizeList(this.config.included_entities), s = this.normalizeList(this.config.ignored_entities), n = this.normalizeList(this.config.ignored_devices), o = new Set(
       this.normalizeList(this.config.ignored_integrations).map((h) => h.toLowerCase())
     ), r = this.normalizeList(this.config.ignored_name_patterns), l = new Map(this.deviceRegistry.map((h) => [h.id, h])), c = new Set(this.entityRegistry.map((h) => h.entity_id)), p = this.entityRegistry.map((h) => {
-      var v;
+      var b;
       const g = this.hass.states[h.entity_id], f = h.device_id || "", m = l.get(f);
       if (!g || m || !t.has(this.getDomain(h.entity_id)) || !e.has(g.state) || h.platform && o.has(h.platform.toLowerCase()) || i.length && !this.matchesPattern(h.entity_id, i) || this.matchesPattern(h.entity_id, s) || this.matchesPattern(f, n))
         return;
-      const b = [(v = g.attributes) == null ? void 0 : v.friendly_name, h.name, h.original_name].filter(Boolean).join(" ");
-      if (!this.matchesPattern(b, r))
+      const v = [(b = g.attributes) == null ? void 0 : b.friendly_name, h.name, h.original_name].filter(Boolean).join(" ");
+      if (!this.matchesPattern(v, r))
         return {
           entityId: h.entity_id,
           entity: g,
@@ -2829,7 +2829,7 @@ const li = "/config/dashboard", Js = [
   { value: "call-service", label: "Call service" },
   { value: "fire-dom-event", label: "Fire DOM event" },
   { value: "none", label: "None" }
-], Lt = class Lt extends x {
+], Rt = class Rt extends x {
   constructor() {
     super(...arguments), this.config = {}, this.serviceDataErrors = {};
   }
@@ -3126,10 +3126,10 @@ const li = "/config/dashboard", Js = [
     })).constructor.getConfigElement(), this.requestUpdate();
   }
 };
-Lt.properties = {
+Rt.properties = {
   hass: { attribute: !1 },
   config: { attribute: !1 }
-}, Lt.styles = _`
+}, Rt.styles = _`
     .editor {
       display: grid;
       gap: 18px;
@@ -3260,7 +3260,7 @@ Lt.properties = {
       font-size: 12px;
     }
   `;
-let Te = Lt;
+let Te = Rt;
 customElements.define("welcome-card-editor", Te);
 const mt = "/config/dashboard", ne = { action: "more-info" }, Ys = { action: "none" }, Xs = "welcome-card:collapsed", di = [
   {
@@ -3319,7 +3319,7 @@ const mt = "/config/dashboard", ne = { action: "more-info" }, Ys = { action: "no
   sunny: "mdi:weather-sunny",
   windy: "mdi:weather-windy",
   "windy-variant": "mdi:weather-windy-variant"
-}, Rt = class Rt extends R {
+}, Lt = class Lt extends L {
   constructor() {
     super(...arguments), this._collapsed = !1, this._now = /* @__PURE__ */ new Date();
   }
@@ -3529,12 +3529,12 @@ const mt = "/config/dashboard", ne = { action: "more-info" }, Ys = { action: "no
     return t ? t.startsWith("°") ? t : t === "C" || t === "F" ? `°${t}` : t : "°";
   }
 };
-Rt.properties = {
+Lt.properties = {
   hass: { attribute: !1 },
   config: { attribute: !1 },
   _collapsed: { state: !0 },
   _now: { state: !0 }
-}, Rt.styles = _`
+}, Lt.styles = _`
     ha-card {
       background: var(--card-background-color);
       border: none;
@@ -3738,7 +3738,7 @@ Rt.properties = {
       }
     }
   `;
-let Ee = Rt;
+let Ee = Lt;
 customElements.define("welcome-card", Ee);
 window.customCards = window.customCards || [];
 window.customCards.push({
@@ -4061,7 +4061,7 @@ Vt.properties = {
   `;
 let ze = Vt;
 customElements.define("thermostat-card-editor", ze);
-const re = "mdi:thermostat", le = "#fbb73c", ce = "#3a8dde", de = "two_rows", Qs = 3e4, Mt = class Mt extends R {
+const re = "mdi:thermostat", le = "#fbb73c", ce = "#3a8dde", de = "two_rows", Qs = 3e4, Mt = class Mt extends L {
   constructor() {
     super(...arguments), this.selectedDualTarget = "low", this.isCollapsed = !1;
   }
@@ -5240,7 +5240,7 @@ function St(a, t) {
   const s = Math.max(0, (i - e) / 1e3);
   return `${s.toFixed(s < 10 ? 2 : 1)}s`;
 }
-function Le(a) {
+function Re(a) {
   switch (a) {
     case "done":
       return "mdi:check-circle";
@@ -5594,7 +5594,7 @@ const tt = He, yi = 2e3, ba = 48, va = /* @__PURE__ */ new Set([
   "speech",
   "content",
   "thinking_content"
-]), q = class q extends R {
+]), q = class q extends L {
   constructor() {
     super(...arguments), this.audioVisualizationId = `assist-debug-audio-${q.nextAudioVisualizationId++}`, this.loading = !1, this.error = "", this.pipelines = [], this.runs = [], this.selectedRunId = "", this.resolvedPipelineId = "", this.sessionStartedAt = Date.now(), this.loadToken = 0, this.lastLoadKey = "", this.runCache = new Qi(), this.thinkingDetailsOpen = !1, this.thinkingDetailsUserCollapsed = !1, this.thinkingDetailsRunId = "", this.thinkingScrollRunId = "", this.thinkingLastScrolledLength = 0, this.thinkingAutoScrollEnabled = !0, this.ulysse31RotationX = 0, this.ulysse31RotationY = 0, this.ulysse31LastFrameAt = 0, this.audioKey = "", this.audioSourceEnded = !1, this.audioAnimationStartedAt = 0, this.audioVisualizationStatus = "", this.audioVisualizationLoading = !1, this.audioVisualizationError = "", this.audioFetchUnavailable = !1, this.audioVisualizationPainted = !1, this.audioNeedsUserStart = !1, this.audioIsVisible = !0, this.handleDocumentVisibilityChange = () => {
       this.audioIsVisible = !document.hidden, this.syncAudioAnimation(), this.syncUlysse31IdleAnimation();
@@ -5812,7 +5812,7 @@ const tt = He, yi = 2e3, ba = 48, va = /* @__PURE__ */ new Set([
       <details class="section summary" ?open=${e}>
         <summary>
           <span class="status ${t.stage === "error" ? "error" : e ? "done" : "running"}">
-            <ha-icon .icon=${Le(t.stage === "error" ? "error" : e ? "done" : "running")}></ha-icon>
+            <ha-icon .icon=${Re(t.stage === "error" ? "error" : e ? "done" : "running")}></ha-icon>
           </span>
           <span class="section-title">Run summary</span>
           <span class="duration">${i || (this.loading ? "Updating" : "In progress")}</span>
@@ -5850,7 +5850,7 @@ const tt = He, yi = 2e3, ba = 48, va = /* @__PURE__ */ new Set([
       <details class="section" ?open=${o}>
         <summary>
           <span class="status ${s}">
-            <ha-icon .icon=${Le(s)}></ha-icon>
+            <ha-icon .icon=${Re(s)}></ha-icon>
           </span>
           <span class="section-title">${t}</span>
           <span class="duration">${this.getStageDuration(e)}</span>
@@ -6413,10 +6413,10 @@ const tt = He, yi = 2e3, ba = 48, va = /* @__PURE__ */ new Set([
   }
   projectUlysse31Point(t, e, i, s, n, o, r, l, c) {
     let p = (i + s * Math.cos(e)) * Math.cos(t), u = (i + s * Math.cos(e)) * Math.sin(t), h = s * Math.sin(e);
-    const g = Math.cos(n), f = Math.sin(n), m = u * g - h * f, b = u * f + h * g;
-    u = m, h = b;
-    const v = Math.cos(o), A = Math.sin(o), $ = p * v + h * A;
-    h = -p * A + h * v, p = $;
+    const g = Math.cos(n), f = Math.sin(n), m = u * g - h * f, v = u * f + h * g;
+    u = m, h = v;
+    const b = Math.cos(o), A = Math.sin(o), $ = p * b + h * A;
+    h = -p * A + h * b, p = $;
     const Y = 2.8 / (2.8 + h);
     return {
       x: r + p * c * Y,
@@ -6425,14 +6425,14 @@ const tt = He, yi = 2e3, ba = 48, va = /* @__PURE__ */ new Set([
     };
   }
   drawUlysse31Wireframe(t, e, i, s) {
-    const n = getComputedStyle(t.canvas), o = n.color, r = n.borderTopColor || o, l = 0.08 + s * 0.92, { rotX: c, rotY: p } = this.advanceUlysse31Rotation(s), u = e / 2, h = i / 2, g = Math.min(e, i) * (0.24 + l * 0.08), f = 1, m = 0.34, b = 28, v = 14;
+    const n = getComputedStyle(t.canvas), o = n.color, r = n.borderTopColor || o, l = 0.08 + s * 0.92, { rotX: c, rotY: p } = this.advanceUlysse31Rotation(s), u = e / 2, h = i / 2, g = Math.min(e, i) * (0.24 + l * 0.08), f = 1, m = 0.34, v = 28, b = 14;
     this.drawUlysse31Backdrop(t, e, i, r), t.save(), t.strokeStyle = o, t.lineWidth = Math.max(1, e / 420), t.shadowBlur = 6 + l * 14, t.shadowColor = o, t.globalAlpha = 0.72 + l * 0.28;
     const A = ($, Y) => {
       t.beginPath();
       let ht = !1;
       if (Y !== null)
-        for (let V = 0; V <= b; V += 1) {
-          const Kt = V / b * Math.PI * 2, C = this.projectUlysse31Point(
+        for (let V = 0; V <= v; V += 1) {
+          const Kt = V / v * Math.PI * 2, C = this.projectUlysse31Point(
             Kt,
             Y,
             f,
@@ -6446,8 +6446,8 @@ const tt = He, yi = 2e3, ba = 48, va = /* @__PURE__ */ new Set([
           ht ? t.lineTo(C.x, C.y) : (t.moveTo(C.x, C.y), ht = !0);
         }
       else if ($ !== null)
-        for (let V = 0; V <= v; V += 1) {
-          const Kt = V / v * Math.PI * 2, C = this.projectUlysse31Point(
+        for (let V = 0; V <= b; V += 1) {
+          const Kt = V / b * Math.PI * 2, C = this.projectUlysse31Point(
             $,
             Kt,
             f,
@@ -6462,10 +6462,10 @@ const tt = He, yi = 2e3, ba = 48, va = /* @__PURE__ */ new Set([
         }
       t.stroke();
     };
-    for (let $ = 0; $ <= v; $ += 1)
-      A(null, $ / v * Math.PI * 2);
-    for (let $ = 0; $ < b; $ += 2)
-      A($ / b * Math.PI * 2, null);
+    for (let $ = 0; $ <= b; $ += 1)
+      A(null, $ / b * Math.PI * 2);
+    for (let $ = 0; $ < v; $ += 2)
+      A($ / v * Math.PI * 2, null);
     t.globalAlpha = 0.45 + l * 0.35, t.lineWidth = Math.max(1, e / 520), t.beginPath(), t.ellipse(u, h, g * 0.34, g * 0.22, p * 0.18, 0, Math.PI * 2), t.stroke(), t.restore();
   }
   advanceUlysse31Rotation(t) {
@@ -6550,8 +6550,8 @@ const tt = He, yi = 2e3, ba = 48, va = /* @__PURE__ */ new Set([
     c.addColorStop(0, r), c.addColorStop(1, l || r), t.fillStyle = c;
     const p = 34, u = Math.max(1, e / 180), h = Math.max(2, e / p - u);
     for (let g = 0; g < p; g += 1) {
-      const f = 0.35 + 0.65 * Math.sin(g / (p - 1) * Math.PI), m = 0.72 + 0.28 * ((Math.sin(g * 1.7) + 1) / 2), b = 0.92 + 0.08 * Math.sin(n * Math.PI * 10), v = Math.max(3, i * (0.08 + s * f * m * b)), A = g * (h + u);
-      t.fillRect(A, i - v, h, v);
+      const f = 0.35 + 0.65 * Math.sin(g / (p - 1) * Math.PI), m = 0.72 + 0.28 * ((Math.sin(g * 1.7) + 1) / 2), v = 0.92 + 0.08 * Math.sin(n * Math.PI * 10), b = Math.max(3, i * (0.08 + s * f * m * v)), A = g * (h + u);
+      t.fillRect(A, i - b, h, b);
     }
   }
   drawMeter(t, e, i, s) {
@@ -7264,11 +7264,11 @@ const xi = (a, t, e) => {
     else if (r[u] === o[f]) l[f] = D(s[u], n[f]), et(a, l[f + 1], s[u]), u++, f--;
     else if (r[h] === o[g]) l[g] = D(s[h], n[g]), et(a, s[u], s[h]), h--, g++;
     else if (c === void 0 && (c = xi(o, g, f), p = xi(r, u, h)), c.has(r[u])) if (c.has(r[h])) {
-      const m = p.get(o[g]), b = m !== void 0 ? s[m] : null;
-      if (b === null) {
-        const v = et(a, s[u]);
-        D(v, n[g]), l[g] = v;
-      } else l[g] = D(b, n[g]), et(a, s[u], b), s[m] = null;
+      const m = p.get(o[g]), v = m !== void 0 ? s[m] : null;
+      if (v === null) {
+        const b = et(a, s[u]);
+        D(b, n[g]), l[g] = b;
+      } else l[g] = D(v, n[g]), et(a, s[u], v), s[m] = null;
       g++;
     } else fe(s[h]), h--;
     else fe(s[u]), u++;
@@ -7280,7 +7280,7 @@ const xi = (a, t, e) => {
       const m = s[u++];
       m !== null && fe(m);
     }
-    return this.ut = o, xa(a, l), L;
+    return this.ut = o, xa(a, l), R;
   }
 }), qt = 0.01, Aa = 0.02;
 function Ca(a) {
@@ -7339,33 +7339,72 @@ class P {
     return !!(!P.isInsecureConnection() && (window.AudioContext || window.webkitAudioContext));
   }
   async start() {
-    var e;
-    if (this.active)
-      return;
-    if (!((e = navigator.mediaDevices) != null && e.getUserMedia))
+    if (this.closing && await this.closing, !this.active) {
+      if (this.canReuse()) {
+        this.stream.getTracks().forEach((t) => {
+          t.enabled = !0;
+        }), this.audioContext.state === "suspended" && await this.audioContext.resume(), this.active = !0;
+        return;
+      }
+      this.hasOpenResources() && await this.close(), await this.initialize();
+    }
+  }
+  stop() {
+    var t, e;
+    !this.stream && !this.processor && !this.worklet && !this.source || (this.active = !1, (t = this.stream) == null || t.getTracks().forEach((i) => {
+      i.enabled = !1;
+    }), ((e = this.audioContext) == null ? void 0 : e.state) === "running" && this.audioContext.suspend());
+  }
+  async close() {
+    if (this.closing)
+      return this.closing;
+    this.closing = this.closeInternal();
+    try {
+      await this.closing;
+    } finally {
+      this.closing = void 0;
+    }
+  }
+  hasOpenResources() {
+    return !!(this.audioContext || this.stream || this.source || this.analyser || this.worklet || this.processor || this.workletUrl);
+  }
+  async closeInternal() {
+    this.active = !1;
+    const t = this.audioContext;
+    if (this.audioContext = void 0, this.sampleRate = void 0, this.teardownNodes(), this.workletUrl && (URL.revokeObjectURL(this.workletUrl), this.workletUrl = void 0), !(!t || t.state === "closed"))
+      try {
+        await t.close();
+      } catch {
+      }
+  }
+  canReuse() {
+    return !!(this.audioContext && this.audioContext.state !== "closed" && this.stream && this.source && this.analyser && (this.worklet || this.processor));
+  }
+  async initialize() {
+    var i;
+    if (!((i = navigator.mediaDevices) != null && i.getUserMedia))
       throw new DOMException(
         "Microphone access is not available in this browser.",
         "NotSupportedError"
       );
-    const t = window.AudioContext || window.webkitAudioContext;
-    if (this.audioContext = new t(), this.sampleRate = this.audioContext.sampleRate, this.audioContext.state === "suspended" && await this.audioContext.resume(), this.stream = await navigator.mediaDevices.getUserMedia({
+    const t = window.AudioContext || window.webkitAudioContext, e = new t();
+    if (this.audioContext = e, this.sampleRate = e.sampleRate, e.state === "suspended" && await e.resume(), this.stream = await navigator.mediaDevices.getUserMedia({
       audio: {
         echoCancellation: !0,
         noiseSuppression: !0,
         autoGainControl: !0
       }
-    }), this.source = this.audioContext.createMediaStreamSource(this.stream), this.setupAnalyser(), await this.startWorkletRecorder()) {
+    }), this.audioContext !== e || e.state === "closed")
+      throw this.stream.getTracks().forEach((s) => s.stop()), this.stream = void 0, new DOMException("Audio recorder was closed.", "AbortError");
+    if (this.source = e.createMediaStreamSource(this.stream), this.setupAnalyser(), await this.startWorkletRecorder()) {
       this.active = !0;
       return;
     }
     this.startScriptProcessorRecorder(), this.active = !0;
   }
-  stop() {
+  teardownNodes() {
     var t, e, i, s, n;
-    !this.active && !this.stream && !this.processor && !this.worklet && !this.source || (this.active = !1, (t = this.processor) == null || t.disconnect(), (e = this.worklet) == null || e.disconnect(), (i = this.analyser) == null || i.disconnect(), (s = this.source) == null || s.disconnect(), this.processor = void 0, this.worklet = void 0, this.analyser = void 0, this.source = void 0, (n = this.stream) == null || n.getTracks().forEach((o) => o.stop()), this.stream = void 0);
-  }
-  async close() {
-    this.stop(), this.audioContext && this.audioContext.state !== "closed" && await this.audioContext.close(), this.workletUrl && (URL.revokeObjectURL(this.workletUrl), this.workletUrl = void 0), this.audioContext = void 0, this.sampleRate = void 0;
+    (t = this.processor) == null || t.disconnect(), (e = this.worklet) == null || e.disconnect(), (i = this.analyser) == null || i.disconnect(), (s = this.source) == null || s.disconnect(), this.processor = void 0, this.worklet = void 0, this.analyser = void 0, this.source = void 0, (n = this.stream) == null || n.getTracks().forEach((o) => o.stop()), this.stream = void 0;
   }
   setupAnalyser() {
     !this.audioContext || !this.source || (this.analyser = this.audioContext.createAnalyser(), this.analyser.fftSize = 64, this.source.connect(this.analyser));
@@ -7409,8 +7448,8 @@ function za(a, t, e) {
   const p = getComputedStyle(a).color, u = Math.max(1, r / 120), h = Math.max(2, r / me - u), g = l / 2;
   s.fillStyle = p;
   for (let f = 0; f < me; f += 1) {
-    const m = Math.floor(f / me * i.length), b = i[m] / 255, v = Math.max(Ea, b * l * 0.85), A = f * (h + u);
-    s.fillRect(A, g - v / 2, h, v);
+    const m = Math.floor(f / me * i.length), v = i[m] / 255, b = Math.max(Ea, v * l * 0.85), A = f * (h + u);
+    s.fillRect(A, g - b / 2, h, b);
   }
   return i;
 }
@@ -7427,7 +7466,7 @@ class Ia {
     this.frameId !== void 0 && (window.cancelAnimationFrame(this.frameId), this.frameId = void 0, this.dataBuffer = void 0);
   }
 }
-const La = 500, Ra = 12e4;
+const Ra = 500, La = 12e4;
 function $i(a) {
   return new URL(a, window.location.origin).toString();
 }
@@ -7512,7 +7551,7 @@ class Ma {
   }
   playLocal(t) {
     this.stopRemote(), this.stopLocal(), this.audio = new Audio($i(t)), this.audio.addEventListener("ended", this.handleAudioEnded), this.audio.addEventListener("pause", this.handleUnload), this.audio.play().catch(() => {
-      this.stopLocal();
+      this.stopLocal(), this.onAudioEnded();
     });
   }
   playRemote(t, e, i) {
@@ -7535,9 +7574,9 @@ class Ma {
       this.completeRemotePlayback();
     }), this.remotePollTimer = window.setInterval(() => {
       this.pollRemotePlayback();
-    }, La), this.remoteSafetyTimer = window.setTimeout(() => {
+    }, Ra), this.remoteSafetyTimer = window.setTimeout(() => {
       this.completeRemotePlayback();
-    }, Ra);
+    }, La);
   }
   pollRemotePlayback() {
     var s, n, o;
@@ -7603,7 +7642,7 @@ function ns(a) {
 function dt(a) {
   return a.role === "assistant" && a.status === "listening";
 }
-function Re(a) {
+function Le(a) {
   return a.role !== "assistant" || a.status === "error" || dt(a) || !a.process || !ns(a.process) ? !1 : !a.text || a.status === "cancelled";
 }
 function B(a) {
@@ -7665,14 +7704,14 @@ function Ba(a, t) {
       status: "listening",
       process: c.process
     });
-    const h = !B(l), g = os(l, c), f = c.assistantText || c.errorText || c.thinking, m = as(c.process) && !p, b = h && !p && !!c.userText && !c.errorText && !g;
-    if (Oa(c, l, p, t.active) && (f || m || b)) {
-      const v = c.errorText ? "error" : g ? "cancelled" : c.assistantText ? "done" : Ua(c, l, p);
+    const h = !B(l), g = os(l, c), f = c.assistantText || c.errorText || c.thinking, m = as(c.process) && !p, v = h && !p && !!c.userText && !c.errorText && !g;
+    if (Oa(c, l, p, t.active) && (f || m || v)) {
+      const b = c.errorText ? "error" : g ? "cancelled" : c.assistantText ? "done" : Ua(c, l, p);
       e.push({
         id: `${r.pipeline_run_id}-assistant`,
         role: "assistant",
         text: c.errorText || c.assistantText || "",
-        status: v,
+        status: b,
         timestamp: Ha(c.process, l, r.timestamp),
         thinking: g ? void 0 : c.thinking || void 0,
         process: c.process
@@ -7793,7 +7832,7 @@ function qa(a, t, e) {
 }
 function Ka(a) {
   return a.map((t) => {
-    if (!(dt(t) || Re(t)))
+    if (!(dt(t) || Le(t)))
       return t.role === "assistant" && ss(t) ? {
         ...t,
         status: "cancelled",
@@ -7898,7 +7937,7 @@ function sn(a, t) {
     const o = Ga(n.status, e), r = n.ended || (o === "cancelled" ? (c = a.process) == null ? void 0 : c.finished : void 0), l = St(n.started, r);
     return d`
                   <span class=${`process-chip ${o}`}>
-                    <ha-icon icon=${Le(o)}></ha-icon>
+                    <ha-icon icon=${Re(o)}></ha-icon>
                     ${n.label}${l ? d` · ${l}` : ""}
                   </span>
                 `;
@@ -8398,11 +8437,11 @@ const w = rs, on = 1e3, rn = 3e4, ln = 400, cn = 48, dn = {
     haKey: "ui.dialogs.voice_command.input_text",
     fallback: "Ask Nabu"
   }
-}, Nt = class Nt extends R {
+}, Nt = class Nt extends L {
   constructor() {
     super(...arguments), this.pipelines = [], this.resolvedPipelineId = "", this.messages = [], this.inputValue = "", this.processing = !1, this.listening = !1, this.loadingPipelines = !1, this.loadingHistory = !1, this.error = "", this.conversationId = null, this.audioController = new Ma(() => {
       this.maybeContinueConversationAfterRun();
-    }), this.chatLogAccumulator = yt(), this.continueConversationAfterRun = !1, this.stickToBottom = !0, this.stickThinkingToBottom = !0, this.loadToken = 0, this.lastHistoryKey = "", this.lastRunsSnapshot = "", this.conversationClearedAt = null, this.lastSeenRunTimestamp = 0, this.hasInProgressHistoryRun = !1, this.historyDisabled = !1, this.historyErrorLogged = !1, this.runCache = new Qi(), this.followUpHintDismissed = na(), this.httpsWarningDismissed = !1, this.suggestedPrompts = [], this.voiceInputHasSpeech = !1, this.userStartedRecordingOnce = !1, this.cardStyles = {}, this.handleSuggestedPromptsChanged = (t) => {
+    }), this.chatLogAccumulator = yt(), this.continueConversationAfterRun = !1, this.stickToBottom = !0, this.stickThinkingToBottom = !0, this.loadToken = 0, this.lastHistoryKey = "", this.lastRunsSnapshot = "", this.conversationClearedAt = null, this.lastSeenRunTimestamp = 0, this.hasInProgressHistoryRun = !1, this.historyDisabled = !1, this.historyErrorLogged = !1, this.runCache = new Qi(), this.followUpHintDismissed = na(), this.httpsWarningDismissed = !1, this.suggestedPrompts = [], this.voiceInputHasSpeech = !1, this.userStartedRecordingOnce = !1, this.startingListening = !1, this.cardStyles = {}, this.handleSuggestedPromptsChanged = (t) => {
       this.suggestedPrompts = t.detail.lines;
     }, this.handleMessagesScroll = (t) => {
       const e = t.currentTarget;
@@ -8446,8 +8485,11 @@ const w = rs, on = 1e3, rn = 3e4, ln = 400, cn = 48, dn = {
     super.connectedCallback(), document.addEventListener("visibilitychange", this.handleVisibilityChange), this.scheduleScrollToEnd(3, !0), this.syncConversationRefreshTimer();
   }
   disconnectedCallback() {
+    super.disconnectedCallback(), document.removeEventListener("visibilitychange", this.handleVisibilityChange), this.scrollFrame !== void 0 && (window.cancelAnimationFrame(this.scrollFrame), this.scrollFrame = void 0), this.stopMicVisualizer(), this.clearConversationRefreshTimer(), this.stopActiveRun(), this.closeAudioRecorder(), this.audioController.unload(this.hass);
+  }
+  async closeAudioRecorder() {
     var t;
-    super.disconnectedCallback(), document.removeEventListener("visibilitychange", this.handleVisibilityChange), this.scrollFrame !== void 0 && (window.cancelAnimationFrame(this.scrollFrame), this.scrollFrame = void 0), this.stopMicVisualizer(), this.clearConversationRefreshTimer(), this.stopActiveRun(), (t = this.audioRecorder) == null || t.close(), this.audioController.unload(this.hass);
+    await ((t = this.audioRecorder) == null ? void 0 : t.close()), this.audioRecorder = void 0;
   }
   shouldUpdate(t) {
     return this.shouldUpdateNonEntityCard(t, [
@@ -8743,52 +8785,57 @@ const w = rs, on = 1e3, rn = 3e4, ln = 400, cn = 48, dn = {
     await this.startListening(!0);
   }
   async startListening(t = !1) {
-    var o;
-    if (this.processing || !this.supportsVoiceInput())
-      return;
-    t && (this.userStartedRecordingOnce = !0);
-    const e = await this.ensurePipeline();
-    if (!e || !this.hass)
-      return;
-    this.stopActiveRun(), this.audioController.unload(this.hass), this.error = "", this.processing = !0, this.listening = !0, this.chatLogAccumulator = yt(), this.continueConversationAfterRun = !1, this.audioBuffer = [], this.voiceInputHasSpeech = !1, this.sttBinaryHandlerId = void 0, this.stickToBottom = !0, this.stickThinkingToBottom = !0;
-    let i, s = _t();
-    this.removeListeningPlaceholder();
-    const n = this.addMessage({
-      role: "assistant",
-      text: "",
-      status: "listening",
-      process: s
-    });
-    mi(e.id);
-    try {
-      (o = this.audioRecorder) == null || o.close(), this.audioRecorder = new P((l) => this.sendAudioChunk(l)), await this.audioRecorder.start();
-      const r = await bi(
-        this.hass,
-        (l) => {
-          var c, p, u, h, g, f, m;
-          if (s = this.applyProcessEvent(s, l), n.process = s, l.type === "stt-end") {
-            this.removeListeningPlaceholder();
-            const b = String(((p = (c = l.data) == null ? void 0 : c.stt_output) == null ? void 0 : p.text) || "").trim();
-            b && (this.addMessage({ role: "user", text: b, status: "done" }), i = this.addMessage({
-              role: "assistant",
-              text: "",
-              status: "pending",
-              process: s
-            }));
-          }
-          i ? this.handleRunEvent(l, i) : l.type === "run-end" ? (this.removeUnprocessedSttMessages(), this.finishRun()) : l.type === "error" ? (this.removeUnprocessedSttMessages(), this.error = String(((u = l.data) == null ? void 0 : u.message) || this.text("run_failed")), this.finishRun()) : this.messages = [...this.messages], l.type === "run-start" ? (this.sttBinaryHandlerId = (g = (h = l.data) == null ? void 0 : h.runner_data) == null ? void 0 : g.stt_binary_handler_id, this.playTtsAudio((m = (f = l.data) == null ? void 0 : f.tts_output) == null ? void 0 : m.url)) : l.type === "stt-start" ? this.flushAudioBuffer() : l.type === "stt-vad-end" ? this.sendSpeechEndChunk() : l.type === "stt-end" && (this.sttBinaryHandlerId = void 0, this.stopListening(!1));
-        },
-        {
-          start_stage: "stt",
-          end_stage: this.getPipelineEndStage(),
-          input: { sample_rate: this.audioRecorder.sampleRate || 16e3 },
-          pipeline: e.id,
-          conversation_id: this.conversationId
+    if (!(this.processing || this.startingListening || !this.supportsVoiceInput())) {
+      this.startingListening = !0;
+      try {
+        t && (this.userStartedRecordingOnce = !0);
+        const e = await this.ensurePipeline();
+        if (!e || !this.hass || !this.isConnected)
+          return;
+        this.stopActiveRun(), this.audioController.unload(this.hass), this.error = "", this.processing = !0, this.listening = !0, this.chatLogAccumulator = yt(), this.audioBuffer = [], this.voiceInputHasSpeech = !1, this.sttBinaryHandlerId = void 0, this.stickToBottom = !0, this.stickThinkingToBottom = !0;
+        let i, s = _t();
+        this.removeListeningPlaceholder();
+        const n = this.addMessage({
+          role: "assistant",
+          text: "",
+          status: "listening",
+          process: s
+        });
+        if (mi(e.id), this.audioRecorder || (this.audioRecorder = new P((r) => this.sendAudioChunk(r))), await this.audioRecorder.start(), !this.isConnected) {
+          await this.audioRecorder.stop();
+          return;
         }
-      );
-      this.activeUnsubscribe = r;
-    } catch (r) {
-      this.error = this.formatError(r), this.stopListening(!1), this.processing = !1;
+        this.continueConversationAfterRun = !1;
+        const o = await bi(
+          this.hass,
+          (r) => {
+            var l, c, p, u, h, g, f;
+            if (s = this.applyProcessEvent(s, r), n.process = s, r.type === "stt-end") {
+              this.removeListeningPlaceholder();
+              const m = String(((c = (l = r.data) == null ? void 0 : l.stt_output) == null ? void 0 : c.text) || "").trim();
+              m && (this.addMessage({ role: "user", text: m, status: "done" }), i = this.addMessage({
+                role: "assistant",
+                text: "",
+                status: "pending",
+                process: s
+              }));
+            }
+            i ? this.handleRunEvent(r, i) : r.type === "run-end" ? (this.removeUnprocessedSttMessages(), this.finishRun()) : r.type === "error" ? (this.removeUnprocessedSttMessages(), this.error = String(((p = r.data) == null ? void 0 : p.message) || this.text("run_failed")), this.finishRun()) : this.messages = [...this.messages], r.type === "run-start" ? (this.sttBinaryHandlerId = (h = (u = r.data) == null ? void 0 : u.runner_data) == null ? void 0 : h.stt_binary_handler_id, this.playTtsAudio((f = (g = r.data) == null ? void 0 : g.tts_output) == null ? void 0 : f.url)) : r.type === "stt-start" ? this.flushAudioBuffer() : r.type === "stt-vad-end" ? this.sendSpeechEndChunk() : r.type === "stt-end" && (this.sttBinaryHandlerId = void 0, this.stopListening(!1));
+          },
+          {
+            start_stage: "stt",
+            end_stage: this.getPipelineEndStage(),
+            input: { sample_rate: this.audioRecorder.sampleRate || 16e3 },
+            pipeline: e.id,
+            conversation_id: this.conversationId
+          }
+        );
+        this.activeUnsubscribe = o;
+      } catch (e) {
+        this.error = this.formatError(e), this.stopListening(!1), this.processing = !1;
+      } finally {
+        this.startingListening = !1;
+      }
     }
   }
   handleRunEvent(t, e) {
@@ -8867,7 +8914,7 @@ const w = rs, on = 1e3, rn = 3e4, ln = 400, cn = 48, dn = {
       }), h = n ? qa(p, s, {
         dropPersistLocal: this.httpsWarningDismissed
       }) : p;
-      return this.processing || this.listening || (this.messages = h.filter((g) => !Re(g)), this.conversationId = this.resolveConversationId(u, n), this.lastRunsSnapshot = l, this.lastHistoryKey = o, this.scheduleInProgressHistoryPoll()), !0;
+      return this.processing || this.listening || (this.messages = h.filter((g) => !Le(g)), this.conversationId = this.resolveConversationId(u, n), this.lastRunsSnapshot = l, this.lastHistoryKey = o, this.scheduleInProgressHistoryPoll()), !0;
     } catch (r) {
       return e !== this.loadToken ? !0 : (this.lastHistoryKey = "", da(r) ? (this.historyDisabled = !0, this.clearConversationRefreshTimer(), !0) : (this.historyErrorLogged || (console.warn("assist-chat-card: failed to load Assist history", r), this.historyErrorLogged = !0), !1));
     } finally {
@@ -8888,7 +8935,7 @@ const w = rs, on = 1e3, rn = 3e4, ln = 400, cn = 48, dn = {
   }
   removeUnprocessedSttMessages() {
     const t = this.messages.filter(
-      (e) => !dt(e) && !Re(e)
+      (e) => !dt(e) && !Le(e)
     );
     t.length !== this.messages.length && (this.messages = t);
   }
@@ -9035,7 +9082,7 @@ ${n}`;
   }
   finishRun() {
     var t;
-    (t = this.activeUnsubscribe) == null || t.call(this), this.activeUnsubscribe = void 0, this.processing = !1, this.stopListening(!1), this.removeUnprocessedSttMessages(), this.refreshHistoryAfterRun(), this.maybeContinueConversationAfterRun(!this.audioController.isPlaying());
+    (t = this.activeUnsubscribe) == null || t.call(this), this.activeUnsubscribe = void 0, this.processing = !1, this.stopListening(!1), this.removeUnprocessedSttMessages(), this.refreshHistoryAfterRun(), this.maybeContinueConversationAfterRun(this.audioController.isPlaying());
   }
   refreshHistoryAfterRun() {
     if (!this.resolvedPipelineId || this.historyDisabled)

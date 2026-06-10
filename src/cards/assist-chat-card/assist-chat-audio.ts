@@ -193,6 +193,7 @@ export class AssistChatAudioController {
     this.audio.addEventListener("pause", this.handleUnload);
     this.audio.play().catch(() => {
       this.stopLocal();
+      this.onAudioEnded();
     });
   }
 

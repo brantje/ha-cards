@@ -181,6 +181,7 @@ class AssistChatCard extends BaseCard {
   private suggestedPrompts: string[] = [];
   private voiceInputHasSpeech = false;
   private userStartedRecordingOnce = false;
+  private startingListening = false;
   private cardStyles: Record<string, string> = {};
 
   static properties = {
@@ -250,8 +251,13 @@ class AssistChatCard extends BaseCard {
     this.stopMicVisualizer();
     this.clearConversationRefreshTimer();
     this.stopActiveRun();
-    void this.audioRecorder?.close();
+    void this.closeAudioRecorder();
     this.audioController.unload(this.hass);
+  }
+
+  private async closeAudioRecorder() {
+    await this.audioRecorder?.close();
+    this.audioRecorder = undefined;
   }
 
   shouldUpdate(changedProperties: PropertyValues): boolean {
@@ -721,49 +727,55 @@ class AssistChatCard extends BaseCard {
   }
 
   private async startListening(userInitiated = false) {
-    if (this.processing || !this.supportsVoiceInput()) {
+    if (this.processing || this.startingListening || !this.supportsVoiceInput()) {
       return;
     }
 
-    if (userInitiated) {
-      this.userStartedRecordingOnce = true;
-    }
-
-    const pipeline = await this.ensurePipeline();
-    if (!pipeline || !this.hass) {
-      return;
-    }
-
-    this.stopActiveRun();
-    this.audioController.unload(this.hass);
-    this.error = "";
-    this.processing = true;
-    this.listening = true;
-    this.chatLogAccumulator = createAssistChatLogAccumulator();
-    this.continueConversationAfterRun = false;
-    this.audioBuffer = [];
-    this.voiceInputHasSpeech = false;
-    this.sttBinaryHandlerId = undefined;
-    this.stickToBottom = true;
-    this.stickThinkingToBottom = true;
-    let assistant: AssistChatMessage | undefined;
-    let voiceProcess = createAssistProcessModel();
-    this.removeListeningPlaceholder();
-    const listeningPlaceholder = this.addMessage({
-      role: "assistant",
-      text: "",
-      status: "listening",
-      process: voiceProcess,
-    });
-
-    setLastUsedPipelineId(pipeline.id);
+    this.startingListening = true;
 
     try {
-      // Close the previous recorder before creating a new one: every recorder
-      // owns an AudioContext and browsers cap how many can exist.
-      void this.audioRecorder?.close();
-      this.audioRecorder = new AssistAudioRecorder((chunk) => this.sendAudioChunk(chunk));
+      if (userInitiated) {
+        this.userStartedRecordingOnce = true;
+      }
+
+      const pipeline = await this.ensurePipeline();
+      if (!pipeline || !this.hass || !this.isConnected) {
+        return;
+      }
+
+      this.stopActiveRun();
+      this.audioController.unload(this.hass);
+      this.error = "";
+      this.processing = true;
+      this.listening = true;
+      this.chatLogAccumulator = createAssistChatLogAccumulator();
+      this.audioBuffer = [];
+      this.voiceInputHasSpeech = false;
+      this.sttBinaryHandlerId = undefined;
+      this.stickToBottom = true;
+      this.stickThinkingToBottom = true;
+      let assistant: AssistChatMessage | undefined;
+      let voiceProcess = createAssistProcessModel();
+      this.removeListeningPlaceholder();
+      const listeningPlaceholder = this.addMessage({
+        role: "assistant",
+        text: "",
+        status: "listening",
+        process: voiceProcess,
+      });
+
+      setLastUsedPipelineId(pipeline.id);
+
+      if (!this.audioRecorder) {
+        this.audioRecorder = new AssistAudioRecorder((chunk) => this.sendAudioChunk(chunk));
+      }
+
       await this.audioRecorder.start();
+      if (!this.isConnected) {
+        await this.audioRecorder.stop();
+        return;
+      }
+      this.continueConversationAfterRun = false;
 
       const unsubscribe = await runAssistPipeline(
         this.hass,
@@ -824,6 +836,8 @@ class AssistChatCard extends BaseCard {
       this.error = this.formatError(error);
       this.stopListening(false);
       this.processing = false;
+    } finally {
+      this.startingListening = false;
     }
   }
 
@@ -1328,7 +1342,7 @@ class AssistChatCard extends BaseCard {
     this.stopListening(false);
     this.removeUnprocessedSttMessages();
     this.refreshHistoryAfterRun();
-    this.maybeContinueConversationAfterRun(!this.audioController.isPlaying());
+    this.maybeContinueConversationAfterRun(this.audioController.isPlaying());
   }
 
   private refreshHistoryAfterRun() {
