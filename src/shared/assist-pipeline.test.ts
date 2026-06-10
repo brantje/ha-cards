@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 import {
+  applyAssistChatLogDelta,
   applyAssistProcessEvent,
+  createAssistChatLogAccumulator,
   createAssistProcessModel,
   extractAssistConversationFromEvents,
   extractSpeechFromIntentOutput,
@@ -9,6 +11,7 @@ import {
   isUnauthorizedWsError,
   PipelineRunEvent,
   resolvePipelineId,
+  trimAssistText,
   upsertAssistToolCalls,
 } from "./assist-pipeline";
 
@@ -64,6 +67,48 @@ describe("applyAssistProcessEvent", () => {
     expect(process.error).toBe("boom");
     expect(process.stages.intent.status).toBe("error");
     expect(process.stages.intent.ended).toBe(T(2));
+  });
+});
+
+describe("applyAssistChatLogDelta", () => {
+  it("accumulates assistant content, thinking and tool calls", () => {
+    const acc = createAssistChatLogAccumulator();
+
+    applyAssistChatLogDelta(acc, { role: "assistant", thinking_content: "hmm " });
+    applyAssistChatLogDelta(acc, { thinking_content: "ok" });
+    applyAssistChatLogDelta(acc, { content: "Hello" });
+
+    expect(acc.thinking).toBe("hmm ok");
+    expect(acc.assistantText).toBe("Hello");
+    expect(acc.currentDeltaRole).toBe("assistant");
+  });
+
+  it("merges tool results by id", () => {
+    const acc = createAssistChatLogAccumulator();
+
+    applyAssistChatLogDelta(acc, {
+      role: "assistant",
+      tool_calls: [{ id: "t1", tool_name: "weather", tool_args: { city: "Berlin" } }],
+    });
+    applyAssistChatLogDelta(acc, {
+      role: "tool_result",
+      tool_call_id: "t1",
+      tool_name: "weather",
+      tool_result: { temp: 21 },
+    });
+
+    expect(acc.toolCalls).toHaveLength(1);
+    expect(acc.toolCalls[0]).toMatchObject({
+      id: "t1",
+      tool_name: "weather",
+      tool_result: { temp: 21 },
+    });
+  });
+});
+
+describe("trimAssistText", () => {
+  it("normalizes leading whitespace per line", () => {
+    expect(trimAssistText("  line one\n   line two\r\n")).toBe("line one\nline two");
   });
 });
 

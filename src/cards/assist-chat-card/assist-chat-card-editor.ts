@@ -1,6 +1,14 @@
 import { css, html, LitElement, PropertyValues } from "lit";
 import { fireEvent, HomeAssistant } from "custom-card-helpers";
-import { renderJinjaCodeEditor, renderTextField } from "../../shared/base-card";
+import {
+  clampNumber,
+  renderCheckbox,
+  renderJinjaCodeEditor,
+  renderTextField,
+  sharedEditorStyles,
+  toColorInputValue,
+} from "../../shared/base-card";
+import { formatAssistError } from "../../shared/assist-format";
 import { loadHaEditorComponents } from "../../shared/ha-component-loader";
 import { DEFAULT_SPEECH_RMS_THRESHOLD } from "../../shared/assist-audio-recorder";
 import { AssistPipeline, listAssistPipelines } from "../../shared/assist-pipeline";
@@ -45,13 +53,25 @@ class AssistChatCardEditor extends LitElement {
   }
 
   shouldUpdate(changedProperties: PropertyValues): boolean {
-    // Only gate `hass` (re-render solely on its first arrival); any other
-    // declared reactive property should always render.
-    if (changedProperties.size === 1 && changedProperties.has("hass")) {
-      return !changedProperties.get("hass") && Boolean(this.hass);
+    if (changedProperties.has("config")) {
+      return true;
     }
 
-    return true;
+    if (
+      changedProperties.has("pipelines") ||
+      changedProperties.has("pipelinesLoading") ||
+      changedProperties.has("pipelineError") ||
+      changedProperties.has("haComponentsVersion")
+    ) {
+      return true;
+    }
+
+    if (changedProperties.has("hass")) {
+      const oldHass = changedProperties.get("hass") as HomeAssistant | undefined;
+      return !oldHass && Boolean(this.hass);
+    }
+
+    return false;
   }
 
   connectedCallback() {
@@ -254,17 +274,12 @@ class AssistChatCardEditor extends LitElement {
     key: keyof typeof ASSIST_CHAT_CARD_DEFAULTS,
     disabled = false
   ) {
-    return html`
-      <label class="checkbox">
-        <input
-          type="checkbox"
-          .checked=${Boolean(this.getValue(key))}
-          ?disabled=${disabled}
-          @change=${(event: Event) => this.updateConfigValue(key, (event.target as HTMLInputElement).checked)}
-        />
-        <span>${label}</span>
-      </label>
-    `;
+    return renderCheckbox({
+      label,
+      checked: Boolean(this.getValue(key)),
+      disabled,
+      onChange: (checked) => this.updateConfigValue(key, checked),
+    });
   }
 
   private renderColorInput(label: string, key: keyof typeof ASSIST_CHAT_CARD_DEFAULTS) {
@@ -275,7 +290,7 @@ class AssistChatCardEditor extends LitElement {
         <span>${label}</span>
         <input
           type="color"
-          .value=${this.toColorInputValue(String(this.config[key] || ""), fallback)}
+          .value=${toColorInputValue(String(this.config[key] || ""), fallback)}
           @change=${(event: Event) => this.updateConfigValue(key, (event.target as HTMLInputElement).value)}
         />
       </label>
@@ -366,9 +381,7 @@ class AssistChatCardEditor extends LitElement {
     min: number,
     max: number
   ) {
-    const parsed = Number(rawValue);
-    const value = Number.isFinite(parsed) ? Math.min(Math.max(Math.round(parsed), min), max) : fallback;
-    this.updateConfigValue(key, value);
+    this.updateConfigValue(key, clampNumber(rawValue, fallback, min, max));
   }
 
   private updateFloatValue(
@@ -388,70 +401,17 @@ class AssistChatCardEditor extends LitElement {
     fireEvent(this, "config-changed", { config });
   }
 
-  private toColorInputValue(value: string, fallback: string) {
-    return /^#[0-9a-f]{6}$/i.test(value) ? value : fallback;
-  }
-
   private formatError(error: unknown) {
-    if (error && typeof error === "object") {
-      const maybeError = error as { message?: string; code?: string };
-      return maybeError.message || maybeError.code || "Unable to load pipelines.";
-    }
-
-    return "Unable to load pipelines.";
+    return formatAssistError(error, { fallback: "Unable to load pipelines." });
   }
 
-  static styles = css`
-    .editor {
-      display: grid;
-      gap: 16px;
-    }
-
-    .grid,
-    fieldset {
-      display: grid;
-      gap: 12px;
-    }
-
+  static styles = [
+    sharedEditorStyles,
+    css`
     .style-grid {
       display: grid;
       gap: 12px;
       grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-
-    fieldset {
-      border: 1px solid var(--divider-color, #ddd);
-      border-radius: 12px;
-      margin: 0;
-      padding: 12px;
-    }
-
-    legend {
-      color: var(--secondary-text-color);
-      font-size: 12px;
-      font-weight: 700;
-      padding: 0 6px;
-    }
-
-    label {
-      color: var(--primary-text-color);
-      display: grid;
-      gap: 6px;
-      font-size: 12px;
-      font-weight: 600;
-    }
-
-    input,
-    select,
-    textarea {
-      background: var(--card-background-color, #fff);
-      border: 1px solid var(--divider-color, #ddd);
-      border-radius: 10px;
-      box-sizing: border-box;
-      color: var(--primary-text-color);
-      font: inherit;
-      min-height: 40px;
-      padding: 8px 10px;
     }
 
     textarea {
@@ -461,18 +421,6 @@ class AssistChatCardEditor extends LitElement {
 
     input[type="color"] {
       padding: 4px;
-    }
-
-    .checkbox {
-      align-items: center;
-      display: flex;
-      flex-direction: row;
-      gap: 10px;
-    }
-
-    .checkbox input {
-      min-height: auto;
-      width: auto;
     }
 
     input:disabled,
@@ -523,18 +471,11 @@ class AssistChatCardEditor extends LitElement {
       font-size: 11px;
     }
 
-    .hint {
-      color: var(--secondary-text-color);
-      font-size: 11px;
-      font-weight: 400;
-      line-height: 1.45;
-      margin: 0;
-    }
-
     .hint a {
       color: var(--primary-color);
     }
-  `;
+  `,
+  ];
 }
 
 customElements.define("assist-chat-card-editor", AssistChatCardEditor);

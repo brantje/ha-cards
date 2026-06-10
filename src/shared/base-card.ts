@@ -1,4 +1,5 @@
-import { html, LitElement, PropertyValues, type TemplateResult } from "lit";
+import { css, html, LitElement, PropertyValues, type TemplateResult } from "lit";
+import type { AssistPipeline } from "./assist-pipeline";
 import type { ActionConfig, HomeAssistant } from "custom-card-helpers";
 import "./jinja-code-editor";
 
@@ -56,6 +57,30 @@ export class BaseCard extends LitElement {
       }
 
       return watched.some((id) => oldHass.states?.[id] !== newHass.states?.[id]);
+    }
+
+    return false;
+  }
+
+  /**
+   * For cards that do not read entity state: re-render on config and declared
+   * reactive state, but only treat the first `hass` arrival as significant.
+   */
+  protected shouldUpdateNonEntityCard(
+    changedProperties: PropertyValues,
+    extraStateKeys: string[] = []
+  ): boolean {
+    if (changedProperties.has("config")) {
+      return true;
+    }
+
+    if (extraStateKeys.some((key) => changedProperties.has(key))) {
+      return true;
+    }
+
+    if (changedProperties.has("hass")) {
+      const oldHass = changedProperties.get("hass") as HassLike | undefined;
+      return !oldHass && Boolean(this.hass);
     }
 
     return false;
@@ -337,3 +362,177 @@ export function renderSharedActionEditor<TAction extends string>(params: {
     }),
   });
 }
+
+export function renderCheckbox(params: {
+  label: string;
+  checked: boolean;
+  disabled?: boolean;
+  onChange: (checked: boolean) => void;
+}): TemplateResult {
+  const { label, checked, disabled = false, onChange } = params;
+
+  return html`
+    <label class="checkbox">
+      <input
+        type="checkbox"
+        .checked=${checked}
+        ?disabled=${disabled}
+        @change=${(event: Event) => onChange((event.target as HTMLInputElement).checked)}
+      />
+      <span>${label}</span>
+    </label>
+  `;
+}
+
+export function renderNumberField(params: {
+  label: string;
+  value: number;
+  min: number;
+  max: number;
+  step?: number;
+  disabled?: boolean;
+  onInput: (value: number) => void;
+}): TemplateResult {
+  const { label, value, min, max, step = 1, disabled = false, onInput } = params;
+
+  return html`
+    <label>
+      <span>${label}</span>
+      <input
+        type="number"
+        min=${min}
+        max=${max}
+        step=${step}
+        .value=${String(value)}
+        ?disabled=${disabled}
+        @input=${(event: InputEvent) => {
+          const parsed = clampNumber((event.target as HTMLInputElement).value, value, min, max);
+          onInput(parsed);
+        }}
+      />
+    </label>
+  `;
+}
+
+export function clampNumber(
+  raw: string | number,
+  fallback: number,
+  min: number,
+  max: number
+): number {
+  const parsed = Number(raw);
+  return Number.isFinite(parsed) ? Math.min(Math.max(Math.round(parsed), min), max) : fallback;
+}
+
+export function toColorInputValue(value: string, fallback: string) {
+  return /^#[0-9a-f]{6}$/i.test(value) ? value : fallback;
+}
+
+export function renderAssistPipelinePicker(params: {
+  hass?: HomeAssistant;
+  label: string;
+  value: string;
+  pipelines: AssistPipeline[];
+  loading?: boolean;
+  error?: string;
+  preferredLabel?: string;
+  onChange: (value: string) => void;
+}): TemplateResult {
+  const {
+    hass,
+    label,
+    value,
+    pipelines,
+    loading = false,
+    error = "",
+    preferredLabel = "Preferred pipeline",
+    onChange,
+  } = params;
+
+  return html`
+    <label>
+      <span>${label}</span>
+      <select
+        .value=${value}
+        ?disabled=${loading || !hass}
+        @change=${(event: Event) => onChange((event.target as HTMLSelectElement).value)}
+      >
+        <option value="preferred">${preferredLabel}</option>
+        ${pipelines.map(
+          (pipeline) => html`
+            <option value=${pipeline.id} ?selected=${pipeline.id === value}>${pipeline.name}</option>
+          `
+        )}
+      </select>
+      ${error ? html`<small>${error}</small>` : ""}
+    </label>
+  `;
+}
+
+export const sharedEditorStyles = css`
+  .editor {
+    display: grid;
+    gap: 16px;
+  }
+
+  .grid,
+  fieldset {
+    display: grid;
+    gap: 12px;
+  }
+
+  fieldset {
+    border: 1px solid var(--divider-color, #ddd);
+    border-radius: 12px;
+    margin: 0;
+    padding: 12px;
+  }
+
+  legend {
+    color: var(--secondary-text-color);
+    font-size: 12px;
+    font-weight: 700;
+    padding: 0 6px;
+  }
+
+  label {
+    color: var(--primary-text-color);
+    display: grid;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  input,
+  select,
+  textarea {
+    background: var(--card-background-color, #fff);
+    border: 1px solid var(--divider-color, #ddd);
+    border-radius: 10px;
+    box-sizing: border-box;
+    color: var(--primary-text-color);
+    font: inherit;
+    min-height: 40px;
+    padding: 8px 10px;
+  }
+
+  .checkbox {
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+  }
+
+  .checkbox input {
+    min-height: auto;
+    width: auto;
+  }
+
+  .hint {
+    color: var(--secondary-text-color);
+    font-size: 11px;
+    font-weight: 400;
+    line-height: 1.45;
+    margin: 0;
+  }
+`;

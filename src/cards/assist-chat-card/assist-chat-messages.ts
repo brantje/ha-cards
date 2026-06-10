@@ -1,3 +1,4 @@
+import { assistProcessStageToMessageStatus } from "../../shared/assist-labels";
 import {
   AssistConversationFromEvents,
   AssistPipelineDebugRunDetails,
@@ -179,16 +180,7 @@ function getInProgressAssistantStatus(
     return "pending";
   }
 
-  const stage = conversation.process.stage;
-  if (stage === "intent") {
-    return "thinking";
-  }
-
-  if (stage === "tts") {
-    return "preparing";
-  }
-
-  return "waiting";
+  return assistProcessStageToMessageStatus(conversation.process.stage, false);
 }
 
 function shouldIncludeAssistantRunMessage(

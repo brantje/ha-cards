@@ -1,6 +1,11 @@
 import { css, html, LitElement, PropertyValues } from "lit";
 import { fireEvent, HomeAssistant } from "custom-card-helpers";
-import { renderEntityPicker, renderJinjaCodeEditor, renderTextField } from "../../shared/base-card";
+import {
+  renderEntityPicker,
+  renderJinjaCodeEditor,
+  renderTextField,
+  toColorInputValue,
+} from "../../shared/base-card";
 import { loadHaEditorComponents } from "../../shared/ha-component-loader";
 import { DEFAULT_ACCENT_BLUE } from "../../shared/card-colors";
 
@@ -156,7 +161,7 @@ class PossibleIssuesCardEditor extends LitElement {
   }
 
   private renderColorInput(label: string, key: "background_color", fallback: string) {
-    const value = this.toColorInputValue(String(this.config[key] || fallback), fallback);
+    const value = toColorInputValue(String(this.config[key] || fallback), fallback);
 
     return html`
       <label>
@@ -507,10 +512,6 @@ class PossibleIssuesCardEditor extends LitElement {
       .split("_")
       .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
       .join(" ");
-  }
-
-  private toColorInputValue(value: string, fallback: string) {
-    return /^#[0-9a-fA-F]{6}$/.test(value) ? value : fallback;
   }
 
   private updateConfig(config: PossibleIssuesCardEditorConfig) {

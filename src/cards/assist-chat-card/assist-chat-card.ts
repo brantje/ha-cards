@@ -1,50 +1,56 @@
 import { css, html, PropertyValues } from "lit";
 import { repeat } from "lit/directives/repeat.js";
 import { styleMap } from "lit/directives/style-map.js";
-import { formatTime, type HomeAssistant } from "custom-card-helpers";
+import { type HomeAssistant } from "custom-card-helpers";
 import { BaseCard } from "../../shared/base-card";
 import {
   AssistAudioRecorder,
   DEFAULT_SPEECH_RMS_THRESHOLD,
-  hasMeaningfulAudio,
 } from "../../shared/assist-audio-recorder";
-import { MicVisualizerLoop } from "../../shared/assist-mic-visualizer";
+import {
+  dismissFollowUpHint,
+  isFollowUpHintDismissed,
+  setLastUsedPipelineId,
+} from "../../shared/assist-chat-storage";
+import { AssistPollController } from "../../shared/assist-poll-controller";
+import { AssistRunCache, fetchRecentAssistRunsWithCache } from "../../shared/assist-run-cache";
+import { formatAssistError } from "../../shared/assist-format";
+import {
+  assistConversationBubbleStyles,
+  assistTypingDotsStyles,
+} from "../../shared/assist-conversation-styles";
+import "../../shared/template-text";
+import { AssistChatAudioController } from "./assist-chat-audio";
+import {
+  renderAssistChatMessage,
+  type AssistChatRenderContext,
+} from "./assist-chat-render";
 import {
   AssistChatLogDelta,
   AssistPipeline,
-  AssistProcessStageStatus,
-  AssistToolCall,
+  applyAssistChatLogDelta,
   applyAssistProcessEvent,
   cloneAssistProcessModel,
+  createAssistChatLogAccumulator,
   createAssistProcessModel,
-  dismissFollowUpHint,
   extractAssistConversationFromEvents,
   extractSpeechFromIntentOutput,
-  getAssistPipelineDebugRun,
   getAssistRunCount,
-  getRecentAssistPipelineDebugRuns,
   isBuiltInConversationAgent,
-  isFollowUpHintDismissed,
   isUnauthorizedWsError,
-  listAssistPipelineDebugRuns,
   listAssistPipelines,
   PipelineRunEvent,
   resolvePipelineId,
   runAssistPipeline,
-  setLastUsedPipelineId,
-  upsertAssistToolCalls,
   type AssistConversationFromEvents,
   type AssistProcessModel,
 } from "../../shared/assist-pipeline";
 import {
   AssistChatMessage,
-  AssistChatMessageStatus,
   AssistChatRun,
   buildMessagesFromRuns,
   finalizeCancelledMessages,
   getRunsSnapshot,
-  hasResponse,
-  isLoadingMessage,
   isRunFinished,
   isUnprocessedSttAssistantMessage,
   mergeHistoryMessages,
@@ -56,8 +62,6 @@ import {
 } from "./assist-chat-card-config";
 import "./assist-chat-card-editor";
 
-type ProcessStageStatus = AssistProcessStageStatus;
-type ProcessStageDisplayStatus = ProcessStageStatus | "cancelled";
 type ProcessModel = AssistProcessModel;
 
 const DEFAULTS = ASSIST_CHAT_CARD_DEFAULTS;
@@ -152,8 +156,10 @@ class AssistChatCard extends BaseCard {
   private audioRecorder?: AssistAudioRecorder;
   private sttBinaryHandlerId?: number | null;
   private audioBuffer?: Int16Array[];
-  private audio?: HTMLAudioElement;
-  private currentDeltaRole = "";
+  private readonly audioController = new AssistChatAudioController(() => {
+    this.maybeContinueConversationAfterRun();
+  });
+  private chatLogAccumulator = createAssistChatLogAccumulator();
   private continueConversationAfterRun = false;
   private scrollFrame?: number;
   private stickToBottom = true;
@@ -163,22 +169,13 @@ class AssistChatCard extends BaseCard {
   private lastRunsSnapshot = "";
   private conversationClearedAt: number | null = null;
   private lastSeenRunTimestamp = 0;
-  private historyPollTimer?: number;
-  private historyPollActive = false;
-  private historyPollDelay = CONVERSATION_REFRESH_MS;
+  private historyPollController?: AssistPollController;
   private historyDisabled = false;
   private historyErrorLogged = false;
-  private runCache = new Map<
-    string,
-    { events: PipelineRunEvent[]; conversation: AssistConversationFromEvents; finished: boolean }
-  >();
+  private runCache = new AssistRunCache();
   private followUpHintDismissed = isFollowUpHintDismissed();
   private httpsWarningDismissed = false;
   private suggestedPrompts: string[] = [];
-  private suggestedPromptsTemplateKey = "";
-  private suggestedPromptsUnsubPromise?: Promise<(() => void) | undefined>;
-  private suggestedPromptsToken = 0;
-  private micVisualizer?: MicVisualizerLoop;
   private voiceInputHasSpeech = false;
   private userStartedRecordingOnce = false;
   private cardStyles: Record<string, string> = {};
@@ -238,7 +235,6 @@ class AssistChatCard extends BaseCard {
     document.addEventListener("visibilitychange", this.handleVisibilityChange);
     this.scheduleScrollToEnd(3, true);
     this.syncConversationRefreshTimer();
-    this.syncSuggestedPromptsTemplate();
   }
 
   disconnectedCallback() {
@@ -252,19 +248,24 @@ class AssistChatCard extends BaseCard {
     this.clearConversationRefreshTimer();
     this.stopActiveRun();
     void this.audioRecorder?.close();
-    this.unloadAudio();
-    void this.unsubscribeSuggestedPromptsTemplate();
+    this.audioController.unload();
   }
 
   shouldUpdate(changedProperties: PropertyValues): boolean {
-    // Gate only `hass`: Home Assistant swaps it on every state change in the
-    // system and this card derives nothing from entity states, so only its
-    // first arrival matters. Every other declared reactive property renders.
-    if (changedProperties.size === 1 && changedProperties.has("hass")) {
-      return !changedProperties.get("hass") && Boolean(this.hass);
-    }
-
-    return true;
+    return this.shouldUpdateNonEntityCard(changedProperties, [
+      "pipelines",
+      "resolvedPipelineId",
+      "messages",
+      "inputValue",
+      "processing",
+      "listening",
+      "loadingPipelines",
+      "loadingHistory",
+      "error",
+      "followUpHintDismissed",
+      "httpsWarningDismissed",
+      "suggestedPrompts",
+    ]);
   }
 
   updated(changedProperties: PropertyValues) {
@@ -293,7 +294,10 @@ class AssistChatCard extends BaseCard {
 
     if (firstHass || changedProperties.has("config")) {
       void this.loadPipelines();
-      this.syncSuggestedPromptsTemplate();
+      const template = normalizeSuggestedPrompts(this.config.suggested_prompts);
+      if (!template) {
+        this.suggestedPrompts = [];
+      }
     }
 
     if (changedProperties.has("listening")) {
@@ -316,6 +320,7 @@ class AssistChatCard extends BaseCard {
           ${this.renderCapabilityHint()}
           ${this.renderMessages()}
           ${this.renderSuggestedPrompts()}
+          ${this.renderSuggestedPromptsTemplateListener()}
           ${this.error ? html`<div class="error" role="alert">${this.error}</div>` : ""}
           <form class="input-row" @submit=${this.handleSubmit}>
             ${this.config.voice_input
@@ -437,6 +442,28 @@ class AssistChatCard extends BaseCard {
     `;
   }
 
+  private renderSuggestedPromptsTemplateListener() {
+    const template = normalizeSuggestedPrompts(this.config.suggested_prompts);
+    if (!template) {
+      return "";
+    }
+
+    return html`
+      <ha-cards-template-text
+        class="template-listener"
+        .hass=${this.hass}
+        .template=${template}
+        .fallback=${template}
+        ?multiline=${true}
+        @lines-changed=${this.handleSuggestedPromptsChanged}
+      ></ha-cards-template-text>
+    `;
+  }
+
+  private handleSuggestedPromptsChanged = (event: CustomEvent<{ lines: string[] }>) => {
+    this.suggestedPrompts = event.detail.lines;
+  };
+
   private renderSuggestedPrompts() {
     const prompts = this.suggestedPrompts;
     if (this.config.show_suggested_prompts === false || !prompts.length) {
@@ -496,105 +523,33 @@ class AssistChatCard extends BaseCard {
     `;
   }
 
+  private getRenderContext(): AssistChatRenderContext {
+    return {
+      showProcess: Boolean(this.config.show_process),
+      showMessageTime: Boolean(this.config.show_message_time),
+      showThinkingUntilResponse: Boolean(this.config.show_thinking_until_response),
+      locale: this.hass?.locale,
+      language: this.hass?.locale?.language,
+      labels: {
+        cancelled: this.text("cancelled"),
+        listening: this.text("listening"),
+        thinking: this.text("thinking"),
+        preparing_reply: this.text("preparing_reply"),
+        waiting_reply: this.text("waiting_reply"),
+        thought_for_cancelled: (duration) => this.text("thought_for_cancelled", { duration }),
+        thought_for: (duration) => this.text("thought_for", { duration }),
+        thought: this.text("thought"),
+        thinking_summary: this.text("thinking_summary"),
+        tool_arguments: this.text("tool_arguments"),
+        tool_result: this.text("tool_result"),
+      },
+      formatToolCallJson: (value) => this.formatToolCallJson(value),
+      onThinkingScroll: this.handleThinkingScroll,
+    };
+  }
+
   private renderMessage(message: AssistChatMessage) {
-    const isLoading = isLoadingMessage(message);
-    const bubbleClass =
-      message.status === "error"
-        ? "bubble error-bubble"
-        : message.status === "cancelled"
-          ? "bubble cancelled-bubble"
-          : isLoading
-            ? "bubble loading"
-            : "bubble";
-
-    return html`
-      <div class=${message.role === "user" ? "message user" : "message assistant"}>
-        <div class=${bubbleClass}>
-          ${this.renderThinkingSection(message)}
-          ${isLoading
-            ? this.renderLoadingStatus(message)
-            : message.text
-              ? message.status !== "error" && message.status !== "cancelled"
-                ? html`<ha-markdown .content=${message.text}></ha-markdown>`
-                : html`<span>${message.text}</span>`
-              : message.status === "cancelled"
-                ? html`<span>${this.text("cancelled")}</span>`
-                : html`<div class="loading-status">${this.renderTypingDots()}</div>`}
-          ${message.process ? this.renderProcess(message) : ""}
-          ${this.config.show_message_time && message.timestamp && !isLoading
-            ? html`<span class="message-time">${this.formatMessageTime(message.timestamp)}</span>`
-            : ""}
-        </div>
-      </div>
-    `;
-  }
-
-  private renderLoadingStatus(message: AssistChatMessage) {
-    const label = this.getLoadingLabel(message.status);
-    const dotsFirst = message.status === "listening";
-
-    return html`
-      <div class="loading-status">
-        ${dotsFirst ? this.renderTypingDots() : ""}
-        ${label ? html`<span>${label}</span>` : ""}
-        ${dotsFirst ? "" : this.renderTypingDots()}
-      </div>
-    `;
-  }
-
-  private getLoadingLabel(status: AssistChatMessageStatus) {
-    switch (status) {
-      case "listening":
-        return this.text("listening");
-      case "thinking":
-        return this.text("thinking");
-      case "preparing":
-        return this.text("preparing_reply");
-      case "waiting":
-        return this.text("waiting_reply");
-      default:
-        return "";
-    }
-  }
-
-  private renderThinkingSection(message: AssistChatMessage) {
-    if (message.role !== "assistant" || !message.thinking || message.status === "cancelled") {
-      return "";
-    }
-    const thinkDuration = this.formatDuration(
-      message.process?.stages.intent.started,
-      message.process?.stages.intent.ended
-    );
-    return html`
-      <details class="thinking" ?open=${this.shouldOpenThinking(message)}>
-        <summary>${this.getThinkingSummary(message, thinkDuration)}</summary>
-        <pre class="thinking-content" @scroll=${this.handleThinkingScroll}>${message.thinking}</pre>
-      </details>
-    `;
-  }
-
-  private getThinkingSummary(message: AssistChatMessage, thinkDuration: string) {
-    if (message.status === "cancelled") {
-      return thinkDuration
-        ? this.text("thought_for_cancelled", { duration: thinkDuration })
-        : this.text("cancelled");
-    }
-
-    if (hasResponse(message)) {
-      return thinkDuration
-        ? this.text("thought_for", { duration: thinkDuration })
-        : this.text("thought");
-    }
-
-    return this.text("thinking_summary");
-  }
-
-  private shouldOpenThinking(message: AssistChatMessage) {
-    return Boolean(
-      this.config.show_thinking_until_response &&
-        !hasResponse(message) &&
-        message.status !== "cancelled"
-    );
+    return renderAssistChatMessage(message, this.getRenderContext());
   }
 
   private handleMessagesScroll = (event: Event) => {
@@ -664,92 +619,6 @@ class AssistChatCard extends BaseCard {
     }
   }
 
-  private renderProcess(message: AssistChatMessage) {
-    if (!this.config.show_process || !message.process) {
-      return "";
-    }
-
-    const cancelled = message.status === "cancelled";
-    const stages = Object.values(message.process.stages).filter((stage) => stage.status !== "idle");
-    const toolCalls = message.process.toolCalls.filter((toolCall) => toolCall.tool_name);
-
-    if (!stages.length && !toolCalls.length) {
-      return "";
-    }
-
-    return html`
-      <div class="process">
-        ${stages.map((stage) => {
-          const displayStatus = this.getProcessStageDisplayStatus(stage.status, cancelled);
-          const ended =
-            stage.ended ||
-            (displayStatus === "cancelled" ? message.process?.finished : undefined);
-          const duration = this.formatDuration(stage.started, ended);
-
-          return html`
-            <span class=${`process-chip ${displayStatus}`}>
-              <ha-icon icon=${this.getStageIcon(displayStatus)}></ha-icon>
-              ${stage.label}${duration ? html` · ${duration}` : ""}
-            </span>
-          `;
-        })}
-        ${toolCalls.map((toolCall) => this.renderToolCall(toolCall))}
-      </div>
-    `;
-  }
-
-  private renderToolCall(toolCall: AssistToolCall) {
-    const argsText = this.formatToolCallJson(toolCall.tool_args);
-    const resultText = this.formatToolCallJson(toolCall.tool_result);
-    const hasDetails = Boolean(argsText || resultText);
-
-    if (!hasDetails) {
-      return html`
-        <span class="process-chip tool">
-          <ha-icon icon="mdi:tools"></ha-icon>
-          ${toolCall.tool_name}
-        </span>
-      `;
-    }
-
-    return html`
-      <details class="tool-call-chip">
-        <summary class="process-chip tool">
-          <ha-icon icon="mdi:tools"></ha-icon>
-          ${toolCall.tool_name}
-        </summary>
-        <div class="tool-call-panel">
-          ${argsText
-            ? html`
-                <div class="tool-call-section">
-                  <span class="tool-call-label">${this.text("tool_arguments")}</span>
-                  <pre>${argsText}</pre>
-                </div>
-              `
-            : ""}
-          ${resultText
-            ? html`
-                <div class="tool-call-section">
-                  <span class="tool-call-label">${this.text("tool_result")}</span>
-                  <pre>${resultText}</pre>
-                </div>
-              `
-            : ""}
-        </div>
-      </details>
-    `;
-  }
-
-  private renderTypingDots() {
-    return html`
-      <span class="typing-dots" aria-hidden="true">
-        <span></span>
-        <span></span>
-        <span></span>
-      </span>
-    `;
-  }
-
   private handleInput(event: InputEvent) {
     this.inputValue = (event.target as HTMLInputElement).value;
   }
@@ -784,7 +653,7 @@ class AssistChatCard extends BaseCard {
     this.stopActiveRun();
     this.error = "";
     this.processing = true;
-    this.currentDeltaRole = "";
+    this.chatLogAccumulator = createAssistChatLogAccumulator();
     this.continueConversationAfterRun = false;
     this.stickToBottom = true;
     this.stickThinkingToBottom = true;
@@ -863,11 +732,11 @@ class AssistChatCard extends BaseCard {
     }
 
     this.stopActiveRun();
-    this.unloadAudio();
+    this.audioController.unload();
     this.error = "";
     this.processing = true;
     this.listening = true;
-    this.currentDeltaRole = "";
+    this.chatLogAccumulator = createAssistChatLogAccumulator();
     this.continueConversationAfterRun = false;
     this.audioBuffer = [];
     this.voiceInputHasSpeech = false;
@@ -966,40 +835,27 @@ class AssistChatCard extends BaseCard {
       this.finishRun();
     }
 
-    this.messages = [...this.messages];
+    this.requestUpdate();
   }
 
   private applyIntentDelta(assistant: AssistChatMessage, delta: AssistChatLogDelta) {
-    if (delta.role) {
-      this.currentDeltaRole = delta.role;
+    this.chatLogAccumulator.assistantText = assistant.text || "";
+    this.chatLogAccumulator.thinking = assistant.thinking || "";
+    this.chatLogAccumulator.toolCalls = assistant.process?.toolCalls || [];
+
+    applyAssistChatLogDelta(this.chatLogAccumulator, delta);
+
+    if (this.chatLogAccumulator.assistantText) {
+      assistant.text = this.chatLogAccumulator.assistantText;
+      assistant.status = "streaming";
     }
 
-    if (this.currentDeltaRole === "assistant") {
-      if ("content" in delta && delta.content) {
-        assistant.text = `${assistant.text || ""}${delta.content}`;
-        assistant.status = "streaming";
-      }
+    if (this.chatLogAccumulator.thinking) {
+      assistant.thinking = this.chatLogAccumulator.thinking;
+    }
 
-      if ("thinking_content" in delta && delta.thinking_content) {
-        assistant.thinking = `${assistant.thinking || ""}${delta.thinking_content}`;
-      }
-
-      if ("tool_calls" in delta && Array.isArray(delta.tool_calls) && assistant.process) {
-        assistant.process.toolCalls = upsertAssistToolCalls(assistant.process.toolCalls, delta.tool_calls);
-      }
-    } else if (
-      this.currentDeltaRole === "tool_result" &&
-      assistant.process &&
-      "tool_call_id" in delta &&
-      delta.tool_call_id
-    ) {
-      assistant.process.toolCalls = upsertAssistToolCalls(assistant.process.toolCalls, [
-        {
-          id: delta.tool_call_id,
-          tool_name: delta.tool_name || "tool",
-          tool_result: "tool_result" in delta ? delta.tool_result : undefined,
-        },
-      ]);
+    if (assistant.process) {
+      assistant.process.toolCalls = this.chatLogAccumulator.toolCalls;
     }
   }
 
@@ -1170,42 +1026,11 @@ class AssistChatCard extends BaseCard {
    * cache, so a steady-state poll costs one `list` call.
    */
   private async fetchRunsWithCache(pipelineId: string, runCount: number): Promise<AssistChatRun[]> {
-    if (!this.hass || runCount === 0) {
+    if (!this.hass) {
       return [];
     }
 
-    const hass = this.hass;
-    const listResponse = await listAssistPipelineDebugRuns(hass, pipelineId);
-    const recentRuns = getRecentAssistPipelineDebugRuns(listResponse.pipeline_runs || [], runCount);
-
-    const runs = await Promise.all(
-      recentRuns.map(async (run): Promise<AssistChatRun> => {
-        const cached = this.runCache.get(run.pipeline_run_id);
-        if (cached?.finished) {
-          return { ...run, events: cached.events, conversation: cached.conversation };
-        }
-
-        const details = await getAssistPipelineDebugRun(hass, pipelineId, run.pipeline_run_id);
-        const events = details.events || [];
-        const conversation = extractAssistConversationFromEvents(events);
-        this.runCache.set(run.pipeline_run_id, {
-          events,
-          conversation,
-          finished: isRunFinished(events),
-        });
-
-        return { ...run, events, conversation };
-      })
-    );
-
-    const recentIds = new Set(recentRuns.map((run) => run.pipeline_run_id));
-    for (const id of this.runCache.keys()) {
-      if (!recentIds.has(id)) {
-        this.runCache.delete(id);
-      }
-    }
-
-    return runs;
+    return fetchRecentAssistRunsWithCache(this.hass, pipelineId, runCount, this.runCache, isRunFinished);
   }
 
   private removeUnprocessedSttMessages() {
@@ -1216,59 +1041,38 @@ class AssistChatCard extends BaseCard {
     }
   }
 
+  private getHistoryPollController() {
+    if (!this.historyPollController) {
+      this.historyPollController = new AssistPollController({
+        intervalMs: CONVERSATION_REFRESH_MS,
+        maxBackoffMs: CONVERSATION_REFRESH_MAX_MS,
+        shouldPoll: () => this.shouldLiveRefresh(),
+        onPoll: async () => {
+          if (!this.resolvedPipelineId) {
+            return true;
+          }
+
+          return this.loadRecentHistory(
+            this.resolvedPipelineId,
+            this.loadToken,
+            true,
+            this.messages,
+            true
+          );
+        },
+      });
+    }
+
+    return this.historyPollController;
+  }
+
   private syncConversationRefreshTimer() {
     if (!this.shouldLiveRefresh()) {
       this.clearConversationRefreshTimer();
       return;
     }
 
-    if (this.historyPollTimer !== undefined || this.historyPollActive) {
-      return;
-    }
-
-    this.historyPollDelay = CONVERSATION_REFRESH_MS;
-    this.scheduleHistoryPoll(0);
-  }
-
-  private scheduleHistoryPoll(delay: number) {
-    this.historyPollTimer = window.setTimeout(() => {
-      void this.runHistoryPoll();
-    }, delay);
-  }
-
-  private async runHistoryPoll() {
-    this.historyPollTimer = undefined;
-
-    if (!this.shouldLiveRefresh()) {
-      return;
-    }
-
-    this.historyPollActive = true;
-    let success = true;
-    try {
-      if (this.resolvedPipelineId) {
-        success = await this.loadRecentHistory(
-          this.resolvedPipelineId,
-          this.loadToken,
-          true,
-          this.messages,
-          true
-        );
-      }
-    } finally {
-      this.historyPollActive = false;
-    }
-
-    if (!this.shouldLiveRefresh() || this.historyPollTimer !== undefined) {
-      return;
-    }
-
-    // Exponential backoff on failures so a broken connection or restarting
-    // server is not hammered every two seconds.
-    this.historyPollDelay = success
-      ? CONVERSATION_REFRESH_MS
-      : Math.min(this.historyPollDelay * 2, CONVERSATION_REFRESH_MAX_MS);
-    this.scheduleHistoryPoll(this.historyPollDelay);
+    this.getHistoryPollController().sync();
   }
 
   private shouldLiveRefresh() {
@@ -1284,12 +1088,7 @@ class AssistChatCard extends BaseCard {
   }
 
   private clearConversationRefreshTimer() {
-    if (this.historyPollTimer === undefined) {
-      return;
-    }
-
-    window.clearTimeout(this.historyPollTimer);
-    this.historyPollTimer = undefined;
+    this.historyPollController?.stop();
   }
 
   private handleVisibilityChange = () => {
@@ -1335,19 +1134,11 @@ class AssistChatCard extends BaseCard {
     const canvas = this.renderRoot.querySelector(
       ".listening-visualizer-canvas"
     ) as HTMLCanvasElement | null;
-    if (!canvas) {
-      return;
-    }
-
-    if (!this.micVisualizer) {
-      this.micVisualizer = new MicVisualizerLoop();
-    }
-
-    this.micVisualizer.start(canvas, () => this.audioRecorder?.getAnalyser());
+    this.audioController.startMicVisualizer(canvas, () => this.audioRecorder?.getAnalyser());
   }
 
   private stopMicVisualizer() {
-    this.micVisualizer?.stop();
+    this.audioController.stopMicVisualizer();
   }
 
   private isVoicePipelineConfigured() {
@@ -1411,47 +1202,32 @@ class AssistChatCard extends BaseCard {
   }
 
   private sendAudioChunk(chunk: Int16Array) {
-    const isEndChunk = chunk.length === 0;
-
-    if (!isEndChunk) {
-      const hasSpeech = hasMeaningfulAudio(chunk, this.getSpeechRmsThreshold());
-      if (!this.voiceInputHasSpeech && !hasSpeech) {
-        return;
-      }
-
-      if (hasSpeech) {
+    const result = this.audioController.sendAudioChunk(
+      this.hass,
+      chunk,
+      this.sttBinaryHandlerId,
+      this.audioBuffer,
+      this.getSpeechRmsThreshold(),
+      this.voiceInputHasSpeech,
+      () => {
         this.voiceInputHasSpeech = true;
       }
-    } else if (!this.voiceInputHasSpeech) {
-      return;
-    }
-
-    if (this.sttBinaryHandlerId === undefined || this.sttBinaryHandlerId === null) {
-      this.audioBuffer?.push(chunk);
-      return;
-    }
-
-    const socket = this.hass?.connection?.socket;
-    if (!socket) {
-      return;
-    }
-
-    socket.binaryType = "arraybuffer";
-    const data = new Uint8Array(1 + chunk.length * 2);
-    data[0] = this.sttBinaryHandlerId;
-    data.set(new Uint8Array(chunk.buffer), 1);
-    socket.send(data);
+    );
+    this.audioBuffer = result.buffer;
+    this.voiceInputHasSpeech = result.hasSpeech;
   }
 
   private flushAudioBuffer() {
-    if (!this.audioBuffer) {
-      return;
-    }
-
-    for (const chunk of this.audioBuffer) {
-      this.sendAudioChunk(chunk);
-    }
-
+    this.audioController.flushAudioBuffer(
+      this.hass,
+      this.audioBuffer,
+      this.sttBinaryHandlerId,
+      this.getSpeechRmsThreshold(),
+      () => {
+        this.voiceInputHasSpeech = true;
+      },
+      this.voiceInputHasSpeech
+    );
     this.audioBuffer = undefined;
   }
 
@@ -1485,7 +1261,7 @@ class AssistChatCard extends BaseCard {
     }
 
     this.messages = finalizeCancelledMessages(this.messages);
-    this.unloadAudio();
+    this.audioController.unload();
     this.continueConversationAfterRun = false;
     this.stopActiveRun();
     this.refreshHistoryAfterRun();
@@ -1505,7 +1281,7 @@ class AssistChatCard extends BaseCard {
     this.stopListening(false);
     this.removeUnprocessedSttMessages();
     this.refreshHistoryAfterRun();
-    this.maybeContinueConversationAfterRun(!this.audio);
+    this.maybeContinueConversationAfterRun(!this.audioController.getAudioElement());
   }
 
   private refreshHistoryAfterRun() {
@@ -1518,23 +1294,8 @@ class AssistChatCard extends BaseCard {
   }
 
   private playTtsAudio(url?: string) {
-    if (!url || !this.config.enable_audio_playback) {
-      return;
-    }
-
-    this.unloadAudio();
-    this.audio = new Audio(new URL(url, window.location.origin).toString());
-    this.audio.addEventListener("ended", this.handleAudioEnded);
-    this.audio.addEventListener("pause", this.unloadAudio);
-    this.audio.play().catch(() => {
-      this.unloadAudio();
-    });
+    this.audioController.playTts(url, Boolean(this.config.enable_audio_playback));
   }
-
-  private handleAudioEnded = () => {
-    this.unloadAudio();
-    this.maybeContinueConversationAfterRun();
-  };
 
   private shouldOfferFollowUpConversation() {
     return Boolean(this.config.continue_conversation || this.config.always_continue_conversation);
@@ -1549,7 +1310,7 @@ class AssistChatCard extends BaseCard {
   }
 
   private maybeContinueConversationAfterRun(skipWhenAudioPlaying = false) {
-    if (skipWhenAudioPlaying && this.audio) {
+    if (skipWhenAudioPlaying && this.audioController.getAudioElement()) {
       return;
     }
 
@@ -1557,18 +1318,6 @@ class AssistChatCard extends BaseCard {
       void this.startListening();
     }
   }
-
-  private unloadAudio = () => {
-    if (!this.audio) {
-      return;
-    }
-
-    this.audio.removeEventListener("ended", this.handleAudioEnded);
-    this.audio.removeEventListener("pause", this.unloadAudio);
-    this.audio.pause();
-    this.audio.removeAttribute("src");
-    this.audio = undefined;
-  };
 
   private addMessage(message: Omit<AssistChatMessage, "id">) {
     const next: AssistChatMessage = {
@@ -1645,121 +1394,6 @@ class AssistChatCard extends BaseCard {
     return this.text("status_idle");
   }
 
-  private syncSuggestedPromptsTemplate() {
-    const template = normalizeSuggestedPrompts(this.config?.suggested_prompts).trim();
-
-    if (!template) {
-      this.suggestedPromptsTemplateKey = "";
-      this.suggestedPromptsToken++;
-      void this.unsubscribeSuggestedPromptsTemplate();
-      this.suggestedPrompts = [];
-      return;
-    }
-
-    if (!this.hass?.connection) {
-      this.suggestedPrompts = this.parseSuggestedPromptLines(template);
-      return;
-    }
-
-    if (template === this.suggestedPromptsTemplateKey) {
-      return;
-    }
-
-    // Mark the active template synchronously so concurrent sync calls cannot
-    // race past the dedupe check and double-subscribe.
-    this.suggestedPromptsTemplateKey = template;
-    void this.subscribeSuggestedPromptsTemplate(template);
-  }
-
-  private async subscribeSuggestedPromptsTemplate(template: string) {
-    const token = ++this.suggestedPromptsToken;
-    await this.unsubscribeSuggestedPromptsTemplate();
-
-    if (token !== this.suggestedPromptsToken) {
-      return;
-    }
-
-    if (!this.hass?.connection) {
-      this.suggestedPrompts = this.parseSuggestedPromptLines(template);
-      return;
-    }
-
-    try {
-      const subscription = this.hass.connection.subscribeMessage<{ result?: unknown; error?: string }>(
-        (message) => {
-          if (token !== this.suggestedPromptsToken) {
-            return;
-          }
-
-          if ("error" in message) {
-            this.suggestedPrompts = this.parseSuggestedPromptLines(template);
-          } else {
-            this.suggestedPrompts = this.parseSuggestedPromptLines(
-              this.formatTemplateResult(message.result)
-            );
-          }
-        },
-        {
-          type: "render_template",
-          template,
-          report_errors: true,
-        }
-      );
-      this.suggestedPromptsUnsubPromise = subscription;
-      const unsubscribe = await subscription;
-
-      if (token !== this.suggestedPromptsToken) {
-        unsubscribe?.();
-        if (this.suggestedPromptsUnsubPromise === subscription) {
-          this.suggestedPromptsUnsubPromise = undefined;
-        }
-      }
-    } catch {
-      if (token === this.suggestedPromptsToken) {
-        this.suggestedPrompts = this.parseSuggestedPromptLines(template);
-        this.suggestedPromptsUnsubPromise = undefined;
-      }
-    }
-  }
-
-  private async unsubscribeSuggestedPromptsTemplate() {
-    const pending = this.suggestedPromptsUnsubPromise;
-    if (!pending) {
-      return;
-    }
-
-    this.suggestedPromptsUnsubPromise = undefined;
-
-    try {
-      const unsubscribe = await pending;
-      unsubscribe?.();
-    } catch (error: unknown) {
-      if ((error as { code?: string })?.code !== "not_found") {
-        console.warn("assist-chat-card: failed to unsubscribe template listener", error);
-      }
-    }
-  }
-
-  private formatTemplateResult(result: unknown) {
-    if (typeof result === "string") {
-      return result;
-    }
-
-    if (result === undefined || result === null) {
-      return "";
-    }
-
-    try {
-      return JSON.stringify(result);
-    } catch {
-      return String(result);
-    }
-  }
-
-  private parseSuggestedPromptLines(value: string) {
-    return value.split("\n").map((line) => line.trim()).filter(Boolean);
-  }
-
   private handleSuggestedPromptClick(event: Event) {
     const index = Number((event.currentTarget as HTMLElement).dataset.index);
     const prompt = this.suggestedPrompts[index];
@@ -1775,54 +1409,6 @@ class AssistChatCard extends BaseCard {
     dismissFollowUpHint();
     this.followUpHintDismissed = true;
   };
-
-  private formatDuration(start?: string, end?: string) {
-    if (!start || !end) {
-      return "";
-    }
-
-    const seconds = Math.max(0, (new Date(end).getTime() - new Date(start).getTime()) / 1000);
-    return Number.isFinite(seconds) ? `${seconds.toFixed(seconds < 10 ? 2 : 1)}s` : "";
-  }
-
-  private formatMessageTime(timestamp: string) {
-    try {
-      const date = new Date(timestamp);
-      if (this.hass?.locale) {
-        return formatTime(date, this.hass.locale);
-      }
-
-      return new Intl.DateTimeFormat(navigator.language, {
-        hour: "2-digit",
-        minute: "2-digit",
-      }).format(date);
-    } catch {
-      return timestamp;
-    }
-  }
-
-  private getProcessStageDisplayStatus(
-    status: ProcessStageStatus,
-    cancelled?: boolean
-  ): ProcessStageDisplayStatus {
-    return cancelled && status === "running" ? "cancelled" : status;
-  }
-
-  private getStageIcon(status: ProcessStageDisplayStatus) {
-    if (status === "done") {
-      return "mdi:check-circle";
-    }
-
-    if (status === "error") {
-      return "mdi:alert-circle";
-    }
-
-    if (status === "cancelled") {
-      return "mdi:stop-circle-outline";
-    }
-
-    return "mdi:progress-clock";
-  }
 
   private getInputPlaceholder() {
     return this.text("input_placeholder");
@@ -1850,28 +1436,12 @@ class AssistChatCard extends BaseCard {
   }
 
   private formatError(error: unknown) {
-    if (error instanceof DOMException) {
-      if (error.name === "NotAllowedError") {
-        return this.text("mic_denied");
-      }
-
-      if (error.name === "NotFoundError") {
-        return this.text("mic_not_found");
-      }
-
-      if (error.name === "NotSupportedError" || error.name === "SecurityError") {
-        return this.text("mic_https");
-      }
-
-      return error.message || error.name;
-    }
-
-    if (error && typeof error === "object") {
-      const maybeError = error as { message?: string; code?: string };
-      return maybeError.message || maybeError.code || this.text("request_rejected");
-    }
-
-    return this.text("request_rejected");
+    return formatAssistError(error, {
+      fallback: this.text("request_rejected"),
+      micDenied: this.text("mic_denied"),
+      micNotFound: this.text("mic_not_found"),
+      micHttps: this.text("mic_https"),
+    });
   }
 
   private getRunCount() {
@@ -1894,12 +1464,23 @@ class AssistChatCard extends BaseCard {
     return historyConversationId || (preserveLocalMessages ? this.conversationId : null);
   }
 
-  static styles = css`
+  static styles = [
+    assistConversationBubbleStyles,
+    assistTypingDotsStyles,
+    css`
     :host {
       height: 100%;
     }
 
+    .template-listener {
+      display: none;
+    }
+
     ha-card {
+      --assist-user-bubble: var(--assist-chat-user-bubble);
+      --assist-user-text: var(--assist-chat-user-text);
+      --assist-assistant-bubble: var(--assist-chat-assistant-bubble);
+      --assist-assistant-text: var(--assist-chat-assistant-text);
       background: var(--assist-chat-background);
       border: 0;
       border-radius: 20px;
@@ -2048,28 +1629,12 @@ class AssistChatCard extends BaseCard {
     }
 
     .bubble {
-      align-items: flex-start;
-      border-radius: 16px;
-      box-sizing: border-box;
-      display: flex;
       flex: 0 1 auto;
-      flex-direction: column;
-      font-size: 14px;
-      gap: 8px;
-      line-height: 1.45;
-      max-width: 88%;
-      min-width: 0;
-      overflow: hidden;
-      overflow-wrap: anywhere;
-      padding: 10px 12px;
     }
 
     .user .bubble {
-      display: inline-flex;
-      flex-direction: column;
       gap: 6px;
       max-width: 100%;
-      min-width: 0;
     }
 
     .tool-call-chip {
@@ -2139,21 +1704,6 @@ class AssistChatCard extends BaseCard {
       word-break: break-word;
     }
 
-    .user .bubble {
-      background: var(--assist-chat-user-bubble);
-      color: var(--assist-chat-user-text);
-    }
-
-    .assistant .bubble {
-      background: var(--assist-chat-assistant-bubble);
-      color: var(--assist-chat-assistant-text);
-    }
-
-    .assistant .bubble.loading,
-    .assistant .bubble.cancelled-bubble {
-      color: var(--secondary-text-color);
-    }
-
     .message-time {
       align-self: flex-end;
       font-size: 12px;
@@ -2168,13 +1718,6 @@ class AssistChatCard extends BaseCard {
       color: var(--secondary-text-color);
     }
 
-    .loading-status {
-      align-items: center;
-      display: inline-flex;
-      gap: 8px;
-    }
-
-    .error-bubble,
     .error {
       color: var(--error-color, #db4437);
     }
@@ -2418,42 +1961,8 @@ class AssistChatCard extends BaseCard {
       --mdc-icon-size: 20px;
     }
 
-    .typing-dots {
-      align-items: center;
-      display: inline-flex;
-      gap: 3px;
-    }
-
-    .typing-dots span {
-      animation: typing-dot 1.2s infinite ease-in-out;
-      background: currentColor;
-      border-radius: 50%;
-      display: block;
-      height: 5px;
-      opacity: 0.45;
-      width: 5px;
-    }
-
-    .typing-dots span:nth-child(2) {
-      animation-delay: 0.15s;
-    }
-
-    .typing-dots span:nth-child(3) {
-      animation-delay: 0.3s;
-    }
-
-    @keyframes typing-dot {
-      0%,
-      80%,
-      100% {
-        transform: translateY(0);
-      }
-      40% {
-        opacity: 1;
-        transform: translateY(-3px);
-      }
-    }
-  `;
+  `,
+  ];
 }
 
 customElements.define("assist-chat-card", AssistChatCard);

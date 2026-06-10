@@ -2,11 +2,22 @@ import { css, html, PropertyValues } from "lit";
 import { styleMap } from "lit/directives/style-map.js";
 import { handleActionConfig, HomeAssistant } from "custom-card-helpers";
 import { BaseCard } from "../../shared/base-card";
+import { getAssistStageLoadingLabel, getAssistWaitingLabel } from "../../shared/assist-labels";
+import { AssistPollController } from "../../shared/assist-poll-controller";
+import { AssistRunCache, isAssistRunFinished } from "../../shared/assist-run-cache";
+import {
+  assistConversationBubbleStyles,
+  assistTypingDotsStyles,
+} from "../../shared/assist-conversation-styles";
+import { formatAssistDuration, formatAssistError, getAssistStageIcon } from "../../shared/assist-format";
+import { renderAssistTypingDots } from "../../shared/assist-typing-dots";
 import {
   AssistPipeline,
   AssistPipelineDebugRun,
   PipelineRunEvent,
+  extractAssistConversationFromEvents,
   extractSpeechFromIntentOutput,
+  type AssistConversationFromEvents,
   getAssistRunCount,
   getAssistPipelineDebugRun,
   getRecentAssistPipelineDebugRuns,
@@ -14,48 +25,16 @@ import {
   listAssistPipelines,
   resolvePipelineId as resolveAssistPipelineId,
 } from "../../shared/assist-pipeline";
+import {
+  ASSIST_DEBUG_CARD_DEFAULTS,
+  type AssistDebugCardConfig,
+  type AudioVisualizationPosition,
+  type AudioVisualizationType,
+  getDebugConfigValue,
+  ULYSSE31_AUDIO_BACKGROUND,
+  ULYSSE31_AUDIO_COLOR,
+} from "./assist-debug-card-config";
 import "./assist-debug-card-editor";
-
-type MetadataMode = "hidden" | "compact" | "full";
-type AudioVisualizationType = "waveform" | "spectrum" | "meter" | "glow" | "ulysse31";
-type AudioVisualizationPosition = "background" | "top" | "between" | "below_chat";
-
-type AssistDebugCardConfig = {
-  type: string;
-  title?: string;
-  pipeline_id?: string;
-  run_count?: number;
-  minimalistic_mode?: boolean;
-  visualization_only?: boolean;
-  conversation_only?: boolean;
-  show_conversation?: boolean;
-  metadata_mode?: MetadataMode;
-  show_raw?: boolean;
-  show_thinking?: boolean;
-  show_summary?: boolean;
-  show_stt?: boolean;
-  show_intent?: boolean;
-  show_tts?: boolean;
-  mask_transcripts?: boolean;
-  background_color?: string;
-  surface_color?: string;
-  text_color?: string;
-  secondary_text_color?: string;
-  accent_color?: string;
-  user_chat_color?: string;
-  user_chat_text_color?: string;
-  assistant_chat_color?: string;
-  assistant_chat_text_color?: string;
-  audio_visualization?: boolean;
-  audio_visualization_type?: AudioVisualizationType;
-  audio_visualization_position?: AudioVisualizationPosition;
-  audio_visualization_height?: number;
-  audio_visualization_color?: string;
-  audio_visualization_secondary_color?: string;
-  audio_visualization_background?: string;
-  audio_visualization_opacity?: number;
-  audio_visualization_start_delay?: number;
-};
 
 type AssistRunListing = AssistPipelineDebugRun;
 
@@ -98,16 +77,10 @@ type RunModel = {
     message?: string;
   };
   events: PipelineRunEvent[];
+  conversation: AssistConversationFromEvents;
 };
 
-const DEFAULT_TITLE = "Assist debug";
-const DEFAULT_PIPELINE_ID = "preferred";
-const DEFAULT_RUN_COUNT = 5;
-const DEFAULT_METADATA_MODE: MetadataMode = "compact";
-const DEFAULT_AUDIO_VISUALIZATION_TYPE: AudioVisualizationType = "waveform";
-const DEFAULT_AUDIO_VISUALIZATION_POSITION: AudioVisualizationPosition = "below_chat";
-const ULYSSE31_AUDIO_COLOR = "#39ff14";
-const ULYSSE31_AUDIO_BACKGROUND = "#000000";
+const DEFAULTS = ASSIST_DEBUG_CARD_DEFAULTS;
 const CONVERSATION_REFRESH_MS = 2000;
 const THINKING_SCROLL_BOTTOM_THRESHOLD = 48;
 
@@ -136,7 +109,8 @@ class AssistDebugCard extends BaseCard {
   private readonly sessionStartedAt = Date.now();
   private loadToken = 0;
   private lastLoadKey = "";
-  private conversationRefreshTimer?: number;
+  private conversationPollController?: AssistPollController;
+  private runCache = new AssistRunCache();
   private thinkingDetailsOpen = false;
   private thinkingDetailsUserCollapsed = false;
   private thinkingDetailsRunId = "";
@@ -197,50 +171,11 @@ class AssistDebugCard extends BaseCard {
   }
 
   static getStubConfig() {
-    return {
-      title: DEFAULT_TITLE,
-      pipeline_id: DEFAULT_PIPELINE_ID,
-      run_count: DEFAULT_RUN_COUNT,
-      minimalistic_mode: false,
-      visualization_only: false,
-      conversation_only: false,
-      show_conversation: false,
-      metadata_mode: DEFAULT_METADATA_MODE,
-      show_raw: true,
-      show_thinking: true,
-      show_summary: true,
-      show_stt: true,
-      show_intent: true,
-      show_tts: true,
-      mask_transcripts: false,
-      audio_visualization: false,
-      audio_visualization_type: DEFAULT_AUDIO_VISUALIZATION_TYPE,
-      audio_visualization_position: DEFAULT_AUDIO_VISUALIZATION_POSITION,
-    };
+    return { ...DEFAULTS, type: "custom:assist-debug-card" };
   }
 
   setConfig(config: AssistDebugCardConfig) {
-    this.config = {
-      title: DEFAULT_TITLE,
-      pipeline_id: DEFAULT_PIPELINE_ID,
-      run_count: DEFAULT_RUN_COUNT,
-      minimalistic_mode: false,
-      visualization_only: false,
-      conversation_only: false,
-      show_conversation: false,
-      metadata_mode: DEFAULT_METADATA_MODE,
-      show_raw: true,
-      show_thinking: true,
-      show_summary: true,
-      show_stt: true,
-      show_intent: true,
-      show_tts: true,
-      mask_transcripts: false,
-      audio_visualization: false,
-      audio_visualization_type: DEFAULT_AUDIO_VISUALIZATION_TYPE,
-      audio_visualization_position: DEFAULT_AUDIO_VISUALIZATION_POSITION,
-      ...config,
-    };
+    this.config = { ...DEFAULTS, ...config };
   }
 
   connectedCallback() {
@@ -321,7 +256,7 @@ class AssistDebugCard extends BaseCard {
   }
 
   render() {
-    const title = this.config.title || DEFAULT_TITLE;
+    const title = getDebugConfigValue(this.config, "title");
     const pipelineName = this.getPipelineName(this.resolvedPipelineId);
     const styles = this.getCardStyles();
 
@@ -466,7 +401,7 @@ class AssistDebugCard extends BaseCard {
           ${backgroundVisualization}
           <div class="conversation conversation-only">
             <div class="bubble assistant loading">
-              ${this.renderTypingDots()}
+              ${renderAssistTypingDots()}
               <span>${this.loading ? "Loading conversation..." : "Waiting for a conversation..."}</span>
             </div>
           </div>
@@ -493,7 +428,7 @@ class AssistDebugCard extends BaseCard {
               ? html`<div class="bubble assistant error-bubble">${run.error?.message || "The assistant run failed."}</div>`
               : html`
                   <div class="bubble assistant loading">
-                    ${this.renderTypingDots()}
+                    ${renderAssistTypingDots()}
                     <span>${this.getConversationLoadingText(run, isProcessing)}</span>
                   </div>
                 `}
@@ -591,25 +526,15 @@ class AssistDebugCard extends BaseCard {
     `;
   }
 
-  private renderTypingDots() {
-    return html`
-      <span class="typing-dots" aria-hidden="true">
-        <span></span>
-        <span></span>
-        <span></span>
-      </span>
-    `;
-  }
-
   private renderSummary(run: RunModel) {
     const completed = run.stage === "done" || run.stage === "error";
-    const duration = this.formatDuration(run.started, run.finished);
+    const duration = formatAssistDuration(run.started, run.finished);
 
     return html`
       <details class="section summary" ?open=${completed}>
         <summary>
           <span class="status ${run.stage === "error" ? "error" : completed ? "done" : "running"}">
-            <ha-icon .icon=${this.getStatusIcon(run.stage === "error" ? "error" : completed ? "done" : "running")}></ha-icon>
+            <ha-icon .icon=${getAssistStageIcon(run.stage === "error" ? "error" : completed ? "done" : "running")}></ha-icon>
           </span>
           <span class="section-title">Run summary</span>
           <span class="duration">${duration || (this.loading ? "Updating" : "In progress")}</span>
@@ -646,7 +571,7 @@ class AssistDebugCard extends BaseCard {
 
   private renderStage(label: string, key: "stt" | "intent" | "tts", stage?: StageModel) {
     const status = this.getStageStatus(key, stage);
-    const metadataMode = this.config.metadata_mode || DEFAULT_METADATA_MODE;
+    const metadataMode = getDebugConfigValue(this.config, "metadata_mode");
     const open = status === "running" || status === "error";
     const primary = this.maskText(stage?.output || stage?.input || "");
 
@@ -654,7 +579,7 @@ class AssistDebugCard extends BaseCard {
       <details class="section" ?open=${open}>
         <summary>
           <span class="status ${status}">
-            <ha-icon .icon=${this.getStatusIcon(status)}></ha-icon>
+            <ha-icon .icon=${getAssistStageIcon(status)}></ha-icon>
           </span>
           <span class="section-title">${label}</span>
           <span class="duration">${this.getStageDuration(key)}</span>
@@ -708,7 +633,7 @@ class AssistDebugCard extends BaseCard {
       return "";
     }
 
-    const thinking = this.extractThinkingFromEvents(run.events);
+    const thinking = this.getThinkingFromEvents(run.events);
     const waitingForThinking = run.stage === "intent" && !run.intent?.done && !thinking;
 
     if (!thinking && !waitingForThinking) {
@@ -797,7 +722,7 @@ class AssistDebugCard extends BaseCard {
       return;
     }
 
-    const thinkingLength = this.extractThinkingFromEvents(run.events).length;
+    const thinkingLength = this.getThinkingFromEvents(run.events).length;
     if (thinkingLength <= this.thinkingLastScrolledLength || !this.thinkingAutoScrollEnabled) {
       return;
     }
@@ -834,8 +759,8 @@ class AssistDebugCard extends BaseCard {
 
   private async loadDebugData(force = false) {
     const loadKey = JSON.stringify({
-      pipeline_id: this.config.pipeline_id || DEFAULT_PIPELINE_ID,
-      run_count: this.config.run_count || DEFAULT_RUN_COUNT,
+      pipeline_id: getDebugConfigValue(this.config, "pipeline_id"),
+      run_count: getDebugConfigValue(this.config, "run_count"),
     });
 
     if (!force && loadKey === this.lastLoadKey && this.runModel) {
@@ -905,14 +830,27 @@ class AssistDebugCard extends BaseCard {
   }
 
   private async loadRun(pipelineId: string, runId: string, token = this.loadToken) {
-    const runResponse = await getAssistPipelineDebugRun(this.hass, pipelineId, runId);
+    const listing = this.runs.find((run) => run.pipeline_run_id === runId);
+    const cached = this.runCache.get(runId);
 
-    if (token !== this.loadToken) {
-      return;
+    let events = cached?.events;
+    if (!cached?.finished) {
+      const runResponse = await getAssistPipelineDebugRun(this.hass, pipelineId, runId);
+
+      if (token !== this.loadToken) {
+        return;
+      }
+
+      events = runResponse.events || [];
+      const conversation = extractAssistConversationFromEvents(events);
+      this.runCache.set(runId, {
+        events,
+        conversation,
+        finished: isAssistRunFinished(events),
+      });
     }
 
-    const listing = this.runs.find((run) => run.pipeline_run_id === runId);
-    this.runModel = this.buildRunModel(pipelineId, runId, runResponse.events || [], listing);
+    this.runModel = this.buildRunModel(pipelineId, runId, events || [], listing);
   }
 
   private buildRunModel(
@@ -921,41 +859,82 @@ class AssistDebugCard extends BaseCard {
     events: PipelineRunEvent[],
     listing?: AssistRunListing
   ): RunModel {
-    const model: RunModel = {
+    const conversation = extractAssistConversationFromEvents(events);
+    const metadata = this.extractDebugStageMetadata(events);
+    const stage = this.resolveRunStage(conversation, events);
+
+    return {
       pipelineId,
       pipelineName: this.getPipelineName(pipelineId),
       runId,
-      stage: "ready",
-      started: listing ? new Date(listing.timestamp) : undefined,
+      stage,
+      started:
+        listing?.timestamp
+          ? new Date(listing.timestamp)
+          : conversation.process.started
+            ? new Date(conversation.process.started)
+            : undefined,
+      finished: conversation.process.finished ? new Date(conversation.process.finished) : undefined,
       events,
+      conversation,
+      language: metadata.language,
+      run: metadata.run,
+      stt: metadata.stt,
+      intent: metadata.intent,
+      tts: metadata.tts,
+      ttsAudio: metadata.ttsAudio,
+      error:
+        metadata.error ||
+        (conversation.errorText ? { message: conversation.errorText } : undefined),
     };
+  }
+
+  private resolveRunStage(
+    conversation: AssistConversationFromEvents,
+    events: PipelineRunEvent[]
+  ): RunModel["stage"] {
+    if (events.some((event) => event.type === "wake_word-start" || event.type === "wake_word-end")) {
+      const processStage = conversation.process.stage;
+      if (processStage === "ready" || processStage === "stt") {
+        return "wake_word";
+      }
+    }
+
+    return conversation.process.stage as RunModel["stage"];
+  }
+
+  private extractDebugStageMetadata(events: PipelineRunEvent[]) {
+    let run: Record<string, any> | undefined;
+    let language = "";
+    let stt: RunModel["stt"];
+    let intent: RunModel["intent"];
+    let tts: RunModel["tts"];
+    let ttsAudio: TtsAudio | undefined;
+    let error: RunModel["error"];
 
     for (const event of events) {
       const data = event.data || {};
 
       if (event.type === "run-start") {
-        model.run = data;
-        model.language = String(data.language || "");
-        model.started = new Date(event.timestamp);
-        model.ttsAudio = this.extractTtsAudio(data.tts_output, event.timestamp) || model.ttsAudio;
+        run = data;
+        language = String(data.language || "");
+        ttsAudio = this.extractTtsAudio(data.tts_output, event.timestamp) || ttsAudio;
       } else if (event.type === "stt-start") {
-        model.stage = "stt";
-        model.stt = {
+        stt = {
           engine: String(data.engine || ""),
           language: data.metadata?.language,
           done: false,
           raw: data,
         };
       } else if (event.type === "stt-end") {
-        model.stt = {
-          ...(model.stt || { done: false }),
+        stt = {
+          ...(stt || { done: false }),
           output: data.stt_output?.text,
           done: true,
-          raw: { ...(model.stt?.raw || {}), ...data },
+          raw: { ...(stt?.raw || {}), ...data },
         };
       } else if (event.type === "intent-start") {
-        model.stage = "intent";
-        model.intent = {
+        intent = {
           engine: String(data.engine || ""),
           language: String(data.language || ""),
           input: data.intent_input,
@@ -964,16 +943,15 @@ class AssistDebugCard extends BaseCard {
           raw: data,
         };
       } else if (event.type === "intent-end") {
-        model.intent = {
-          ...(model.intent || { done: false }),
+        intent = {
+          ...(intent || { done: false }),
           output: extractSpeechFromIntentOutput(data.intent_output),
           processedLocally: data.processed_locally,
           done: true,
-          raw: { ...(model.intent?.raw || {}), ...data },
+          raw: { ...(intent?.raw || {}), ...data },
         };
       } else if (event.type === "tts-start") {
-        model.stage = "tts";
-        model.tts = {
+        tts = {
           engine: String(data.engine || ""),
           language: String(data.language || ""),
           voice: data.voice,
@@ -982,26 +960,21 @@ class AssistDebugCard extends BaseCard {
           raw: data,
         };
       } else if (event.type === "tts-end") {
-        model.tts = {
-          ...(model.tts || { done: false }),
+        tts = {
+          ...(tts || { done: false }),
           done: true,
-          raw: { ...(model.tts?.raw || {}), ...data },
+          raw: { ...(tts?.raw || {}), ...data },
         };
-        model.ttsAudio = this.extractTtsAudio(data.tts_output, event.timestamp) || model.ttsAudio;
-      } else if (event.type === "run-end") {
-        model.stage = "done";
-        model.finished = new Date(event.timestamp);
+        ttsAudio = this.extractTtsAudio(data.tts_output, event.timestamp) || ttsAudio;
       } else if (event.type === "error") {
-        model.stage = "error";
-        model.finished = new Date(event.timestamp);
-        model.error = {
+        error = {
           code: data.code,
           message: data.message,
         };
       }
     }
 
-    return model;
+    return { run, language, stt, intent, tts, ttsAudio, error };
   }
 
   private async selectRun(runId: string) {
@@ -1054,21 +1027,37 @@ class AssistDebugCard extends BaseCard {
     }
   }
 
+  private getConversationPollController() {
+    if (!this.conversationPollController) {
+      this.conversationPollController = new AssistPollController({
+        intervalMs: CONVERSATION_REFRESH_MS,
+        maxBackoffMs: CONVERSATION_REFRESH_MS * 30,
+        shouldPoll: () => this.shouldLiveRefresh() && Boolean(this.hass),
+        onPoll: async () => {
+          if (this.loading) {
+            return true;
+          }
+
+          try {
+            await this.loadDebugData(true);
+            return true;
+          } catch {
+            return false;
+          }
+        },
+      });
+    }
+
+    return this.conversationPollController;
+  }
+
   private syncConversationRefreshTimer() {
     if (!this.shouldLiveRefresh() || !this.hass) {
       this.clearConversationRefreshTimer();
       return;
     }
 
-    if (this.conversationRefreshTimer !== undefined) {
-      return;
-    }
-
-    this.conversationRefreshTimer = window.setInterval(() => {
-      if (!this.loading) {
-        this.loadDebugData(true);
-      }
-    }, CONVERSATION_REFRESH_MS);
+    this.getConversationPollController().sync();
   }
 
   private shouldLiveRefresh() {
@@ -1104,46 +1093,18 @@ class AssistDebugCard extends BaseCard {
     return Boolean(this.config.show_thinking) && this.isLatestSelectedRun() && !this.isRunFinished(run);
   }
 
-  private extractThinkingFromEvents(events: PipelineRunEvent[]) {
-    const sorted = [...events].sort(
-      (a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
-    );
-    let thinking = "";
-
-    for (const event of sorted) {
-      if (event.type !== "intent-progress") {
-        continue;
-      }
-
-      const chunk = event.data?.chat_log_delta?.thinking_content;
-      if (typeof chunk === "string" && chunk) {
-        thinking += chunk;
-      }
-    }
+  private getThinkingFromEvents(events: PipelineRunEvent[]) {
+    const thinking = extractAssistConversationFromEvents(events).thinking;
 
     if (this.config.mask_transcripts && thinking) {
       return "[masked]";
     }
 
-    return this.trimThinkingWhitespace(thinking);
-  }
-
-  private trimThinkingWhitespace(text: string) {
-    return text
-      .replace(/\r\n/g, "\n")
-      .split("\n")
-      .map((line) => line.trimStart())
-      .join("\n")
-      .trim();
+    return thinking;
   }
 
   private clearConversationRefreshTimer() {
-    if (this.conversationRefreshTimer === undefined) {
-      return;
-    }
-
-    window.clearInterval(this.conversationRefreshTimer);
-    this.conversationRefreshTimer = undefined;
+    this.conversationPollController?.stop();
   }
 
   private setupAudioVisibilityTracking() {
@@ -2120,7 +2081,7 @@ class AssistDebugCard extends BaseCard {
   }
 
   private getRunCount() {
-    return getAssistRunCount(this.config.run_count, DEFAULT_RUN_COUNT, 1);
+    return getAssistRunCount(this.config.run_count, DEFAULTS.run_count, 1);
   }
 
   private getPipelineName(pipelineId: string) {
@@ -2156,29 +2117,7 @@ class AssistDebugCard extends BaseCard {
       start = this.runModel?.events.find((event) => event.type === "stt-start")?.timestamp;
     }
     const end = this.runModel?.events.find((event) => event.type === `${key}-end`)?.timestamp;
-    return this.formatDuration(start ? new Date(start) : undefined, end ? new Date(end) : undefined);
-  }
-
-  private getStatusIcon(status: string) {
-    switch (status) {
-      case "done":
-        return "mdi:check-circle";
-      case "running":
-        return "mdi:progress-clock";
-      case "error":
-        return "mdi:alert-circle";
-      default:
-        return "mdi:circle-outline";
-    }
-  }
-
-  private formatDuration(start?: Date, end?: Date) {
-    if (!start || !end) {
-      return "";
-    }
-
-    const seconds = Math.max(0, (end.getTime() - start.getTime()) / 1000);
-    return `${seconds.toFixed(seconds < 10 ? 2 : 1)}s`;
+    return formatAssistDuration(start, end);
   }
 
   private formatTime(timestamp: string) {
@@ -2210,29 +2149,21 @@ class AssistDebugCard extends BaseCard {
 
   private getConversationMessages(run: RunModel) {
     return {
-      userText: this.maskText(run.stt?.output || run.intent?.input || ""),
-      assistantText: this.maskText(run.tts?.input || this.extractAssistantSpeech(run) || ""),
+      userText: this.maskText(run.conversation.userText),
+      assistantText: this.maskText(run.conversation.assistantText),
     };
   }
 
   private getConversationLoadingText(run: RunModel, isProcessing: boolean) {
     if (!isProcessing) {
-      return "Waiting for reply...";
+      return getAssistWaitingLabel();
     }
 
-    if (run.stage === "stt") {
-      return "Listening...";
+    if (run.stage === "stt" || run.stage === "intent" || run.stage === "tts") {
+      return getAssistStageLoadingLabel(run.stage);
     }
 
-    if (run.stage === "intent") {
-      return "Thinking...";
-    }
-
-    if (run.stage === "tts") {
-      return "Preparing reply...";
-    }
-
-    return "Processing...";
+    return getAssistStageLoadingLabel("ready");
   }
 
   private extractTtsAudio(output: any, timestamp?: string): TtsAudio | undefined {
@@ -2271,12 +2202,7 @@ class AssistDebugCard extends BaseCard {
   }
 
   private formatError(error: unknown) {
-    if (error && typeof error === "object") {
-      const maybeError = error as { message?: string; code?: string };
-      return maybeError.message || maybeError.code || "Home Assistant rejected the debug request.";
-    }
-
-    return "Home Assistant rejected the debug request.";
+    return formatAssistError(error, { fallback: "Home Assistant rejected the debug request." });
   }
 
   private localize(key: string) {
@@ -2296,7 +2222,7 @@ class AssistDebugCard extends BaseCard {
       type === "glow" ||
       type === "ulysse31"
       ? type
-      : DEFAULT_AUDIO_VISUALIZATION_TYPE;
+      : DEFAULTS.audio_visualization_type;
   }
 
   private getAudioVisualizationPosition(): AudioVisualizationPosition {
@@ -2304,7 +2230,7 @@ class AssistDebugCard extends BaseCard {
 
     return position === "background" || position === "top" || position === "between" || position === "below_chat"
       ? position
-      : DEFAULT_AUDIO_VISUALIZATION_POSITION;
+      : DEFAULTS.audio_visualization_position;
   }
 
   private getAudioVisualizationHeight() {
@@ -2352,8 +2278,16 @@ class AssistDebugCard extends BaseCard {
     };
   }
 
-  static styles = css`
+  static styles = [
+    assistConversationBubbleStyles,
+    assistTypingDotsStyles,
+    css`
     ha-card {
+      --assist-user-bubble: var(--assist-debug-user-chat);
+      --assist-user-text: var(--assist-debug-user-chat-text);
+      --assist-assistant-bubble: var(--assist-debug-assistant-chat);
+      --assist-assistant-text: var(--assist-debug-assistant-chat-text);
+      --assist-secondary-text: var(--assist-debug-secondary-text);
       background: var(--assist-debug-background);
       border: 0;
       border-radius: 20px;
@@ -2529,38 +2463,20 @@ class AssistDebugCard extends BaseCard {
     }
 
     .bubble {
-      border-radius: 16px;
       font-size: 13px;
       line-height: 1.35;
-      max-width: 88%;
-      padding: 10px 12px;
     }
 
     .bubble.user {
-      background: var(--assist-debug-user-chat);
-      color: var(--assist-debug-user-chat-text);
       justify-self: end;
     }
 
     .bubble.assistant {
-      background: var(--assist-debug-assistant-chat);
-      color: var(--assist-debug-assistant-chat-text);
       justify-self: start;
     }
 
     .conversation-only {
       min-height: 68px;
-    }
-
-    .bubble.loading {
-      align-items: center;
-      color: var(--assist-debug-secondary-text);
-      display: inline-flex;
-      gap: 8px;
-    }
-
-    .error-bubble {
-      color: var(--error-color, #db4437);
     }
 
     .audio-visualization {
@@ -2645,42 +2561,6 @@ class AssistDebugCard extends BaseCard {
     .audio-start-button {
       background: var(--assist-debug-user-chat);
       color: var(--assist-debug-user-chat-text);
-    }
-
-    .typing-dots {
-      align-items: center;
-      display: inline-flex;
-      gap: 3px;
-    }
-
-    .typing-dots span {
-      animation: typing-dot 1.2s infinite ease-in-out;
-      background: currentColor;
-      border-radius: 50%;
-      display: block;
-      height: 5px;
-      opacity: 0.45;
-      width: 5px;
-    }
-
-    .typing-dots span:nth-child(2) {
-      animation-delay: 0.15s;
-    }
-
-    .typing-dots span:nth-child(3) {
-      animation-delay: 0.3s;
-    }
-
-    @keyframes typing-dot {
-      0%,
-      80%,
-      100% {
-        transform: translateY(0);
-      }
-      40% {
-        opacity: 1;
-        transform: translateY(-3px);
-      }
     }
 
     .timeline {
@@ -2841,7 +2721,8 @@ class AssistDebugCard extends BaseCard {
         padding-left: 12px;
       }
     }
-  `;
+  `,
+  ];
 }
 
 class ConversationDebugCard extends AssistDebugCard {}

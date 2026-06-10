@@ -68,8 +68,11 @@ class HaCardsTemplateText extends LitElement {
   variables: Record<string, unknown> = {};
   entityIds: string[] = [];
   fallback = "";
+  /** When true, dispatches `lines-changed` with newline-split trimmed lines instead of rendering text. */
+  multiline = false;
 
   private _rendered = "";
+  private _lines: string[] = [];
   private _unsubRenderTemplate?: Promise<(() => void) | undefined>;
 
   static properties = {
@@ -78,6 +81,7 @@ class HaCardsTemplateText extends LitElement {
     variables: { attribute: false },
     entityIds: { attribute: false },
     fallback: { type: String },
+    multiline: { type: Boolean },
   };
 
   connectedCallback() {
@@ -102,7 +106,31 @@ class HaCardsTemplateText extends LitElement {
   }
 
   render() {
+    if (this.multiline) {
+      return html``;
+    }
+
     return html`<span>${this._rendered || this.fallback}</span>`;
+  }
+
+  private _parseLines(value: string) {
+    return value.split("\n").map((line) => line.trim()).filter(Boolean);
+  }
+
+  private _dispatchLines(value: string) {
+    const lines = this._parseLines(value);
+    if (lines.join("\n") === this._lines.join("\n")) {
+      return;
+    }
+
+    this._lines = lines;
+    this.dispatchEvent(
+      new CustomEvent("lines-changed", {
+        detail: { lines },
+        bubbles: true,
+        composed: true,
+      })
+    );
   }
 
   private _formatResult(result: RenderTemplateResult["result"]) {
@@ -122,6 +150,9 @@ class HaCardsTemplateText extends LitElement {
 
     if (!this.hass?.connection || !this.template) {
       this._rendered = "";
+      if (this.multiline) {
+        this._dispatchLines(this.fallback || "");
+      }
       return;
     }
 
@@ -130,8 +161,15 @@ class HaCardsTemplateText extends LitElement {
         (message: RenderTemplateResult | RenderTemplateError) => {
           if ("error" in message) {
             this._rendered = this.fallback;
+            if (this.multiline) {
+              this._dispatchLines(this.fallback);
+            }
           } else {
-            this._rendered = this._formatResult(message.result);
+            const rendered = this._formatResult(message.result);
+            this._rendered = rendered;
+            if (this.multiline) {
+              this._dispatchLines(rendered);
+            }
           }
           this.requestUpdate();
         },
@@ -146,6 +184,9 @@ class HaCardsTemplateText extends LitElement {
       await this._unsubRenderTemplate;
     } catch {
       this._rendered = this.fallback;
+      if (this.multiline) {
+        this._dispatchLines(this.fallback);
+      }
       this._unsubRenderTemplate = undefined;
       this.requestUpdate();
     }

@@ -1,4 +1,5 @@
 import type { HomeAssistant } from "custom-card-helpers";
+import { getLastUsedPipelineId } from "./assist-chat-storage";
 
 export type AssistPipeline = {
   id: string;
@@ -88,6 +89,54 @@ export type AssistChatLogDelta =
       tool_result?: unknown;
     };
 
+export type AssistChatLogAccumulator = {
+  currentDeltaRole: string;
+  assistantText: string;
+  thinking: string;
+  toolCalls: AssistToolCall[];
+};
+
+export function createAssistChatLogAccumulator(): AssistChatLogAccumulator {
+  return {
+    currentDeltaRole: "",
+    assistantText: "",
+    thinking: "",
+    toolCalls: [],
+  };
+}
+
+export function applyAssistChatLogDelta(acc: AssistChatLogAccumulator, delta: AssistChatLogDelta): void {
+  if (delta.role) {
+    acc.currentDeltaRole = delta.role;
+  }
+
+  if (acc.currentDeltaRole === "assistant") {
+    if ("content" in delta && delta.content) {
+      acc.assistantText += delta.content;
+    }
+
+    if ("thinking_content" in delta && delta.thinking_content) {
+      acc.thinking += delta.thinking_content;
+    }
+
+    if ("tool_calls" in delta && Array.isArray(delta.tool_calls)) {
+      acc.toolCalls = upsertAssistToolCalls(acc.toolCalls, delta.tool_calls);
+    }
+  } else if (
+    acc.currentDeltaRole === "tool_result" &&
+    "tool_call_id" in delta &&
+    delta.tool_call_id
+  ) {
+    acc.toolCalls = upsertAssistToolCalls(acc.toolCalls, [
+      {
+        id: delta.tool_call_id,
+        tool_name: delta.tool_name || "tool",
+        tool_result: "tool_result" in delta ? delta.tool_result : undefined,
+      },
+    ]);
+  }
+}
+
 export type PipelineRunEvent = {
   type:
     | "run-start"
@@ -128,41 +177,6 @@ export type AssistPipelineUnsubscribe = () => void;
 export const DEFAULT_ASSIST_RUN_COUNT = 5;
 export const MIN_ASSIST_RUN_COUNT = 0;
 export const MAX_ASSIST_RUN_COUNT = 20;
-export const LAST_USED_PIPELINE_KEY = "assist-chat-card:last-used-pipeline";
-export const FOLLOW_UP_HINT_DISMISSED_KEY = "assist-chat-card:follow-up-hint-dismissed";
-
-export function getLastUsedPipelineId(): string | null {
-  try {
-    return window.localStorage.getItem(LAST_USED_PIPELINE_KEY);
-  } catch {
-    return null;
-  }
-}
-
-export function setLastUsedPipelineId(pipelineId: string) {
-  try {
-    window.localStorage.setItem(LAST_USED_PIPELINE_KEY, pipelineId);
-  } catch {
-    // Ignore storage failures in restricted contexts.
-  }
-}
-
-export function isFollowUpHintDismissed(): boolean {
-  try {
-    return window.localStorage.getItem(FOLLOW_UP_HINT_DISMISSED_KEY) === "true";
-  } catch {
-    return false;
-  }
-}
-
-export function dismissFollowUpHint() {
-  try {
-    window.localStorage.setItem(FOLLOW_UP_HINT_DISMISSED_KEY, "true");
-  } catch {
-    // Ignore storage failures in restricted contexts.
-  }
-}
-
 export function isBuiltInConversationAgent(pipeline?: AssistPipeline): boolean {
   const engine = pipeline?.conversation_engine;
   return !engine || engine === "conversation.home_assistant";
@@ -200,30 +214,6 @@ export function getAssistPipelineDebugRun(
 export function isUnauthorizedWsError(error: unknown): boolean {
   const code = (error as { code?: string } | null)?.code;
   return code === "unauthorized" || code === "not_allowed" || code === "forbidden";
-}
-
-export async function fetchRecentAssistPipelineDebugRuns(
-  hass: HomeAssistant,
-  pipelineId: string,
-  runCount = DEFAULT_ASSIST_RUN_COUNT
-): Promise<AssistPipelineDebugRunDetails[]> {
-  const count = getAssistRunCount(runCount);
-  if (count === 0) {
-    return [];
-  }
-
-  const response = await listAssistPipelineDebugRuns(hass, pipelineId);
-  const recentRuns = getRecentAssistPipelineDebugRuns(response.pipeline_runs || [], count);
-
-  return Promise.all(
-    recentRuns.map(async (run) => {
-      const details = await getAssistPipelineDebugRun(hass, pipelineId, run.pipeline_run_id);
-      return {
-        ...run,
-        events: details.events || [],
-      };
-    })
-  );
 }
 
 export function runAssistPipeline(
@@ -303,11 +293,9 @@ export function buildAssistProcessModel(events: PipelineRunEvent[]) {
 export function extractAssistConversationFromEvents(events: PipelineRunEvent[]): AssistConversationFromEvents {
   const process = createAssistProcessModel();
   let userText = "";
-  let assistantText = "";
-  let thinking = "";
   let errorText = "";
   let conversationId: string | null = null;
-  let currentDeltaRole = "";
+  const chatLog = createAssistChatLogAccumulator();
 
   for (const event of sortEventsByTimestamp(events)) {
     const data = event.data || {};
@@ -318,42 +306,23 @@ export function extractAssistConversationFromEvents(events: PipelineRunEvent[]):
     } else if (event.type === "intent-start") {
       userText = extractText(data.intent_input) || userText;
     } else if (event.type === "intent-progress" && data.chat_log_delta) {
-      const delta = data.chat_log_delta as AssistChatLogDelta;
-      if (delta.role) {
-        currentDeltaRole = delta.role;
-      }
-
-      if (currentDeltaRole === "assistant") {
-        if ("content" in delta && delta.content) {
-          assistantText += delta.content;
-        }
-
-        if ("thinking_content" in delta && delta.thinking_content) {
-          thinking += delta.thinking_content;
-        }
-
-        if ("tool_calls" in delta && Array.isArray(delta.tool_calls)) {
-          process.toolCalls = upsertAssistToolCalls(process.toolCalls, delta.tool_calls);
-        }
-      } else if (currentDeltaRole === "tool_result" && "tool_call_id" in delta && delta.tool_call_id) {
-        process.toolCalls = upsertAssistToolCalls(process.toolCalls, [
-          {
-            id: delta.tool_call_id,
-            tool_name: delta.tool_name || "tool",
-            tool_result: "tool_result" in delta ? delta.tool_result : undefined,
-          },
-        ]);
-      }
+      applyAssistChatLogDelta(chatLog, data.chat_log_delta as AssistChatLogDelta);
+      process.toolCalls = chatLog.toolCalls;
     } else if (event.type === "intent-end") {
       conversationId = data.intent_output?.conversation_id || conversationId;
       const speech = extractSpeechFromIntentOutput(data.intent_output);
-      assistantText = speech || assistantText;
+      if (speech) {
+        chatLog.assistantText = speech;
+      }
 
       if (data.intent_output?.response?.response_type === "error") {
-        errorText = assistantText || "The assistant run failed.";
+        errorText = chatLog.assistantText || "The assistant run failed.";
       }
     } else if (event.type === "tts-start") {
-      assistantText = extractText(data.tts_input) || assistantText;
+      const ttsInput = extractText(data.tts_input);
+      if (ttsInput) {
+        chatLog.assistantText = ttsInput;
+      }
     } else if (event.type === "error") {
       errorText = extractText(data.message) || extractText(data.code) || "The assistant run failed.";
     }
@@ -361,8 +330,8 @@ export function extractAssistConversationFromEvents(events: PipelineRunEvent[]):
 
   return {
     userText,
-    assistantText,
-    thinking: trimAssistText(thinking),
+    assistantText: chatLog.assistantText,
+    thinking: trimAssistText(chatLog.thinking),
     toolCalls: [...process.toolCalls],
     errorText,
     conversationId,
@@ -486,7 +455,7 @@ function extractText(value: unknown) {
   return typeof value === "string" ? value : "";
 }
 
-function trimAssistText(text: string) {
+export function trimAssistText(text: string) {
   return text
     .replace(/\r\n/g, "\n")
     .split("\n")
