@@ -2,6 +2,7 @@ import { css, html, PropertyValues } from "lit";
 import { styleMap } from "lit/directives/style-map.js";
 import { handleActionConfig, HomeAssistant } from "custom-card-helpers";
 import { BaseCard } from "../../shared/base-card";
+import { DEFAULT_ACCENT_BLUE } from "../../shared/card-colors";
 import { buildValueCheckTemplateVariables } from "../../shared/template-text";
 import "../../shared/template-text";
 import "./possible-issues-card-editor";
@@ -87,7 +88,7 @@ type ValueCheckIssueEntity = BaseIssueEntity & {
 type IssueEntity = StateIssueEntity | ValueCheckIssueEntity;
 
 const DEFAULT_TITLE = "Possible Issues";
-const DEFAULT_BACKGROUND_COLOR = "#44739e";
+const DEFAULT_BACKGROUND_COLOR = DEFAULT_ACCENT_BLUE;
 const DEFAULT_DOMAINS = ["sensor", "light", "switch"];
 const DEFAULT_ISSUE_STATES = ["unavailable"];
 const DEFAULT_ROW_DETAIL: RowDetailMode = "none";

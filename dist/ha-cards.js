@@ -3,18 +3,18 @@
  * Copyright 2019 Google LLC
  * SPDX-License-Identifier: BSD-3-Clause
  */
-const nt = globalThis, se = nt.ShadowRoot && (nt.ShadyCSS === void 0 || nt.ShadyCSS.nativeShadow) && "adoptedStyleSheets" in Document.prototype && "replace" in CSSStyleSheet.prototype, ae = Symbol(), le = /* @__PURE__ */ new WeakMap();
-let qe = class {
+const ut = globalThis, Ee = ut.ShadowRoot && (ut.ShadyCSS === void 0 || ut.ShadyCSS.nativeShadow) && "adoptedStyleSheets" in Document.prototype && "replace" in CSSStyleSheet.prototype, Ie = Symbol(), Ne = /* @__PURE__ */ new WeakMap();
+let Ti = class {
   constructor(t, e, i) {
-    if (this._$cssResult$ = !0, i !== ae) throw Error("CSSResult is not constructable. Use `unsafeCSS` or `css` instead.");
+    if (this._$cssResult$ = !0, i !== Ie) throw Error("CSSResult is not constructable. Use `unsafeCSS` or `css` instead.");
     this.cssText = t, this.t = e;
   }
   get styleSheet() {
     let t = this.o;
     const e = this.t;
-    if (se && t === void 0) {
+    if (Ee && t === void 0) {
       const i = e !== void 0 && e.length === 1;
-      i && (t = le.get(e)), t === void 0 && ((this.o = t = new CSSStyleSheet()).replaceSync(this.cssText), i && le.set(e, t));
+      i && (t = Ne.get(e)), t === void 0 && ((this.o = t = new CSSStyleSheet()).replaceSync(this.cssText), i && Ne.set(e, t));
     }
     return t;
   }
@@ -22,95 +22,95 @@ let qe = class {
     return this.cssText;
   }
 };
-const ei = (n) => new qe(typeof n == "string" ? n : n + "", void 0, ae), w = (n, ...t) => {
-  const e = n.length === 1 ? n[0] : t.reduce((i, s, a) => i + ((o) => {
+const es = (a) => new Ti(typeof a == "string" ? a : a + "", void 0, Ie), w = (a, ...t) => {
+  const e = a.length === 1 ? a[0] : t.reduce((i, s, n) => i + ((o) => {
     if (o._$cssResult$ === !0) return o.cssText;
     if (typeof o == "number") return o;
     throw Error("Value passed to 'css' function must be a 'css' function result: " + o + ". Use 'unsafeCSS' to pass non-literal values, but take care to ensure page security.");
-  })(s) + n[a + 1], n[0]);
-  return new qe(e, n, ae);
-}, ii = (n, t) => {
-  if (se) n.adoptedStyleSheets = t.map((e) => e instanceof CSSStyleSheet ? e : e.styleSheet);
+  })(s) + a[n + 1], a[0]);
+  return new Ti(e, a, Ie);
+}, is = (a, t) => {
+  if (Ee) a.adoptedStyleSheets = t.map((e) => e instanceof CSSStyleSheet ? e : e.styleSheet);
   else for (const e of t) {
-    const i = document.createElement("style"), s = nt.litNonce;
-    s !== void 0 && i.setAttribute("nonce", s), i.textContent = e.cssText, n.appendChild(i);
+    const i = document.createElement("style"), s = ut.litNonce;
+    s !== void 0 && i.setAttribute("nonce", s), i.textContent = e.cssText, a.appendChild(i);
   }
-}, ce = se ? (n) => n : (n) => n instanceof CSSStyleSheet ? ((t) => {
+}, Pe = Ee ? (a) => a : (a) => a instanceof CSSStyleSheet ? ((t) => {
   let e = "";
   for (const i of t.cssRules) e += i.cssText;
-  return ei(e);
-})(n) : n;
+  return es(e);
+})(a) : a;
 /**
  * @license
  * Copyright 2017 Google LLC
  * SPDX-License-Identifier: BSD-3-Clause
  */
-const { is: si, defineProperty: ai, getOwnPropertyDescriptor: oi, getOwnPropertyNames: ni, getOwnPropertySymbols: ri, getPrototypeOf: li } = Object, C = globalThis, de = C.trustedTypes, ci = de ? de.emptyScript : "", xt = C.reactiveElementPolyfillSupport, G = (n, t) => n, jt = { toAttribute(n, t) {
+const { is: ss, defineProperty: ns, getOwnPropertyDescriptor: as, getOwnPropertyNames: os, getOwnPropertySymbols: rs, getPrototypeOf: ls } = Object, T = globalThis, Oe = T.trustedTypes, cs = Oe ? Oe.emptyScript : "", Rt = T.reactiveElementPolyfillSupport, et = (a, t) => a, de = { toAttribute(a, t) {
   switch (t) {
     case Boolean:
-      n = n ? ci : null;
+      a = a ? cs : null;
       break;
     case Object:
     case Array:
-      n = n == null ? n : JSON.stringify(n);
+      a = a == null ? a : JSON.stringify(a);
   }
-  return n;
-}, fromAttribute(n, t) {
-  let e = n;
+  return a;
+}, fromAttribute(a, t) {
+  let e = a;
   switch (t) {
     case Boolean:
-      e = n !== null;
+      e = a !== null;
       break;
     case Number:
-      e = n === null ? null : Number(n);
+      e = a === null ? null : Number(a);
       break;
     case Object:
     case Array:
       try {
-        e = JSON.parse(n);
+        e = JSON.parse(a);
       } catch {
         e = null;
       }
   }
   return e;
-} }, Ge = (n, t) => !si(n, t), he = { attribute: !0, type: String, converter: jt, reflect: !1, useDefault: !1, hasChanged: Ge };
-Symbol.metadata ?? (Symbol.metadata = Symbol("metadata")), C.litPropertyMetadata ?? (C.litPropertyMetadata = /* @__PURE__ */ new WeakMap());
-let R = class extends HTMLElement {
+} }, Ei = (a, t) => !ss(a, t), Fe = { attribute: !0, type: String, converter: de, reflect: !1, useDefault: !1, hasChanged: Ei };
+Symbol.metadata ?? (Symbol.metadata = Symbol("metadata")), T.litPropertyMetadata ?? (T.litPropertyMetadata = /* @__PURE__ */ new WeakMap());
+let H = class extends HTMLElement {
   static addInitializer(t) {
     this._$Ei(), (this.l ?? (this.l = [])).push(t);
   }
   static get observedAttributes() {
     return this.finalize(), this._$Eh && [...this._$Eh.keys()];
   }
-  static createProperty(t, e = he) {
+  static createProperty(t, e = Fe) {
     if (e.state && (e.attribute = !1), this._$Ei(), this.prototype.hasOwnProperty(t) && ((e = Object.create(e)).wrapped = !0), this.elementProperties.set(t, e), !e.noAccessor) {
       const i = Symbol(), s = this.getPropertyDescriptor(t, i, e);
-      s !== void 0 && ai(this.prototype, t, s);
+      s !== void 0 && ns(this.prototype, t, s);
     }
   }
   static getPropertyDescriptor(t, e, i) {
-    const { get: s, set: a } = oi(this.prototype, t) ?? { get() {
+    const { get: s, set: n } = as(this.prototype, t) ?? { get() {
       return this[e];
     }, set(o) {
       this[e] = o;
     } };
     return { get: s, set(o) {
       const r = s == null ? void 0 : s.call(this);
-      a == null || a.call(this, o), this.requestUpdate(t, r, i);
+      n == null || n.call(this, o), this.requestUpdate(t, r, i);
     }, configurable: !0, enumerable: !0 };
   }
   static getPropertyOptions(t) {
-    return this.elementProperties.get(t) ?? he;
+    return this.elementProperties.get(t) ?? Fe;
   }
   static _$Ei() {
-    if (this.hasOwnProperty(G("elementProperties"))) return;
-    const t = li(this);
+    if (this.hasOwnProperty(et("elementProperties"))) return;
+    const t = ls(this);
     t.finalize(), t.l !== void 0 && (this.l = [...t.l]), this.elementProperties = new Map(t.elementProperties);
   }
   static finalize() {
-    if (this.hasOwnProperty(G("finalized"))) return;
-    if (this.finalized = !0, this._$Ei(), this.hasOwnProperty(G("properties"))) {
-      const e = this.properties, i = [...ni(e), ...ri(e)];
+    if (this.hasOwnProperty(et("finalized"))) return;
+    if (this.finalized = !0, this._$Ei(), this.hasOwnProperty(et("properties"))) {
+      const e = this.properties, i = [...os(e), ...rs(e)];
       for (const s of i) this.createProperty(s, e[s]);
     }
     const t = this[Symbol.metadata];
@@ -129,8 +129,8 @@ let R = class extends HTMLElement {
     const e = [];
     if (Array.isArray(t)) {
       const i = new Set(t.flat(1 / 0).reverse());
-      for (const s of i) e.unshift(ce(s));
-    } else t !== void 0 && e.push(ce(t));
+      for (const s of i) e.unshift(Pe(s));
+    } else t !== void 0 && e.push(Pe(t));
     return e;
   }
   static _$Eu(t, e) {
@@ -159,7 +159,7 @@ let R = class extends HTMLElement {
   }
   createRenderRoot() {
     const t = this.shadowRoot ?? this.attachShadow(this.constructor.shadowRootOptions);
-    return ii(t, this.constructor.elementStyles), t;
+    return is(t, this.constructor.elementStyles), t;
   }
   connectedCallback() {
     var t;
@@ -181,34 +181,34 @@ let R = class extends HTMLElement {
     this._$AK(t, i);
   }
   _$ET(t, e) {
-    var a;
+    var n;
     const i = this.constructor.elementProperties.get(t), s = this.constructor._$Eu(t, i);
     if (s !== void 0 && i.reflect === !0) {
-      const o = (((a = i.converter) == null ? void 0 : a.toAttribute) !== void 0 ? i.converter : jt).toAttribute(e, i.type);
+      const o = (((n = i.converter) == null ? void 0 : n.toAttribute) !== void 0 ? i.converter : de).toAttribute(e, i.type);
       this._$Em = t, o == null ? this.removeAttribute(s) : this.setAttribute(s, o), this._$Em = null;
     }
   }
   _$AK(t, e) {
-    var a, o;
+    var n, o;
     const i = this.constructor, s = i._$Eh.get(t);
     if (s !== void 0 && this._$Em !== s) {
-      const r = i.getPropertyOptions(s), l = typeof r.converter == "function" ? { fromAttribute: r.converter } : ((a = r.converter) == null ? void 0 : a.fromAttribute) !== void 0 ? r.converter : jt;
+      const r = i.getPropertyOptions(s), l = typeof r.converter == "function" ? { fromAttribute: r.converter } : ((n = r.converter) == null ? void 0 : n.fromAttribute) !== void 0 ? r.converter : de;
       this._$Em = s;
-      const u = l.fromAttribute(e, r.type);
-      this[s] = u ?? ((o = this._$Ej) == null ? void 0 : o.get(s)) ?? u, this._$Em = null;
+      const h = l.fromAttribute(e, r.type);
+      this[s] = h ?? ((o = this._$Ej) == null ? void 0 : o.get(s)) ?? h, this._$Em = null;
     }
   }
-  requestUpdate(t, e, i, s = !1, a) {
+  requestUpdate(t, e, i, s = !1, n) {
     var o;
     if (t !== void 0) {
       const r = this.constructor;
-      if (s === !1 && (a = this[t]), i ?? (i = r.getPropertyOptions(t)), !((i.hasChanged ?? Ge)(a, e) || i.useDefault && i.reflect && a === ((o = this._$Ej) == null ? void 0 : o.get(t)) && !this.hasAttribute(r._$Eu(t, i)))) return;
+      if (s === !1 && (n = this[t]), i ?? (i = r.getPropertyOptions(t)), !((i.hasChanged ?? Ei)(n, e) || i.useDefault && i.reflect && n === ((o = this._$Ej) == null ? void 0 : o.get(t)) && !this.hasAttribute(r._$Eu(t, i)))) return;
       this.C(t, e, i);
     }
     this.isUpdatePending === !1 && (this._$ES = this._$EP());
   }
-  C(t, e, { useDefault: i, reflect: s, wrapped: a }, o) {
-    i && !(this._$Ej ?? (this._$Ej = /* @__PURE__ */ new Map())).has(t) && (this._$Ej.set(t, o ?? e ?? this[t]), a !== !0 || o !== void 0) || (this._$AL.has(t) || (this.hasUpdated || i || (e = void 0), this._$AL.set(t, e)), s === !0 && this._$Em !== t && (this._$Eq ?? (this._$Eq = /* @__PURE__ */ new Set())).add(t));
+  C(t, e, { useDefault: i, reflect: s, wrapped: n }, o) {
+    i && !(this._$Ej ?? (this._$Ej = /* @__PURE__ */ new Map())).has(t) && (this._$Ej.set(t, o ?? e ?? this[t]), n !== !0 || o !== void 0) || (this._$AL.has(t) || (this.hasUpdated || i || (e = void 0), this._$AL.set(t, e)), s === !0 && this._$Em !== t && (this._$Eq ?? (this._$Eq = /* @__PURE__ */ new Set())).add(t));
   }
   async _$EP() {
     this.isUpdatePending = !0;
@@ -228,21 +228,21 @@ let R = class extends HTMLElement {
     if (!this.isUpdatePending) return;
     if (!this.hasUpdated) {
       if (this.renderRoot ?? (this.renderRoot = this.createRenderRoot()), this._$Ep) {
-        for (const [a, o] of this._$Ep) this[a] = o;
+        for (const [n, o] of this._$Ep) this[n] = o;
         this._$Ep = void 0;
       }
       const s = this.constructor.elementProperties;
-      if (s.size > 0) for (const [a, o] of s) {
-        const { wrapped: r } = o, l = this[a];
-        r !== !0 || this._$AL.has(a) || l === void 0 || this.C(a, void 0, o, l);
+      if (s.size > 0) for (const [n, o] of s) {
+        const { wrapped: r } = o, l = this[n];
+        r !== !0 || this._$AL.has(n) || l === void 0 || this.C(n, void 0, o, l);
       }
     }
     let t = !1;
     const e = this._$AL;
     try {
       t = this.shouldUpdate(e), t ? (this.willUpdate(e), (i = this._$EO) == null || i.forEach((s) => {
-        var a;
-        return (a = s.hostUpdate) == null ? void 0 : a.call(s);
+        var n;
+        return (n = s.hostUpdate) == null ? void 0 : n.call(s);
       }), this.update(e)) : this._$EM();
     } catch (s) {
       throw t = !1, this._$EM(), s;
@@ -278,76 +278,76 @@ let R = class extends HTMLElement {
   firstUpdated(t) {
   }
 };
-R.elementStyles = [], R.shadowRootOptions = { mode: "open" }, R[G("elementProperties")] = /* @__PURE__ */ new Map(), R[G("finalized")] = /* @__PURE__ */ new Map(), xt == null || xt({ ReactiveElement: R }), (C.reactiveElementVersions ?? (C.reactiveElementVersions = [])).push("2.1.2");
+H.elementStyles = [], H.shadowRootOptions = { mode: "open" }, H[et("elementProperties")] = /* @__PURE__ */ new Map(), H[et("finalized")] = /* @__PURE__ */ new Map(), Rt == null || Rt({ ReactiveElement: H }), (T.reactiveElementVersions ?? (T.reactiveElementVersions = [])).push("2.1.2");
 /**
  * @license
  * Copyright 2017 Google LLC
  * SPDX-License-Identifier: BSD-3-Clause
  */
-const K = globalThis, ue = (n) => n, lt = K.trustedTypes, pe = lt ? lt.createPolicy("lit-html", { createHTML: (n) => n }) : void 0, Ke = "$lit$", S = `lit$${Math.random().toFixed(9).slice(2)}$`, Je = "?" + S, di = `<${Je}>`, M = document, J = () => M.createComment(""), Y = (n) => n === null || typeof n != "object" && typeof n != "function", oe = Array.isArray, hi = (n) => oe(n) || typeof (n == null ? void 0 : n[Symbol.iterator]) == "function", At = `[ 	
-\f\r]`, B = /<(?:(!--|\/[^a-zA-Z])|(\/?[a-zA-Z][^>\s]*)|(\/?$))/g, ge = /-->/g, me = />/g, z = RegExp(`>|${At}(?:([^\\s"'>=/]+)(${At}*=${At}*(?:[^ 	
-\f\r"'\`<>=]|("|')|))|$)`, "g"), fe = /'/g, ve = /"/g, Ye = /^(?:script|style|textarea|title)$/i, ui = (n) => (t, ...e) => ({ _$litType$: n, strings: t, values: e }), c = ui(1), N = Symbol.for("lit-noChange"), f = Symbol.for("lit-nothing"), be = /* @__PURE__ */ new WeakMap(), I = M.createTreeWalker(M, 129);
-function Ze(n, t) {
-  if (!oe(n) || !n.hasOwnProperty("raw")) throw Error("invalid template strings array");
-  return pe !== void 0 ? pe.createHTML(t) : t;
+const it = globalThis, He = (a) => a, mt = it.trustedTypes, Be = mt ? mt.createPolicy("lit-html", { createHTML: (a) => a }) : void 0, Ii = "$lit$", C = `lit$${Math.random().toFixed(9).slice(2)}$`, zi = "?" + C, ds = `<${zi}>`, F = document, st = () => F.createComment(""), nt = (a) => a === null || typeof a != "object" && typeof a != "function", ze = Array.isArray, hs = (a) => ze(a) || typeof (a == null ? void 0 : a[Symbol.iterator]) == "function", Mt = `[ 	
+\f\r]`, J = /<(?:(!--|\/[^a-zA-Z])|(\/?[a-zA-Z][^>\s]*)|(\/?$))/g, We = /-->/g, je = />/g, L = RegExp(`>|${Mt}(?:([^\\s"'>=/]+)(${Mt}*=${Mt}*(?:[^ 	
+\f\r"'\`<>=]|("|')|))|$)`, "g"), qe = /'/g, Ke = /"/g, Vi = /^(?:script|style|textarea|title)$/i, us = (a) => (t, ...e) => ({ _$litType$: a, strings: t, values: e }), c = us(1), I = Symbol.for("lit-noChange"), y = Symbol.for("lit-nothing"), Ge = /* @__PURE__ */ new WeakMap(), U = F.createTreeWalker(F, 129);
+function Di(a, t) {
+  if (!ze(a) || !a.hasOwnProperty("raw")) throw Error("invalid template strings array");
+  return Be !== void 0 ? Be.createHTML(t) : t;
 }
-const pi = (n, t) => {
-  const e = n.length - 1, i = [];
-  let s, a = t === 2 ? "<svg>" : t === 3 ? "<math>" : "", o = B;
+const ps = (a, t) => {
+  const e = a.length - 1, i = [];
+  let s, n = t === 2 ? "<svg>" : t === 3 ? "<math>" : "", o = J;
   for (let r = 0; r < e; r++) {
-    const l = n[r];
-    let u, p, h = -1, d = 0;
-    for (; d < l.length && (o.lastIndex = d, p = o.exec(l), p !== null); ) d = o.lastIndex, o === B ? p[1] === "!--" ? o = ge : p[1] !== void 0 ? o = me : p[2] !== void 0 ? (Ye.test(p[2]) && (s = RegExp("</" + p[2], "g")), o = z) : p[3] !== void 0 && (o = z) : o === z ? p[0] === ">" ? (o = s ?? B, h = -1) : p[1] === void 0 ? h = -2 : (h = o.lastIndex - p[2].length, u = p[1], o = p[3] === void 0 ? z : p[3] === '"' ? ve : fe) : o === ve || o === fe ? o = z : o === ge || o === me ? o = B : (o = z, s = void 0);
-    const g = o === z && n[r + 1].startsWith("/>") ? " " : "";
-    a += o === B ? l + di : h >= 0 ? (i.push(u), l.slice(0, h) + Ke + l.slice(h) + S + g) : l + S + (h === -2 ? r : g);
+    const l = a[r];
+    let h, p, u = -1, d = 0;
+    for (; d < l.length && (o.lastIndex = d, p = o.exec(l), p !== null); ) d = o.lastIndex, o === J ? p[1] === "!--" ? o = We : p[1] !== void 0 ? o = je : p[2] !== void 0 ? (Vi.test(p[2]) && (s = RegExp("</" + p[2], "g")), o = L) : p[3] !== void 0 && (o = L) : o === L ? p[0] === ">" ? (o = s ?? J, u = -1) : p[1] === void 0 ? u = -2 : (u = o.lastIndex - p[2].length, h = p[1], o = p[3] === void 0 ? L : p[3] === '"' ? Ke : qe) : o === Ke || o === qe ? o = L : o === We || o === je ? o = J : (o = L, s = void 0);
+    const g = o === L && a[r + 1].startsWith("/>") ? " " : "";
+    n += o === J ? l + ds : u >= 0 ? (i.push(h), l.slice(0, u) + Ii + l.slice(u) + C + g) : l + C + (u === -2 ? r : g);
   }
-  return [Ze(n, a + (n[e] || "<?>") + (t === 2 ? "</svg>" : t === 3 ? "</math>" : "")), i];
+  return [Di(a, n + (a[e] || "<?>") + (t === 2 ? "</svg>" : t === 3 ? "</math>" : "")), i];
 };
-class Z {
+let he = class Li {
   constructor({ strings: t, _$litType$: e }, i) {
     let s;
     this.parts = [];
-    let a = 0, o = 0;
-    const r = t.length - 1, l = this.parts, [u, p] = pi(t, e);
-    if (this.el = Z.createElement(u, i), I.currentNode = this.el.content, e === 2 || e === 3) {
-      const h = this.el.content.firstChild;
-      h.replaceWith(...h.childNodes);
+    let n = 0, o = 0;
+    const r = t.length - 1, l = this.parts, [h, p] = ps(t, e);
+    if (this.el = Li.createElement(h, i), U.currentNode = this.el.content, e === 2 || e === 3) {
+      const u = this.el.content.firstChild;
+      u.replaceWith(...u.childNodes);
     }
-    for (; (s = I.nextNode()) !== null && l.length < r; ) {
+    for (; (s = U.nextNode()) !== null && l.length < r; ) {
       if (s.nodeType === 1) {
-        if (s.hasAttributes()) for (const h of s.getAttributeNames()) if (h.endsWith(Ke)) {
-          const d = p[o++], g = s.getAttribute(h).split(S), m = /([.?@])?(.*)/.exec(d);
-          l.push({ type: 1, index: a, name: m[2], strings: g, ctor: m[1] === "." ? mi : m[1] === "?" ? fi : m[1] === "@" ? vi : wt }), s.removeAttribute(h);
-        } else h.startsWith(S) && (l.push({ type: 6, index: a }), s.removeAttribute(h));
-        if (Ye.test(s.tagName)) {
-          const h = s.textContent.split(S), d = h.length - 1;
+        if (s.hasAttributes()) for (const u of s.getAttributeNames()) if (u.endsWith(Ii)) {
+          const d = p[o++], g = s.getAttribute(u).split(C), m = /([.?@])?(.*)/.exec(d);
+          l.push({ type: 1, index: n, name: m[2], strings: g, ctor: m[1] === "." ? ms : m[1] === "?" ? fs : m[1] === "@" ? bs : zt }), s.removeAttribute(u);
+        } else u.startsWith(C) && (l.push({ type: 6, index: n }), s.removeAttribute(u));
+        if (Vi.test(s.tagName)) {
+          const u = s.textContent.split(C), d = u.length - 1;
           if (d > 0) {
-            s.textContent = lt ? lt.emptyScript : "";
-            for (let g = 0; g < d; g++) s.append(h[g], J()), I.nextNode(), l.push({ type: 2, index: ++a });
-            s.append(h[d], J());
+            s.textContent = mt ? mt.emptyScript : "";
+            for (let g = 0; g < d; g++) s.append(u[g], st()), U.nextNode(), l.push({ type: 2, index: ++n });
+            s.append(u[d], st());
           }
         }
-      } else if (s.nodeType === 8) if (s.data === Je) l.push({ type: 2, index: a });
+      } else if (s.nodeType === 8) if (s.data === zi) l.push({ type: 2, index: n });
       else {
-        let h = -1;
-        for (; (h = s.data.indexOf(S, h + 1)) !== -1; ) l.push({ type: 7, index: a }), h += S.length - 1;
+        let u = -1;
+        for (; (u = s.data.indexOf(C, u + 1)) !== -1; ) l.push({ type: 7, index: n }), u += C.length - 1;
       }
-      a++;
+      n++;
     }
   }
   static createElement(t, e) {
-    const i = M.createElement("template");
+    const i = F.createElement("template");
     return i.innerHTML = t, i;
   }
-}
-function P(n, t, e = n, i) {
+};
+function j(a, t, e = a, i) {
   var o, r;
-  if (t === N) return t;
+  if (t === I) return t;
   let s = i !== void 0 ? (o = e._$Co) == null ? void 0 : o[i] : e._$Cl;
-  const a = Y(t) ? void 0 : t._$litDirective$;
-  return (s == null ? void 0 : s.constructor) !== a && ((r = s == null ? void 0 : s._$AO) == null || r.call(s, !1), a === void 0 ? s = void 0 : (s = new a(n), s._$AT(n, e, i)), i !== void 0 ? (e._$Co ?? (e._$Co = []))[i] = s : e._$Cl = s), s !== void 0 && (t = P(n, s._$AS(n, t.values), s, i)), t;
+  const n = nt(t) ? void 0 : t._$litDirective$;
+  return (s == null ? void 0 : s.constructor) !== n && ((r = s == null ? void 0 : s._$AO) == null || r.call(s, !1), n === void 0 ? s = void 0 : (s = new n(a), s._$AT(a, e, i)), i !== void 0 ? (e._$Co ?? (e._$Co = []))[i] = s : e._$Cl = s), s !== void 0 && (t = j(a, s._$AS(a, t.values), s, i)), t;
 }
-class gi {
+class gs {
   constructor(t, e) {
     this._$AV = [], this._$AN = void 0, this._$AD = t, this._$AM = e;
   }
@@ -358,30 +358,30 @@ class gi {
     return this._$AM._$AU;
   }
   u(t) {
-    const { el: { content: e }, parts: i } = this._$AD, s = ((t == null ? void 0 : t.creationScope) ?? M).importNode(e, !0);
-    I.currentNode = s;
-    let a = I.nextNode(), o = 0, r = 0, l = i[0];
+    const { el: { content: e }, parts: i } = this._$AD, s = ((t == null ? void 0 : t.creationScope) ?? F).importNode(e, !0);
+    U.currentNode = s;
+    let n = U.nextNode(), o = 0, r = 0, l = i[0];
     for (; l !== void 0; ) {
       if (o === l.index) {
-        let u;
-        l.type === 2 ? u = new X(a, a.nextSibling, this, t) : l.type === 1 ? u = new l.ctor(a, l.name, l.strings, this, t) : l.type === 6 && (u = new bi(a, this, t)), this._$AV.push(u), l = i[++r];
+        let h;
+        l.type === 2 ? h = new q(n, n.nextSibling, this, t) : l.type === 1 ? h = new l.ctor(n, l.name, l.strings, this, t) : l.type === 6 && (h = new vs(n, this, t)), this._$AV.push(h), l = i[++r];
       }
-      o !== (l == null ? void 0 : l.index) && (a = I.nextNode(), o++);
+      o !== (l == null ? void 0 : l.index) && (n = U.nextNode(), o++);
     }
-    return I.currentNode = M, s;
+    return U.currentNode = F, s;
   }
   p(t) {
     let e = 0;
     for (const i of this._$AV) i !== void 0 && (i.strings !== void 0 ? (i._$AI(t, i, e), e += i.strings.length - 2) : i._$AI(t[e])), e++;
   }
 }
-class X {
+class q {
   get _$AU() {
     var t;
     return ((t = this._$AM) == null ? void 0 : t._$AU) ?? this._$Cv;
   }
   constructor(t, e, i, s) {
-    this.type = 2, this._$AH = f, this._$AN = void 0, this._$AA = t, this._$AB = e, this._$AM = i, this.options = s, this._$Cv = (s == null ? void 0 : s.isConnected) ?? !0;
+    this.type = 2, this._$AH = y, this._$AN = void 0, this._$AA = t, this._$AB = e, this._$AM = i, this.options = s, this._$Cv = (s == null ? void 0 : s.isConnected) ?? !0;
   }
   get parentNode() {
     let t = this._$AA.parentNode;
@@ -395,7 +395,7 @@ class X {
     return this._$AB;
   }
   _$AI(t, e = this) {
-    t = P(this, t, e), Y(t) ? t === f || t == null || t === "" ? (this._$AH !== f && this._$AR(), this._$AH = f) : t !== this._$AH && t !== N && this._(t) : t._$litType$ !== void 0 ? this.$(t) : t.nodeType !== void 0 ? this.T(t) : hi(t) ? this.k(t) : this._(t);
+    t = j(this, t, e), nt(t) ? t === y || t == null || t === "" ? (this._$AH !== y && this._$AR(), this._$AH = y) : t !== this._$AH && t !== I && this._(t) : t._$litType$ !== void 0 ? this.$(t) : t.nodeType !== void 0 ? this.T(t) : hs(t) ? this.k(t) : this._(t);
   }
   O(t) {
     return this._$AA.parentNode.insertBefore(t, this._$AB);
@@ -404,33 +404,33 @@ class X {
     this._$AH !== t && (this._$AR(), this._$AH = this.O(t));
   }
   _(t) {
-    this._$AH !== f && Y(this._$AH) ? this._$AA.nextSibling.data = t : this.T(M.createTextNode(t)), this._$AH = t;
+    this._$AH !== y && nt(this._$AH) ? this._$AA.nextSibling.data = t : this.T(F.createTextNode(t)), this._$AH = t;
   }
   $(t) {
-    var a;
-    const { values: e, _$litType$: i } = t, s = typeof i == "number" ? this._$AC(t) : (i.el === void 0 && (i.el = Z.createElement(Ze(i.h, i.h[0]), this.options)), i);
-    if (((a = this._$AH) == null ? void 0 : a._$AD) === s) this._$AH.p(e);
+    var n;
+    const { values: e, _$litType$: i } = t, s = typeof i == "number" ? this._$AC(t) : (i.el === void 0 && (i.el = he.createElement(Di(i.h, i.h[0]), this.options)), i);
+    if (((n = this._$AH) == null ? void 0 : n._$AD) === s) this._$AH.p(e);
     else {
-      const o = new gi(s, this), r = o.u(this.options);
+      const o = new gs(s, this), r = o.u(this.options);
       o.p(e), this.T(r), this._$AH = o;
     }
   }
   _$AC(t) {
-    let e = be.get(t.strings);
-    return e === void 0 && be.set(t.strings, e = new Z(t)), e;
+    let e = Ge.get(t.strings);
+    return e === void 0 && Ge.set(t.strings, e = new he(t)), e;
   }
   k(t) {
-    oe(this._$AH) || (this._$AH = [], this._$AR());
+    ze(this._$AH) || (this._$AH = [], this._$AR());
     const e = this._$AH;
     let i, s = 0;
-    for (const a of t) s === e.length ? e.push(i = new X(this.O(J()), this.O(J()), this, this.options)) : i = e[s], i._$AI(a), s++;
+    for (const n of t) s === e.length ? e.push(i = new q(this.O(st()), this.O(st()), this, this.options)) : i = e[s], i._$AI(n), s++;
     s < e.length && (this._$AR(i && i._$AB.nextSibling, s), e.length = s);
   }
   _$AR(t = this._$AA.nextSibling, e) {
     var i;
     for ((i = this._$AP) == null ? void 0 : i.call(this, !1, !0, e); t !== this._$AB; ) {
-      const s = ue(t).nextSibling;
-      ue(t).remove(), t = s;
+      const s = He(t).nextSibling;
+      He(t).remove(), t = s;
     }
   }
   setConnected(t) {
@@ -438,62 +438,62 @@ class X {
     this._$AM === void 0 && (this._$Cv = t, (e = this._$AP) == null || e.call(this, t));
   }
 }
-let wt = class {
+let zt = class {
   get tagName() {
     return this.element.tagName;
   }
   get _$AU() {
     return this._$AM._$AU;
   }
-  constructor(t, e, i, s, a) {
-    this.type = 1, this._$AH = f, this._$AN = void 0, this.element = t, this.name = e, this._$AM = s, this.options = a, i.length > 2 || i[0] !== "" || i[1] !== "" ? (this._$AH = Array(i.length - 1).fill(new String()), this.strings = i) : this._$AH = f;
+  constructor(t, e, i, s, n) {
+    this.type = 1, this._$AH = y, this._$AN = void 0, this.element = t, this.name = e, this._$AM = s, this.options = n, i.length > 2 || i[0] !== "" || i[1] !== "" ? (this._$AH = Array(i.length - 1).fill(new String()), this.strings = i) : this._$AH = y;
   }
   _$AI(t, e = this, i, s) {
-    const a = this.strings;
+    const n = this.strings;
     let o = !1;
-    if (a === void 0) t = P(this, t, e, 0), o = !Y(t) || t !== this._$AH && t !== N, o && (this._$AH = t);
+    if (n === void 0) t = j(this, t, e, 0), o = !nt(t) || t !== this._$AH && t !== I, o && (this._$AH = t);
     else {
       const r = t;
-      let l, u;
-      for (t = a[0], l = 0; l < a.length - 1; l++) u = P(this, r[i + l], e, l), u === N && (u = this._$AH[l]), o || (o = !Y(u) || u !== this._$AH[l]), u === f ? t = f : t !== f && (t += (u ?? "") + a[l + 1]), this._$AH[l] = u;
+      let l, h;
+      for (t = n[0], l = 0; l < n.length - 1; l++) h = j(this, r[i + l], e, l), h === I && (h = this._$AH[l]), o || (o = !nt(h) || h !== this._$AH[l]), h === y ? t = y : t !== y && (t += (h ?? "") + n[l + 1]), this._$AH[l] = h;
     }
     o && !s && this.j(t);
   }
   j(t) {
-    t === f ? this.element.removeAttribute(this.name) : this.element.setAttribute(this.name, t ?? "");
+    t === y ? this.element.removeAttribute(this.name) : this.element.setAttribute(this.name, t ?? "");
   }
 };
-class mi extends wt {
+class ms extends zt {
   constructor() {
     super(...arguments), this.type = 3;
   }
   j(t) {
-    this.element[this.name] = t === f ? void 0 : t;
+    this.element[this.name] = t === y ? void 0 : t;
   }
 }
-class fi extends wt {
+class fs extends zt {
   constructor() {
     super(...arguments), this.type = 4;
   }
   j(t) {
-    this.element.toggleAttribute(this.name, !!t && t !== f);
+    this.element.toggleAttribute(this.name, !!t && t !== y);
   }
 }
-class vi extends wt {
-  constructor(t, e, i, s, a) {
-    super(t, e, i, s, a), this.type = 5;
+class bs extends zt {
+  constructor(t, e, i, s, n) {
+    super(t, e, i, s, n), this.type = 5;
   }
   _$AI(t, e = this) {
-    if ((t = P(this, t, e, 0) ?? f) === N) return;
-    const i = this._$AH, s = t === f && i !== f || t.capture !== i.capture || t.once !== i.once || t.passive !== i.passive, a = t !== f && (i === f || s);
-    s && this.element.removeEventListener(this.name, this, i), a && this.element.addEventListener(this.name, this, t), this._$AH = t;
+    if ((t = j(this, t, e, 0) ?? y) === I) return;
+    const i = this._$AH, s = t === y && i !== y || t.capture !== i.capture || t.once !== i.once || t.passive !== i.passive, n = t !== y && (i === y || s);
+    s && this.element.removeEventListener(this.name, this, i), n && this.element.addEventListener(this.name, this, t), this._$AH = t;
   }
   handleEvent(t) {
     var e;
     typeof this._$AH == "function" ? this._$AH.call(((e = this.options) == null ? void 0 : e.host) ?? this.element, t) : this._$AH.handleEvent(t);
   }
 }
-let bi = class {
+let vs = class {
   constructor(t, e, i) {
     this.element = t, this.type = 6, this._$AN = void 0, this._$AM = e, this.options = i;
   }
@@ -501,27 +501,27 @@ let bi = class {
     return this._$AM._$AU;
   }
   _$AI(t) {
-    P(this, t);
+    j(this, t);
   }
 };
-const St = K.litHtmlPolyfillSupport;
-St == null || St(Z, X), (K.litHtmlVersions ?? (K.litHtmlVersions = [])).push("3.3.2");
-const yi = (n, t, e) => {
+const ys = { I: q }, Ut = it.litHtmlPolyfillSupport;
+Ut == null || Ut(he, q), (it.litHtmlVersions ?? (it.litHtmlVersions = [])).push("3.3.2");
+const _s = (a, t, e) => {
   const i = (e == null ? void 0 : e.renderBefore) ?? t;
   let s = i._$litPart$;
   if (s === void 0) {
-    const a = (e == null ? void 0 : e.renderBefore) ?? null;
-    i._$litPart$ = s = new X(t.insertBefore(J(), a), a, void 0, e ?? {});
+    const n = (e == null ? void 0 : e.renderBefore) ?? null;
+    i._$litPart$ = s = new q(t.insertBefore(st(), n), n, void 0, e ?? {});
   }
-  return s._$AI(n), s;
+  return s._$AI(a), s;
 };
 /**
  * @license
  * Copyright 2017 Google LLC
  * SPDX-License-Identifier: BSD-3-Clause
  */
-const D = globalThis;
-let _ = class extends R {
+const P = globalThis;
+let x = class extends H {
   constructor() {
     super(...arguments), this.renderOptions = { host: this }, this._$Do = void 0;
   }
@@ -532,7 +532,7 @@ let _ = class extends R {
   }
   update(t) {
     const e = this.render();
-    this.hasUpdated || (this.renderOptions.isConnected = this.isConnected), super.update(t), this._$Do = yi(e, this.renderRoot, this.renderOptions);
+    this.hasUpdated || (this.renderOptions.isConnected = this.isConnected), super.update(t), this._$Do = _s(e, this.renderRoot, this.renderOptions);
   }
   connectedCallback() {
     var t;
@@ -543,21 +543,21 @@ let _ = class extends R {
     super.disconnectedCallback(), (t = this._$Do) == null || t.setConnected(!1);
   }
   render() {
-    return N;
+    return I;
   }
 };
-var je;
-_._$litElement$ = !0, _.finalized = !0, (je = D.litElementHydrateSupport) == null || je.call(D, { LitElement: _ });
-const Ct = D.litElementPolyfillSupport;
-Ct == null || Ct({ LitElement: _ });
-(D.litElementVersions ?? (D.litElementVersions = [])).push("4.2.2");
+var Ci;
+x._$litElement$ = !0, x.finalized = !0, (Ci = P.litElementHydrateSupport) == null || Ci.call(P, { LitElement: x });
+const Nt = P.litElementPolyfillSupport;
+Nt == null || Nt({ LitElement: x });
+(P.litElementVersions ?? (P.litElementVersions = [])).push("4.2.2");
 /**
  * @license
  * Copyright 2017 Google LLC
  * SPDX-License-Identifier: BSD-3-Clause
  */
-const _i = { ATTRIBUTE: 1 }, wi = (n) => (...t) => ({ _$litDirective$: n, values: t });
-let $i = class {
+const Ri = { ATTRIBUTE: 1, CHILD: 2 }, Mi = (a) => (...t) => ({ _$litDirective$: a, values: t });
+let Ui = class {
   constructor(t) {
   }
   get _$AU() {
@@ -578,94 +578,105 @@ let $i = class {
  * Copyright 2018 Google LLC
  * SPDX-License-Identifier: BSD-3-Clause
  */
-const Xe = "important", xi = " !" + Xe, Q = wi(class extends $i {
-  constructor(n) {
+const Ni = "important", ws = " !" + Ni, K = Mi(class extends Ui {
+  constructor(a) {
     var t;
-    if (super(n), n.type !== _i.ATTRIBUTE || n.name !== "style" || ((t = n.strings) == null ? void 0 : t.length) > 2) throw Error("The `styleMap` directive must be used in the `style` attribute and must be the only part in the attribute.");
+    if (super(a), a.type !== Ri.ATTRIBUTE || a.name !== "style" || ((t = a.strings) == null ? void 0 : t.length) > 2) throw Error("The `styleMap` directive must be used in the `style` attribute and must be the only part in the attribute.");
   }
-  render(n) {
-    return Object.keys(n).reduce((t, e) => {
-      const i = n[e];
+  render(a) {
+    return Object.keys(a).reduce((t, e) => {
+      const i = a[e];
       return i == null ? t : t + `${e = e.includes("-") ? e : e.replace(/(?:^(webkit|moz|ms|o)|)(?=[A-Z])/g, "-$&").toLowerCase()}:${i};`;
     }, "");
   }
-  update(n, [t]) {
-    const { style: e } = n.element;
+  update(a, [t]) {
+    const { style: e } = a.element;
     if (this.ft === void 0) return this.ft = new Set(Object.keys(t)), this.render(t);
     for (const i of this.ft) t[i] == null && (this.ft.delete(i), i.includes("-") ? e.removeProperty(i) : e[i] = null);
     for (const i in t) {
       const s = t[i];
       if (s != null) {
         this.ft.add(i);
-        const a = typeof s == "string" && s.endsWith(xi);
-        i.includes("-") || a ? e.setProperty(i, a ? s.slice(0, -11) : s, a ? Xe : "") : e[i] = s;
+        const n = typeof s == "string" && s.endsWith(ws);
+        i.includes("-") || n ? e.setProperty(i, n ? s.slice(0, -11) : s, n ? Ni : "") : e[i] = s;
       }
     }
-    return N;
+    return I;
   }
 });
-var V, ye;
-(function(n) {
-  n.language = "language", n.system = "system", n.comma_decimal = "comma_decimal", n.decimal_comma = "decimal_comma", n.space_comma = "space_comma", n.none = "none";
-})(V || (V = {})), (function(n) {
-  n.language = "language", n.system = "system", n.am_pm = "12", n.twenty_four = "24";
-})(ye || (ye = {}));
-function Qe() {
-  return (Qe = Object.assign || function(n) {
+var N, B;
+(function(a) {
+  a.language = "language", a.system = "system", a.comma_decimal = "comma_decimal", a.decimal_comma = "decimal_comma", a.space_comma = "space_comma", a.none = "none";
+})(N || (N = {})), (function(a) {
+  a.language = "language", a.system = "system", a.am_pm = "12", a.twenty_four = "24";
+})(B || (B = {}));
+var xs = function(a) {
+  if (a.time_format === B.language || a.time_format === B.system) {
+    var t = a.time_format === B.language ? a.language : void 0, e = (/* @__PURE__ */ new Date()).toLocaleString(t);
+    return e.includes("AM") || e.includes("PM");
+  }
+  return a.time_format === B.am_pm;
+}, $s = function(a, t) {
+  return As(t).format(a);
+}, As = function(a) {
+  return new Intl.DateTimeFormat(a.language, { hour: "numeric", minute: "2-digit", hour12: xs(a) });
+};
+function Pi() {
+  return (Pi = Object.assign || function(a) {
     for (var t = 1; t < arguments.length; t++) {
       var e = arguments[t];
-      for (var i in e) Object.prototype.hasOwnProperty.call(e, i) && (n[i] = e[i]);
+      for (var i in e) Object.prototype.hasOwnProperty.call(e, i) && (a[i] = e[i]);
     }
-    return n;
+    return a;
   }).apply(this, arguments);
 }
-function Ai(n) {
-  return n.substr(0, n.indexOf("."));
+function Ss(a) {
+  return a.substr(0, a.indexOf("."));
 }
-var Si = function(n) {
-  switch (n.number_format) {
-    case V.comma_decimal:
+var ks = function(a) {
+  switch (a.number_format) {
+    case N.comma_decimal:
       return ["en-US", "en"];
-    case V.decimal_comma:
+    case N.decimal_comma:
       return ["de", "es", "it"];
-    case V.space_comma:
+    case N.space_comma:
       return ["fr", "sv", "cs"];
-    case V.system:
+    case N.system:
       return;
     default:
-      return n.language;
+      return a.language;
   }
-}, Ci = function(n, t) {
-  return t === void 0 && (t = 2), Math.round(n * Math.pow(10, t)) / Math.pow(10, t);
-}, ti = function(n, t, e) {
-  var i = t ? Si(t) : void 0;
-  if (Number.isNaN = Number.isNaN || function s(a) {
-    return typeof a == "number" && s(a);
-  }, (t == null ? void 0 : t.number_format) !== V.none && !Number.isNaN(Number(n)) && Intl) try {
-    return new Intl.NumberFormat(i, _e(n, e)).format(Number(n));
+}, Cs = function(a, t) {
+  return t === void 0 && (t = 2), Math.round(a * Math.pow(10, t)) / Math.pow(10, t);
+}, Oi = function(a, t, e) {
+  var i = t ? ks(t) : void 0;
+  if (Number.isNaN = Number.isNaN || function s(n) {
+    return typeof n == "number" && s(n);
+  }, (t == null ? void 0 : t.number_format) !== N.none && !Number.isNaN(Number(a)) && Intl) try {
+    return new Intl.NumberFormat(i, Ye(a, e)).format(Number(a));
   } catch (s) {
-    return console.error(s), new Intl.NumberFormat(void 0, _e(n, e)).format(Number(n));
+    return console.error(s), new Intl.NumberFormat(void 0, Ye(a, e)).format(Number(a));
   }
-  return typeof n == "string" ? n : Ci(n, e == null ? void 0 : e.maximumFractionDigits).toString() + ((e == null ? void 0 : e.style) === "currency" ? " " + e.currency : "");
-}, _e = function(n, t) {
-  var e = Qe({ maximumFractionDigits: 2 }, t);
-  if (typeof n != "string") return e;
+  return typeof a == "string" ? a : Cs(a, e == null ? void 0 : e.maximumFractionDigits).toString() + ((e == null ? void 0 : e.style) === "currency" ? " " + e.currency : "");
+}, Ye = function(a, t) {
+  var e = Pi({ maximumFractionDigits: 2 }, t);
+  if (typeof a != "string") return e;
   if (!t || !t.minimumFractionDigits && !t.maximumFractionDigits) {
-    var i = n.indexOf(".") > -1 ? n.split(".")[1].length : 0;
+    var i = a.indexOf(".") > -1 ? a.split(".")[1].length : 0;
     e.minimumFractionDigits = i, e.maximumFractionDigits = i;
   }
   return e;
-}, ki = ["closed", "locked", "off"], A = function(n, t, e, i) {
+}, Ts = ["closed", "locked", "off"], A = function(a, t, e, i) {
   i = i || {}, e = e ?? {};
   var s = new Event(t, { bubbles: i.bubbles === void 0 || i.bubbles, cancelable: !!i.cancelable, composed: i.composed === void 0 || i.composed });
-  return s.detail = e, n.dispatchEvent(s), s;
-}, et = function(n) {
-  A(window, "haptic", n);
-}, Ti = function(n, t, e) {
+  return s.detail = e, a.dispatchEvent(s), s;
+}, ot = function(a) {
+  A(window, "haptic", a);
+}, Es = function(a, t, e) {
   e === void 0 && (e = !1), e ? history.replaceState(null, "", t) : history.pushState(null, "", t), A(window, "location-changed", { replace: e });
-}, Ei = function(n, t, e) {
+}, Is = function(a, t, e) {
   e === void 0 && (e = !0);
-  var i, s = Ai(t), a = s === "group" ? "homeassistant" : s;
+  var i, s = Ss(t), n = s === "group" ? "homeassistant" : s;
   switch (s) {
     case "lock":
       i = e ? "unlock" : "lock";
@@ -676,36 +687,36 @@ var Si = function(n) {
     default:
       i = e ? "turn_on" : "turn_off";
   }
-  return n.callService(a, i, { entity_id: t });
-}, zi = function(n, t) {
-  var e = ki.includes(n.states[t].state);
-  return Ei(n, t, e);
-}, k = function(n, t, e, i) {
-  if (i || (i = { action: "more-info" }), !i.confirmation || i.confirmation.exemptions && i.confirmation.exemptions.some(function(a) {
-    return a.user === t.user.id;
-  }) || (et("warning"), confirm(i.confirmation.text || "Are you sure you want to " + i.action + "?"))) switch (i.action) {
+  return a.callService(n, i, { entity_id: t });
+}, zs = function(a, t) {
+  var e = Ts.includes(a.states[t].state);
+  return Is(a, t, e);
+}, E = function(a, t, e, i) {
+  if (i || (i = { action: "more-info" }), !i.confirmation || i.confirmation.exemptions && i.confirmation.exemptions.some(function(n) {
+    return n.user === t.user.id;
+  }) || (ot("warning"), confirm(i.confirmation.text || "Are you sure you want to " + i.action + "?"))) switch (i.action) {
     case "more-info":
-      (e.entity || e.camera_image) && A(n, "hass-more-info", { entityId: e.entity ? e.entity : e.camera_image });
+      (e.entity || e.camera_image) && A(a, "hass-more-info", { entityId: e.entity ? e.entity : e.camera_image });
       break;
     case "navigate":
-      i.navigation_path && Ti(0, i.navigation_path);
+      i.navigation_path && Es(0, i.navigation_path);
       break;
     case "url":
       i.url_path && window.open(i.url_path);
       break;
     case "toggle":
-      e.entity && (zi(t, e.entity), et("success"));
+      e.entity && (zs(t, e.entity), ot("success"));
       break;
     case "call-service":
-      if (!i.service) return void et("failure");
+      if (!i.service) return void ot("failure");
       var s = i.service.split(".", 2);
-      t.callService(s[0], s[1], i.service_data, i.target), et("success");
+      t.callService(s[0], s[1], i.service_data, i.target), ot("success");
       break;
     case "fire-dom-event":
-      A(n, "ll-custom", i);
+      A(a, "ll-custom", i);
   }
 };
-const ht = class ht extends _ {
+const yt = class yt extends x {
   constructor() {
     super(...arguments), this.label = "", this.fieldName = "template", this.value = "", this._computeLabel = (t) => t.name === this.fieldName ? this.label : t.name;
   }
@@ -763,12 +774,12 @@ const ht = class ht extends _ {
     t.stopPropagation(), this._emitValueChanged(t.detail.value ?? "");
   }
 };
-ht.properties = {
+yt.properties = {
   hass: { attribute: !1 },
   label: { type: String },
   fieldName: { type: String },
   value: { type: String }
-}, ht.styles = w`
+}, yt.styles = w`
     :host {
       display: block;
     }
@@ -790,9 +801,9 @@ ht.properties = {
       font-weight: 500;
     }
   `;
-let qt = ht;
-customElements.define("ha-cards-jinja-editor", qt);
-const ne = class ne extends _ {
+let ue = yt;
+customElements.define("ha-cards-jinja-editor", ue);
+const Me = class Me extends x {
   setConfig(t) {
     this.config = t;
   }
@@ -818,21 +829,21 @@ const ne = class ne extends _ {
       if (!i)
         return !1;
       const s = this.getWatchedEntities();
-      return s.length === 0 ? !1 : s.some((a) => {
+      return s.length === 0 ? !1 : s.some((n) => {
         var o, r;
-        return ((o = e.states) == null ? void 0 : o[a]) !== ((r = i.states) == null ? void 0 : r[a]);
+        return ((o = e.states) == null ? void 0 : o[n]) !== ((r = i.states) == null ? void 0 : r[n]);
       });
     }
     return !1;
   }
 };
-ne.properties = {
+Me.properties = {
   hass: { attribute: !1 },
   config: { attribute: !1 }
 };
-let O = ne;
-function L(n) {
-  const { hass: t, label: e, value: i, domains: s, disabled: a = !1, onValueChanged: o } = n;
+let z = Me;
+function O(a) {
+  const { hass: t, label: e, value: i, domains: s, disabled: n = !1, onValueChanged: o } = a;
   return s.length ? c`
     <div class="field">
       <ha-entity-picker
@@ -840,7 +851,7 @@ function L(n) {
         .label=${e}
         .value=${i}
         .includeDomains=${s}
-        ?disabled=${a}
+        ?disabled=${n}
         allow-custom-entity
         @value-changed=${(r) => o(r.detail.value)}
       ></ha-entity-picker>
@@ -851,75 +862,75 @@ function L(n) {
           .hass=${t}
           .label=${e}
           .value=${i}
-          ?disabled=${a}
+          ?disabled=${n}
           allow-custom-entity
           @value-changed=${(r) => o(r.detail.value)}
         ></ha-entity-picker>
       </div>
     `;
 }
-function we(n) {
-  const { hass: t, label: e, fieldName: i, value: s, onValueChanged: a } = n;
+function pe(a) {
+  const { hass: t, label: e, fieldName: i, value: s, onValueChanged: n } = a;
   return c`
     <ha-cards-jinja-editor
       .hass=${t}
       .label=${e}
       .fieldName=${i}
       .value=${s}
-      @value-changed=${(o) => a(o.detail.value ?? "")}
+      @value-changed=${(o) => n(o.detail.value ?? "")}
     ></ha-cards-jinja-editor>
   `;
 }
-function U(n) {
-  const { label: t, value: e, placeholder: i = "", onInput: s } = n;
+function V(a) {
+  const { label: t, value: e, placeholder: i = "", onInput: s } = a;
   return c`
     <label>
       <span>${t}</span>
-      <input .value=${e} placeholder=${i} @input=${(a) => s(a.target.value)} />
+      <input .value=${e} placeholder=${i} @input=${(n) => s(n.target.value)} />
     </label>
   `;
 }
-function rt(n) {
-  const { hass: t, label: e, value: i, fallback: s, onValueChanged: a } = n;
+function pt(a) {
+  const { hass: t, label: e, value: i, fallback: s, onValueChanged: n } = a;
   return c`
     <div class="field">
       <ha-icon-picker
         .hass=${t}
         .label=${e}
         .value=${i || s}
-        @value-changed=${(o) => a(o.detail.value)}
+        @value-changed=${(o) => n(o.detail.value)}
       ></ha-icon-picker>
     </div>
   `;
 }
-function it(n) {
-  const { label: t, value: e, placeholder: i, onInput: s } = n;
+function rt(a) {
+  const { label: t, value: e, placeholder: i, onInput: s } = a;
   return c`
     <label>
       <span>${t}</span>
-      <input .value=${e} placeholder=${i} @input=${(a) => s(a.target.value)} />
+      <input .value=${e} placeholder=${i} @input=${(n) => s(n.target.value)} />
     </label>
   `;
 }
-function Ii(n) {
-  const { actionConfig: t, formatJson: e, onActionValueChanged: i, onServiceDataChanged: s, serviceDataError: a } = n;
+function Vs(a) {
+  const { actionConfig: t, formatJson: e, onActionValueChanged: i, onServiceDataChanged: s, serviceDataError: n } = a;
   switch (t.action) {
     case "more-info":
-      return it({
+      return rt({
         label: "Entity override",
         value: String(t.entity || ""),
         placeholder: "Optional entity",
         onInput: (o) => i("entity", o)
       });
     case "navigate":
-      return it({
+      return rt({
         label: "Navigation path",
         value: String(t.navigation_path || ""),
         placeholder: "/lovelace/0",
         onInput: (o) => i("navigation_path", o)
       });
     case "url":
-      return it({
+      return rt({
         label: "URL path",
         value: String(t.url_path || ""),
         placeholder: "https://example.com",
@@ -927,7 +938,7 @@ function Ii(n) {
       });
     case "call-service":
       return c`
-        ${it({
+        ${rt({
         label: "Service",
         value: String(t.service || ""),
         placeholder: "light.turn_on",
@@ -941,14 +952,14 @@ function Ii(n) {
             @change=${(o) => s(o.target.value)}
           ></textarea>
         </label>
-        ${a ? c`<div class="error">${a}</div>` : ""}
+        ${n ? c`<div class="error">${n}</div>` : ""}
       `;
     default:
       return "";
   }
 }
-function Vi(n) {
-  const { label: t, actionConfig: e, actionOptions: i, onActionTypeChanged: s, fields: a, className: o } = n, r = e.action;
+function Ds(a) {
+  const { label: t, actionConfig: e, actionOptions: i, onActionTypeChanged: s, fields: n, className: o } = a, r = e.action;
   return c`
     <fieldset class=${o || ""}>
       <legend>${t}</legend>
@@ -965,38 +976,38 @@ function Vi(n) {
         </select>
       </label>
 
-      ${a}
+      ${n}
     </fieldset>
   `;
 }
-function Gt(n) {
+function ge(a) {
   const {
     label: t,
     actionConfig: e,
     actionOptions: i,
     onActionTypeChanged: s,
-    onActionValueChanged: a,
+    onActionValueChanged: n,
     onServiceDataChanged: o,
     formatJson: r,
     serviceDataError: l,
-    className: u
-  } = n;
-  return Vi({
+    className: h
+  } = a;
+  return Ds({
     label: t,
-    className: u,
+    className: h,
     actionConfig: e,
     actionOptions: i,
     onActionTypeChanged: s,
-    fields: Ii({
+    fields: Vs({
       actionConfig: e,
       formatJson: r,
-      onActionValueChanged: a,
+      onActionValueChanged: n,
       onServiceDataChanged: o,
       serviceDataError: l
     })
   });
 }
-const Di = [
+const Ls = [
   { value: "more-info", label: "More info" },
   { value: "toggle", label: "Toggle" },
   { value: "navigate", label: "Navigate" },
@@ -1004,7 +1015,7 @@ const Di = [
   { value: "call-service", label: "Call service" },
   { value: "fire-dom-event", label: "Fire DOM event" },
   { value: "none", label: "None" }
-], ut = class ut extends _ {
+], _t = class _t extends x {
   constructor() {
     super(...arguments), this.config = {}, this.serviceDataErrors = {};
   }
@@ -1029,48 +1040,48 @@ const Di = [
     return c`
       <div class="editor">
         <div class="grid">
-          ${U({
+          ${V({
       label: "Name",
       value: String(this.config.name || ""),
       placeholder: "Living room",
       onInput: (t) => this.updateConfigValue("name", t)
     })}
-          ${L({
+          ${O({
       hass: this.hass,
       label: "Light entity",
       value: String(this.config.entity || ""),
       domains: ["light"],
       onValueChanged: (t) => this.updateConfigValue("entity", t)
     })}
-          ${rt({
+          ${pt({
       hass: this.hass,
       label: "Icon",
       value: String(this.config.icon || ""),
       fallback: "mdi:sofa",
       onValueChanged: (t) => this.updateConfigValue("icon", t)
     })}
-          ${L({
+          ${O({
       hass: this.hass,
       label: "Sensor 1 entity",
       value: String(this.config.sensor1_entity || ""),
       domains: ["sensor"],
       onValueChanged: (t) => this.updateConfigValue("sensor1_entity", t)
     })}
-          ${rt({
+          ${pt({
       hass: this.hass,
       label: "Sensor 1 icon",
       value: String(this.config.sensor1_icon || ""),
       fallback: "mdi:thermometer",
       onValueChanged: (t) => this.updateConfigValue("sensor1_icon", t)
     })}
-          ${L({
+          ${O({
       hass: this.hass,
       label: "Sensor 2 entity",
       value: String(this.config.sensor2_entity || ""),
       domains: ["sensor"],
       onValueChanged: (t) => this.updateConfigValue("sensor2_entity", t)
     })}
-          ${rt({
+          ${pt({
       hass: this.hass,
       label: "Sensor 2 icon",
       value: String(this.config.sensor2_icon || ""),
@@ -1087,12 +1098,12 @@ const Di = [
   }
   renderActionEditor(t, e) {
     const i = this.config[e] || { action: "none" };
-    return Gt({
+    return ge({
       label: t,
       actionConfig: i,
-      actionOptions: Di,
+      actionOptions: Ls,
       onActionTypeChanged: (s) => this.updateActionType(e, s),
-      onActionValueChanged: (s, a) => this.updateActionValue(e, s, a),
+      onActionValueChanged: (s, n) => this.updateActionValue(e, s, n),
       onServiceDataChanged: (s) => this.updateServiceData(e, s),
       formatJson: (s) => this.formatJson(s),
       serviceDataError: this.serviceDataErrors[e]
@@ -1158,10 +1169,10 @@ const Di = [
     })).constructor.getConfigElement(), this.requestUpdate();
   }
 };
-ut.properties = {
+_t.properties = {
   hass: { attribute: !1 },
   config: { attribute: !1 }
-}, ut.styles = w`
+}, _t.styles = w`
     .editor {
       display: grid;
       gap: 18px;
@@ -1227,9 +1238,9 @@ ut.properties = {
       font-size: 12px;
     }
   `;
-let Kt = ut;
-customElements.define("room-card-editor", Kt);
-const st = { action: "more-info" }, kt = { action: "toggle" }, Tt = { action: "more-info" }, Et = "mdi:thermometer", zt = "mdi:water-percent", re = class re extends O {
+let me = _t;
+customElements.define("room-card-editor", me);
+const lt = { action: "more-info" }, Pt = { action: "toggle" }, Ot = { action: "more-info" }, Ft = "mdi:thermometer", Ht = "mdi:water-percent", Ue = class Ue extends z {
   constructor() {
     super(...arguments), this.lightHoldTriggered = !1;
   }
@@ -1241,11 +1252,11 @@ const st = { action: "more-info" }, kt = { action: "toggle" }, Tt = { action: "m
       entity: "",
       name: "Living room",
       icon: "mdi:sofa",
-      sensor1_icon: Et,
-      sensor2_icon: zt,
-      tap_action: st,
-      light_tap_action: kt,
-      light_hold_action: Tt
+      sensor1_icon: Ft,
+      sensor2_icon: Ht,
+      tap_action: lt,
+      light_tap_action: Pt,
+      light_hold_action: Ot
     };
   }
   setConfig(t) {
@@ -1253,11 +1264,11 @@ const st = { action: "more-info" }, kt = { action: "toggle" }, Tt = { action: "m
       throw new Error("Room Card requires a light entity");
     this.config = {
       icon: "mdi:sofa",
-      sensor1_icon: Et,
-      sensor2_icon: zt,
-      tap_action: st,
-      light_tap_action: kt,
-      light_hold_action: Tt,
+      sensor1_icon: Ft,
+      sensor2_icon: Ht,
+      tap_action: lt,
+      light_tap_action: Pt,
+      light_hold_action: Ot,
       ...t
     };
   }
@@ -1271,11 +1282,11 @@ const st = { action: "more-info" }, kt = { action: "toggle" }, Tt = { action: "m
   }
   render() {
     var r;
-    const t = this.getLightEntity(), e = this.isLightOff(t), i = this.config.name || ((r = t == null ? void 0 : t.attributes) == null ? void 0 : r.friendly_name) || "Room", s = this.getLightRgb(t), a = !!(this.config.sensor1_entity || this.config.sensor2_entity), o = s ? {
+    const t = this.getLightEntity(), e = this.isLightOff(t), i = this.config.name || ((r = t == null ? void 0 : t.attributes) == null ? void 0 : r.friendly_name) || "Room", s = this.getLightRgb(t), n = !!(this.config.sensor1_entity || this.config.sensor2_entity), o = s ? {
       "--room-light-rgb": s.join(",")
     } : {};
     return c`
-      <ha-card class=${e ? "light-off" : ""} style=${Q(o)} @click=${this.handleCardTap}>
+      <ha-card class=${e ? "light-off" : ""} style=${K(o)} @click=${this.handleCardTap}>
         <div class="card" role="button" tabindex="0" @keydown=${this.handleCardKeydown}>
           <div class="top-row">
             <div class="room-icon">
@@ -1299,14 +1310,14 @@ const st = { action: "more-info" }, kt = { action: "toggle" }, Tt = { action: "m
 
           <div class="details">
             <div class="name">${i}</div>
-            ${a ? c`
+            ${n ? c`
                   <div class="sensors">
                     ${this.config.sensor1_entity ? this.renderSensor(
-      this.config.sensor1_icon || Et,
+      this.config.sensor1_icon || Ft,
       this.config.sensor1_entity
     ) : ""}
                     ${this.config.sensor2_entity ? this.renderSensor(
-      this.config.sensor2_icon || zt,
+      this.config.sensor2_icon || Ht,
       this.config.sensor2_entity
     ) : ""}
                   </div>
@@ -1317,8 +1328,8 @@ const st = { action: "more-info" }, kt = { action: "toggle" }, Tt = { action: "m
     `;
   }
   renderSensor(t, e) {
-    var a, o;
-    const i = e ? (o = (a = this.hass) == null ? void 0 : a.states) == null ? void 0 : o[e] : void 0, s = i ? this.formatEntityState(i) : "-";
+    var n, o;
+    const i = e ? (o = (n = this.hass) == null ? void 0 : n.states) == null ? void 0 : o[e] : void 0, s = i ? this.formatEntityState(i) : "-";
     return c`
       <span class="sensor">
         <ha-icon .icon=${t}></ha-icon>
@@ -1334,7 +1345,7 @@ const st = { action: "more-info" }, kt = { action: "toggle" }, Tt = { action: "m
   formatSensorValue(t) {
     var i;
     const e = Number(t);
-    return t.trim() === "" || !Number.isFinite(e) ? t : ti(e, (i = this.hass) == null ? void 0 : i.locale, { maximumFractionDigits: 2 });
+    return t.trim() === "" || !Number.isFinite(e) ? t : Oi(e, (i = this.hass) == null ? void 0 : i.locale, { maximumFractionDigits: 2 });
   }
   getLightEntity() {
     var t, e;
@@ -1344,37 +1355,37 @@ const st = { action: "more-info" }, kt = { action: "toggle" }, Tt = { action: "m
     return !t || t.state === "off" || t.state === "unavailable";
   }
   getLightRgb(t) {
-    var s, a;
+    var s, n;
     if (this.isLightOff(t))
       return;
     const e = (s = t.attributes) == null ? void 0 : s.rgb_color;
     if (Array.isArray(e) && e.length >= 3)
       return [Number(e[0]), Number(e[1]), Number(e[2])];
-    const i = (a = t.attributes) == null ? void 0 : a.hs_color;
+    const i = (n = t.attributes) == null ? void 0 : n.hs_color;
     if (Array.isArray(i) && i.length >= 2)
       return this.hslToRgb(Number(i[0]), Number(i[1]), 50);
   }
   hslToRgb(t, e, i) {
-    const s = e / 100, a = i / 100, o = (1 - Math.abs(2 * a - 1)) * s, r = t / 60, l = o * (1 - Math.abs(r % 2 - 1)), u = a - o / 2;
+    const s = e / 100, n = i / 100, o = (1 - Math.abs(2 * n - 1)) * s, r = t / 60, l = o * (1 - Math.abs(r % 2 - 1)), h = n - o / 2;
     let p = [0, 0, 0];
-    return r >= 0 && r < 1 ? p = [o, l, 0] : r < 2 ? p = [l, o, 0] : r < 3 ? p = [0, o, l] : r < 4 ? p = [0, l, o] : r < 5 ? p = [l, 0, o] : p = [o, 0, l], p.map((h) => Math.round((h + u) * 255));
+    return r >= 0 && r < 1 ? p = [o, l, 0] : r < 2 ? p = [l, o, 0] : r < 3 ? p = [0, o, l] : r < 4 ? p = [0, l, o] : r < 5 ? p = [l, 0, o] : p = [o, 0, l], p.map((u) => Math.round((u + h) * 255));
   }
   handleCardTap(t) {
-    t.target.closest(".light-button") || this.runAction(this.config.tap_action || st);
+    t.target.closest(".light-button") || this.runAction(this.config.tap_action || lt);
   }
   handleCardKeydown(t) {
-    t.key !== "Enter" && t.key !== " " || (t.preventDefault(), this.runAction(this.config.tap_action || st));
+    t.key !== "Enter" && t.key !== " " || (t.preventDefault(), this.runAction(this.config.tap_action || lt));
   }
   handleLightTap(t) {
     if (t.stopPropagation(), this.lightHoldTriggered) {
       this.lightHoldTriggered = !1;
       return;
     }
-    this.cancelLightHold(), this.runAction(this.config.light_tap_action || kt);
+    this.cancelLightHold(), this.runAction(this.config.light_tap_action || Pt);
   }
   handleLightPointerDown(t) {
     t.stopPropagation(), this.lightHoldTriggered = !1, this.cancelLightHold(), this.holdTimer = window.setTimeout(() => {
-      this.lightHoldTriggered = !0, this.runAction(this.config.light_hold_action || Tt);
+      this.lightHoldTriggered = !0, this.runAction(this.config.light_hold_action || Ot);
     }, 500);
   }
   handleLightPointerUp(t) {
@@ -1387,7 +1398,7 @@ const st = { action: "more-info" }, kt = { action: "toggle" }, Tt = { action: "m
     t.preventDefault();
   }
   runAction(t) {
-    k(
+    E(
       this,
       this.hass,
       {
@@ -1397,7 +1408,7 @@ const st = { action: "more-info" }, kt = { action: "toggle" }, Tt = { action: "m
     );
   }
 };
-re.styles = w`
+Ue.styles = w`
     ha-card {
       --room-light-rgb: 94, 124, 84;
       background: #332d1d;
@@ -1550,15 +1561,15 @@ re.styles = w`
       }
     }
   `;
-let Jt = re;
-customElements.define("room-card", Jt);
+let fe = Ue;
+customElements.define("room-card", fe);
 window.customCards = window.customCards || [];
 window.customCards.push({
   type: "room-card",
   name: "Room Card",
   description: "Room card with light actions and sensors"
 });
-const Li = {
+const Vt = "#324c64", Rs = {
   equals: "is",
   not_equals: "is not",
   gt: ">",
@@ -1568,25 +1579,25 @@ const Li = {
   contains: "contains",
   not_contains: "does not contain"
 };
-function Mi(n, t) {
+function Ms(a, t) {
   var s;
-  const e = n.check.operator === "not_contains" ? n.check.values.join(", ") : n.matchedValue || n.check.values.join(", "), i = String(((s = n.entity.attributes) == null ? void 0 : s.unit_of_measurement) || "");
+  const e = a.check.operator === "not_contains" ? a.check.values.join(", ") : a.matchedValue || a.check.values.join(", "), i = String(((s = a.entity.attributes) == null ? void 0 : s.unit_of_measurement) || "");
   return {
-    entity: n.check.entity,
-    entity_id: n.check.entity,
-    name: t(n.check.entity, n.entity),
-    state: n.entity.state,
+    entity: a.check.entity,
+    entity_id: a.check.entity,
+    name: t(a.check.entity, a.entity),
+    state: a.entity.state,
     matched: e,
     matched_value: e,
-    operator: n.check.operator,
-    operator_label: Li[n.check.operator],
+    operator: a.check.operator,
+    operator_label: Rs[a.check.operator],
     unit: i,
     unit_of_measurement: i,
-    values: n.check.values.join(", "),
-    attributes: n.entity.attributes
+    values: a.check.values.join(", "),
+    attributes: a.entity.attributes
   };
 }
-const pt = class pt extends _ {
+const wt = class wt extends x {
   constructor() {
     super(...arguments), this.template = "", this.variables = {}, this.entityIds = [], this.fallback = "", this._rendered = "";
   }
@@ -1647,46 +1658,46 @@ const pt = class pt extends _ {
       }
   }
 };
-pt.properties = {
+wt.properties = {
   hass: { attribute: !1 },
   template: { type: String },
   variables: { attribute: !1 },
   entityIds: { attribute: !1 },
   fallback: { type: String }
-}, pt.styles = w`
+}, wt.styles = w`
     :host {
       display: inline;
     }
   `;
-let Yt = pt;
-customElements.define("ha-cards-template-text", Yt);
-async function Ni() {
+let be = wt;
+customElements.define("ha-cards-template-text", be);
+async function Fi() {
   if (customElements.get("ha-form") && customElements.get("ha-entity-picker"))
     return !0;
-  let n = !1;
-  return customElements.get("ha-form") || (n = await $e("hui-tile-card", {
+  let a = !1;
+  return customElements.get("ha-form") || (a = await Je("hui-tile-card", {
     type: "tile",
     entity: "sun.sun"
-  }) || n), customElements.get("ha-entity-picker") || (n = await $e("hui-entities-card", {
+  }) || a), customElements.get("ha-entity-picker") || (a = await Je("hui-entities-card", {
     type: "entities",
     entities: []
-  }) || n), n || !!customElements.get("ha-form");
+  }) || a), a || !!customElements.get("ha-form");
 }
-async function $e(n, t) {
-  let e = customElements.get(n);
+async function Je(a, t) {
+  let e = customElements.get(a);
   if (typeof (e == null ? void 0 : e.getConfigElement) != "function") {
     const i = window.loadCardHelpers;
     if (!i)
       return !1;
     try {
-      await (await i()).createCardElement(t), e = customElements.get(n);
+      await (await i()).createCardElement(t), e = customElements.get(a);
     } catch {
       return !1;
     }
   }
   return typeof (e == null ? void 0 : e.getConfigElement) == "function" ? (await e.getConfigElement(), !0) : !1;
 }
-const xe = "Possible Issues", Ae = "#44739e", Se = ["sensor", "light", "switch"], Oi = ["unavailable"], Ui = ["unavailable", "unknown", "none"], Ce = "none", Ri = [
+const Ze = "Possible Issues", Xe = Vt, Qe = ["sensor", "light", "switch"], Us = ["unavailable"], Ns = ["unavailable", "unknown", "none"], ti = "none", Ps = [
   { value: "equals", label: "Equals" },
   { value: "not_equals", label: "Does not equal" },
   { value: "gt", label: "Greater than (>)" },
@@ -1695,7 +1706,7 @@ const xe = "Possible Issues", Ae = "#44739e", Se = ["sensor", "light", "switch"]
   { value: "gte", label: "Greater than or equal (>=)" },
   { value: "contains", label: "Contains" },
   { value: "not_contains", label: "Does not contain" }
-], gt = class gt extends _ {
+], xt = class xt extends x {
   constructor() {
     super(...arguments), this.config = {}, this.integrationOptions = [], this.integrationsLoading = !1, this.integrationsVersion = 0, this.haComponentsVersion = 0;
   }
@@ -1704,16 +1715,16 @@ const xe = "Possible Issues", Ae = "#44739e", Se = ["sensor", "light", "switch"]
   }
   setConfig(t) {
     this.config = {
-      title: xe,
-      background_color: Ae,
-      domains: Se,
-      issue_states: Oi,
+      title: Ze,
+      background_color: Xe,
+      domains: Qe,
+      issue_states: Us,
       included_entities: [],
       ignored_entities: [],
       ignored_devices: [],
       ignored_integrations: [],
       ignored_name_patterns: [],
-      row_detail: Ce,
+      row_detail: ti,
       value_checks: [],
       ...t
     };
@@ -1728,14 +1739,14 @@ const xe = "Possible Issues", Ae = "#44739e", Se = ["sensor", "light", "switch"]
     return c`
       <div class="editor">
         <div class="grid">
-          ${U({
+          ${V({
       label: "Title",
       value: String(this.config.title || ""),
-      placeholder: xe,
+      placeholder: Ze,
       onInput: (t) => this.updateConfigValue("title", t)
     })}
-          ${this.renderColorInput("Background color", "background_color", Ae)}
-          ${this.renderListField("Domains", "domains", Se, "sensor, light, switch")}
+          ${this.renderColorInput("Background color", "background_color", Xe)}
+          ${this.renderListField("Domains", "domains", Qe, "sensor, light, switch")}
           ${this.renderIssueStatesField()}
           ${this.renderValueChecksField()}
           ${this.renderListField("Only include entity IDs or patterns", "included_entities", [], "sensor.temperature, light.kitchen")}
@@ -1749,11 +1760,11 @@ const xe = "Possible Issues", Ae = "#44739e", Se = ["sensor", "light", "switch"]
     `;
   }
   renderListField(t, e, i, s) {
-    return U({
+    return V({
       label: t,
       value: this.formatList(this.config[e], i),
       placeholder: s,
-      onInput: (a) => this.updateListValue(e, a)
+      onInput: (n) => this.updateListValue(e, n)
     });
   }
   renderColorInput(t, e, i) {
@@ -1764,13 +1775,13 @@ const xe = "Possible Issues", Ae = "#44739e", Se = ["sensor", "light", "switch"]
         <input
           type="color"
           .value=${s}
-          @input=${(a) => this.updateConfigValue(e, a.target.value)}
+          @input=${(n) => this.updateConfigValue(e, n.target.value)}
         />
       </label>
     `;
   }
   renderIssueStatesField() {
-    const t = this.parseConfigList(this.config.issue_states), e = new Set(t), i = Ui.filter((s) => !e.has(s));
+    const t = this.parseConfigList(this.config.issue_states), e = new Set(t), i = Ns.filter((s) => !e.has(s));
     return c`
       <div class="field-group">
         <label>
@@ -1817,7 +1828,7 @@ const xe = "Possible Issues", Ae = "#44739e", Se = ["sensor", "light", "switch"]
         ${t.length ? t.map(
       (e, i) => c`
                 <div class="value-check">
-                  ${L({
+                  ${O({
         hass: this.hass,
         label: "Entity",
         value: String(e.entity || ""),
@@ -1835,7 +1846,7 @@ const xe = "Possible Issues", Ae = "#44739e", Se = ["sensor", "light", "switch"]
         s.target.value
       )}
                     >
-                      ${Ri.map(
+                      ${Ps.map(
         (s) => c`
                           <option value=${s.value} ?selected=${(e.operator || "equals") === s.value}>
                             ${s.label}
@@ -1854,7 +1865,7 @@ const xe = "Possible Issues", Ae = "#44739e", Se = ["sensor", "light", "switch"]
                     />
                   </label>
 
-                  ${we({
+                  ${pe({
         hass: this.hass,
         label: "Message",
         fieldName: "message",
@@ -1862,7 +1873,7 @@ const xe = "Possible Issues", Ae = "#44739e", Se = ["sensor", "light", "switch"]
         onValueChanged: (s) => this.updateValueCheck(i, "message", s)
       })}
 
-                  ${we({
+                  ${pe({
         hass: this.hass,
         label: "Submessage",
         fieldName: "submessage",
@@ -1892,23 +1903,23 @@ const xe = "Possible Issues", Ae = "#44739e", Se = ["sensor", "light", "switch"]
     `;
   }
   renderIgnoredIntegrationsField() {
-    const t = this.parseConfigList(this.config.ignored_integrations), e = new Set(t), i = this.integrationOptions.filter((a) => !e.has(a)), s = this.integrationsLoading || i.length === 0;
+    const t = this.parseConfigList(this.config.ignored_integrations), e = new Set(t), i = this.integrationOptions.filter((n) => !e.has(n)), s = this.integrationsLoading || i.length === 0;
     return c`
       <label>
         <span>Ignored integrations</span>
-        <select ?disabled=${s} @change=${(a) => this.handleIgnoredIntegrationSelected(a)}>
+        <select ?disabled=${s} @change=${(n) => this.handleIgnoredIntegrationSelected(n)}>
           <option value="">
             ${this.integrationsLoading ? "Loading integrations..." : i.length ? "Add integration" : "No integrations available"}
           </option>
-          ${i.map((a) => c`<option value=${a}>${this.formatIntegrationName(a)}</option>`)}
+          ${i.map((n) => c`<option value=${n}>${this.formatIntegrationName(n)}</option>`)}
         </select>
       </label>
       ${t.length ? c`
             <div class="chips" aria-label="Ignored integrations">
               ${t.map(
-      (a) => c`
-                  <button class="chip" type="button" @click=${() => this.removeIgnoredIntegration(a)}>
-                    ${this.formatIntegrationName(a)}
+      (n) => c`
+                  <button class="chip" type="button" @click=${() => this.removeIgnoredIntegration(n)}>
+                    ${this.formatIntegrationName(n)}
                     <span aria-hidden="true">x</span>
                   </button>
                 `
@@ -1918,7 +1929,7 @@ const xe = "Possible Issues", Ae = "#44739e", Se = ["sensor", "light", "switch"]
     `;
   }
   renderRowDetailField() {
-    const t = this.config.row_detail || Ce;
+    const t = this.config.row_detail || ti;
     return c`
       <label>
         <span>Row detail</span>
@@ -2027,7 +2038,7 @@ const xe = "Possible Issues", Ae = "#44739e", Se = ["sensor", "light", "switch"]
   }
   async loadHomeAssistantPickers() {
     try {
-      await Ni() && (this.haComponentsVersion += 1);
+      await Fi() && (this.haComponentsVersion += 1);
     } catch (t) {
       console.warn("possible-issues-card: Failed to load Home Assistant pickers", t);
     }
@@ -2046,12 +2057,12 @@ const xe = "Possible Issues", Ae = "#44739e", Se = ["sensor", "light", "switch"]
     }
   }
 };
-gt.properties = {
+xt.properties = {
   hass: { attribute: !1 },
   config: { attribute: !1 },
   integrationsVersion: { state: !0 },
   haComponentsVersion: { state: !0 }
-}, gt.styles = w`
+}, xt.styles = w`
     .editor {
       display: grid;
       gap: 18px;
@@ -2181,9 +2192,9 @@ gt.properties = {
       line-height: 1;
     }
   `;
-let Zt = gt;
-customElements.define("possible-issues-card-editor", Zt);
-const It = "Possible Issues", Vt = "#44739e", W = ["sensor", "light", "switch"], at = ["unavailable"], Dt = "none", mt = class mt extends O {
+let ve = xt;
+customElements.define("possible-issues-card-editor", ve);
+const Bt = "Possible Issues", Wt = Vt, Z = ["sensor", "light", "switch"], ct = ["unavailable"], jt = "none", $t = class $t extends z {
   constructor() {
     super(...arguments), this.entityRegistry = [], this.deviceRegistry = [], this.registryLoading = !1, this.registryError = !1, this.registryVersion = 0;
   }
@@ -2192,31 +2203,31 @@ const It = "Possible Issues", Vt = "#44739e", W = ["sensor", "light", "switch"],
   }
   static getStubConfig() {
     return {
-      title: It,
-      background_color: Vt,
-      domains: W,
-      issue_states: at,
+      title: Bt,
+      background_color: Wt,
+      domains: Z,
+      issue_states: ct,
       included_entities: [],
       ignored_entities: [],
       ignored_devices: [],
       ignored_integrations: [],
       ignored_name_patterns: [],
-      row_detail: Dt,
+      row_detail: jt,
       value_checks: []
     };
   }
   setConfig(t) {
     this.config = {
-      title: It,
-      background_color: Vt,
-      domains: W,
-      issue_states: at,
+      title: Bt,
+      background_color: Wt,
+      domains: Z,
+      issue_states: ct,
       included_entities: [],
       ignored_entities: [],
       ignored_devices: [],
       ignored_integrations: [],
       ignored_name_patterns: [],
-      row_detail: Dt,
+      row_detail: jt,
       value_checks: [],
       ...t
     };
@@ -2227,8 +2238,8 @@ const It = "Possible Issues", Vt = "#44739e", W = ["sensor", "light", "switch"],
     if (t.has("hass")) {
       const e = t.get("hass");
       return e ? this.hass ? this.getWatchedEntityIds(this.hass).some((s) => {
-        var a, o;
-        return ((a = e.states) == null ? void 0 : a[s]) !== ((o = this.hass.states) == null ? void 0 : o[s]);
+        var n, o;
+        return ((n = e.states) == null ? void 0 : n[s]) !== ((o = this.hass.states) == null ? void 0 : o[s]);
       }) : !1 : !0;
     }
     return !1;
@@ -2238,12 +2249,12 @@ const It = "Possible Issues", Vt = "#44739e", W = ["sensor", "light", "switch"],
   }
   render() {
     const t = this.getIssueDevices(), e = [...this.getStateIssueEntities(), ...this.getValueCheckIssues()], i = {
-      "--possible-issues-card-background": this.config.background_color || Vt
+      "--possible-issues-card-background": this.config.background_color || Wt
     };
     return !t.length && !e.length ? c`` : c`
-      <ha-card style=${Q(i)}>
+      <ha-card style=${K(i)}>
         <div class="card">
-          <h2>${this.config.title || It}</h2>
+          <h2>${this.config.title || Bt}</h2>
           <div class="devices">
             ${t.map((s) => this.renderDeviceRow(s))}
             ${e.map((s) => this.renderEntityRow(s))}
@@ -2265,8 +2276,8 @@ const It = "Possible Issues", Vt = "#44739e", W = ["sensor", "light", "switch"],
     `;
   }
   renderEntityRow(t) {
-    var l, u, p;
-    const e = t.entityId, i = this.isValueCheckIssue(t), s = this.getEntityName(e, t.entity), a = i ? this.getValueCheckDetail(t) : this.getStateIssueDetail(t), o = i ? Mi(t, (h, d) => this.getEntityName(h, d)) : void 0, r = ((l = t.entity.attributes) == null ? void 0 : l.icon) || ((u = t.registryEntry) == null ? void 0 : u.icon) || ((p = t.registryEntry) == null ? void 0 : p.original_icon) || "mdi:alert-circle-outline";
+    var l, h, p;
+    const e = t.entityId, i = this.isValueCheckIssue(t), s = this.getEntityName(e, t.entity), n = i ? this.getValueCheckDetail(t) : this.getStateIssueDetail(t), o = i ? Ms(t, (u, d) => this.getEntityName(u, d)) : void 0, r = ((l = t.entity.attributes) == null ? void 0 : l.icon) || ((h = t.registryEntry) == null ? void 0 : h.icon) || ((p = t.registryEntry) == null ? void 0 : p.original_icon) || "mdi:alert-circle-outline";
     return c`
       <button class="device-row" type="button" @click=${() => this.openIssueEntity(t)}>
         <ha-icon .icon=${r}></ha-icon>
@@ -2286,8 +2297,8 @@ const It = "Possible Issues", Vt = "#44739e", W = ["sensor", "light", "switch"],
                   .template=${t.check.submessage}
                   .variables=${o}
                   .entityIds=${[t.check.entity]}
-                  .fallback=${a}
-                ></ha-cards-template-text>` : a}
+                  .fallback=${n}
+                ></ha-cards-template-text>` : n}
           </span>
         </span>
       </button>
@@ -2297,44 +2308,44 @@ const It = "Possible Issues", Vt = "#44739e", W = ["sensor", "light", "switch"],
     var p;
     if (this.registryError || !this.entityRegistry.length || !this.deviceRegistry.length || !this.hass)
       return [];
-    const t = new Set(this.normalizeList(this.config.domains, W)), e = new Set(this.normalizeList(this.config.issue_states, at)), i = this.normalizeList(this.config.included_entities), s = this.normalizeList(this.config.ignored_entities), a = this.normalizeList(this.config.ignored_devices), o = new Set(
-      this.normalizeList(this.config.ignored_integrations).map((h) => h.toLowerCase())
-    ), r = this.normalizeList(this.config.ignored_name_patterns), l = new Map(this.deviceRegistry.map((h) => [h.id, h])), u = /* @__PURE__ */ new Map();
-    for (const h of this.entityRegistry) {
-      const d = this.hass.states[h.entity_id], g = h.device_id || "", m = l.get(g);
-      if (!d || !m || !t.has(this.getDomain(h.entity_id)) || !e.has(d.state) || h.platform && o.has(h.platform.toLowerCase()) || i.length && !this.matchesPattern(h.entity_id, i) || this.matchesPattern(h.entity_id, s) || this.matchesPattern(g, a))
+    const t = new Set(this.normalizeList(this.config.domains, Z)), e = new Set(this.normalizeList(this.config.issue_states, ct)), i = this.normalizeList(this.config.included_entities), s = this.normalizeList(this.config.ignored_entities), n = this.normalizeList(this.config.ignored_devices), o = new Set(
+      this.normalizeList(this.config.ignored_integrations).map((u) => u.toLowerCase())
+    ), r = this.normalizeList(this.config.ignored_name_patterns), l = new Map(this.deviceRegistry.map((u) => [u.id, u])), h = /* @__PURE__ */ new Map();
+    for (const u of this.entityRegistry) {
+      const d = this.hass.states[u.entity_id], g = u.device_id || "", m = l.get(g);
+      if (!d || !m || !t.has(this.getDomain(u.entity_id)) || !e.has(d.state) || u.platform && o.has(u.platform.toLowerCase()) || i.length && !this.matchesPattern(u.entity_id, i) || this.matchesPattern(u.entity_id, s) || this.matchesPattern(g, n))
         continue;
-      const v = [this.getDeviceName(m), (p = d.attributes) == null ? void 0 : p.friendly_name, h.name, h.original_name].filter(Boolean).join(" ");
-      this.matchesPattern(v, r) || u.set(g, [...u.get(g) || [], h]);
+      const f = [this.getDeviceName(m), (p = d.attributes) == null ? void 0 : p.friendly_name, u.name, u.original_name].filter(Boolean).join(" ");
+      this.matchesPattern(f, r) || h.set(g, [...h.get(g) || [], u]);
     }
-    return [...u.entries()].map(([h, d]) => ({
-      device: l.get(h),
+    return [...h.entries()].map(([u, d]) => ({
+      device: l.get(u),
       entities: d
-    })).sort((h, d) => this.getDeviceName(h.device).localeCompare(this.getDeviceName(d.device)));
+    })).sort((u, d) => this.getDeviceName(u.device).localeCompare(this.getDeviceName(d.device)));
   }
   getStateIssueEntities() {
     if (!this.hass || !this.registryError && !this.registryVersion)
       return [];
-    const t = new Set(this.normalizeList(this.config.domains, W)), e = new Set(this.normalizeList(this.config.issue_states, at)), i = this.normalizeList(this.config.included_entities), s = this.normalizeList(this.config.ignored_entities), a = this.normalizeList(this.config.ignored_devices), o = new Set(
+    const t = new Set(this.normalizeList(this.config.domains, Z)), e = new Set(this.normalizeList(this.config.issue_states, ct)), i = this.normalizeList(this.config.included_entities), s = this.normalizeList(this.config.ignored_entities), n = this.normalizeList(this.config.ignored_devices), o = new Set(
       this.normalizeList(this.config.ignored_integrations).map((d) => d.toLowerCase())
-    ), r = this.normalizeList(this.config.ignored_name_patterns), l = new Map(this.deviceRegistry.map((d) => [d.id, d])), u = new Set(this.entityRegistry.map((d) => d.entity_id)), p = this.entityRegistry.map((d) => {
+    ), r = this.normalizeList(this.config.ignored_name_patterns), l = new Map(this.deviceRegistry.map((d) => [d.id, d])), h = new Set(this.entityRegistry.map((d) => d.entity_id)), p = this.entityRegistry.map((d) => {
       var b;
-      const g = this.hass.states[d.entity_id], m = d.device_id || "", v = l.get(m);
-      if (!g || v || !t.has(this.getDomain(d.entity_id)) || !e.has(g.state) || d.platform && o.has(d.platform.toLowerCase()) || i.length && !this.matchesPattern(d.entity_id, i) || this.matchesPattern(d.entity_id, s) || this.matchesPattern(m, a))
+      const g = this.hass.states[d.entity_id], m = d.device_id || "", f = l.get(m);
+      if (!g || f || !t.has(this.getDomain(d.entity_id)) || !e.has(g.state) || d.platform && o.has(d.platform.toLowerCase()) || i.length && !this.matchesPattern(d.entity_id, i) || this.matchesPattern(d.entity_id, s) || this.matchesPattern(m, n))
         return;
-      const $ = [(b = g.attributes) == null ? void 0 : b.friendly_name, d.name, d.original_name].filter(Boolean).join(" ");
-      if (!this.matchesPattern($, r))
+      const v = [(b = g.attributes) == null ? void 0 : b.friendly_name, d.name, d.original_name].filter(Boolean).join(" ");
+      if (!this.matchesPattern(v, r))
         return {
           entityId: d.entity_id,
           entity: g,
           issueState: g.state,
           registryEntry: d
         };
-    }).filter((d) => !!d), h = Object.entries(this.hass.states || {}).map(([d, g]) => {
-      var v;
-      if (u.has(d) || !t.has(this.getDomain(d)) || !e.has(g.state) || i.length && !this.matchesPattern(d, i) || this.matchesPattern(d, s))
+    }).filter((d) => !!d), u = Object.entries(this.hass.states || {}).map(([d, g]) => {
+      var f;
+      if (h.has(d) || !t.has(this.getDomain(d)) || !e.has(g.state) || i.length && !this.matchesPattern(d, i) || this.matchesPattern(d, s))
         return;
-      const m = [(v = g.attributes) == null ? void 0 : v.friendly_name].filter(Boolean).join(" ");
+      const m = [(f = g.attributes) == null ? void 0 : f.friendly_name].filter(Boolean).join(" ");
       if (!this.matchesPattern(m, r))
         return {
           entityId: d,
@@ -2342,7 +2353,7 @@ const It = "Possible Issues", Vt = "#44739e", W = ["sensor", "light", "switch"],
           issueState: g.state
         };
     }).filter((d) => !!d);
-    return [...p, ...h].sort(
+    return [...p, ...u].sort(
       (d, g) => this.getEntityName(d.entityId, d.entity).localeCompare(this.getEntityName(g.entityId, g.entity))
     );
   }
@@ -2358,8 +2369,8 @@ const It = "Possible Issues", Vt = "#44739e", W = ["sensor", "light", "switch"],
     }).filter((t) => !!t) : [];
   }
   getDomainEntityIds(t) {
-    var s, a;
-    const e = new Set(this.normalizeList((s = this.config) == null ? void 0 : s.domains, W)), i = this.normalizeList((a = this.config) == null ? void 0 : a.included_entities);
+    var s, n;
+    const e = new Set(this.normalizeList((s = this.config) == null ? void 0 : s.domains, Z)), i = this.normalizeList((n = this.config) == null ? void 0 : n.included_entities);
     return Object.keys(t.states || {}).filter(
       (o) => e.has(this.getDomain(o)) && (!i.length || this.matchesPattern(o, i))
     );
@@ -2378,20 +2389,20 @@ const It = "Possible Issues", Vt = "#44739e", W = ["sensor", "light", "switch"],
     return ((i = e.attributes) == null ? void 0 : i.friendly_name) || t;
   }
   getIssueIcon(t) {
-    var i, s, a;
+    var i, s, n;
     const e = t ? (s = (i = this.hass) == null ? void 0 : i.states) == null ? void 0 : s[t.entity_id] : void 0;
-    return ((a = e == null ? void 0 : e.attributes) == null ? void 0 : a.icon) || (t == null ? void 0 : t.icon) || (t == null ? void 0 : t.original_icon) || "mdi:devices";
+    return ((n = e == null ? void 0 : e.attributes) == null ? void 0 : n.icon) || (t == null ? void 0 : t.icon) || (t == null ? void 0 : t.original_icon) || "mdi:devices";
   }
   getRowDetail(t) {
-    const e = this.config.row_detail || Dt;
+    const e = this.config.row_detail || jt;
     if (e === "count") {
       const i = t.entities.length;
       return `${i} unavailable ${i === 1 ? "entity" : "entities"}`;
     }
     return e === "entities" ? t.entities.map((i) => {
-      var a;
+      var n;
       const s = this.hass.states[i.entity_id];
-      return ((a = s == null ? void 0 : s.attributes) == null ? void 0 : a.friendly_name) || i.name || i.original_name || i.entity_id;
+      return ((n = s == null ? void 0 : s.attributes) == null ? void 0 : n.friendly_name) || i.name || i.original_name || i.entity_id;
     }).join(", ") : "";
   }
   getStateIssueDetail(t) {
@@ -2399,8 +2410,8 @@ const It = "Possible Issues", Vt = "#44739e", W = ["sensor", "light", "switch"],
   }
   getValueCheckDetail(t) {
     var r;
-    const e = this.getOperatorLabel(t.check.operator), i = ((r = t.entity.attributes) == null ? void 0 : r.unit_of_measurement) || "", s = t.check.operator === "not_contains" ? t.check.values.join(", ") : t.matchedValue || t.check.values.join(", "), a = `${t.entity.state} ${i ? `${i}` : ""}`, o = `${s} ${i ? `${i}` : ""}`;
-    return `${a} ${e} ${o}`;
+    const e = this.getOperatorLabel(t.check.operator), i = ((r = t.entity.attributes) == null ? void 0 : r.unit_of_measurement) || "", s = t.check.operator === "not_contains" ? t.check.values.join(", ") : t.matchedValue || t.check.values.join(", "), n = `${t.entity.state} ${i ? `${i}` : ""}`, o = `${s} ${i ? `${i}` : ""}`;
+    return `${n} ${e} ${o}`;
   }
   getOperatorLabel(t) {
     return {
@@ -2415,7 +2426,7 @@ const It = "Possible Issues", Vt = "#44739e", W = ["sensor", "light", "switch"],
     }[t];
   }
   openDevice(t) {
-    k(
+    E(
       this,
       this.hass,
       {},
@@ -2434,7 +2445,7 @@ const It = "Possible Issues", Vt = "#44739e", W = ["sensor", "light", "switch"],
     this.openDevice(t.device.id);
   }
   openEntity(t) {
-    k(
+    E(
       this,
       this.hass,
       { entity: t },
@@ -2445,7 +2456,7 @@ const It = "Possible Issues", Vt = "#44739e", W = ["sensor", "light", "switch"],
   }
   openIssueEntity(t) {
     if (this.isValueCheckIssue(t) && t.check.navigation_path) {
-      k(
+      E(
         this,
         this.hass,
         {},
@@ -2502,25 +2513,25 @@ const It = "Possible Issues", Vt = "#44739e", W = ["sensor", "light", "switch"],
     }
   }
   matchesNumericValue(t, e, i) {
-    const s = Number(t), a = Number(e);
-    if (!Number.isFinite(s) || !Number.isFinite(a))
+    const s = Number(t), n = Number(e);
+    if (!Number.isFinite(s) || !Number.isFinite(n))
       return !1;
     switch (i) {
       case "gt":
-        return s > a;
+        return s > n;
       case "lt":
-        return s < a;
+        return s < n;
       case "lte":
-        return s <= a;
+        return s <= n;
       case "gte":
-        return s >= a;
+        return s >= n;
       default:
         return !1;
     }
   }
   normalizeList(t, e = []) {
     const i = t == null || t === "" ? e : t;
-    return (Array.isArray(i) ? i : String(i).split(",")).map((a) => String(a).trim()).filter(Boolean);
+    return (Array.isArray(i) ? i : String(i).split(",")).map((n) => String(n).trim()).filter(Boolean);
   }
   matchesPattern(t, e) {
     const i = t.toLowerCase();
@@ -2543,11 +2554,11 @@ const It = "Possible Issues", Vt = "#44739e", W = ["sensor", "light", "switch"],
     }
   }
 };
-mt.properties = {
+$t.properties = {
   hass: { attribute: !1 },
   config: { attribute: !1 },
   registryVersion: { state: !0 }
-}, mt.styles = w`
+}, $t.styles = w`
     ha-card {
       background: var(--possible-issues-card-background);
       border: none;
@@ -2633,15 +2644,15 @@ mt.properties = {
       white-space: nowrap;
     }
   `;
-let Xt = mt;
-customElements.define("possible-issues-card", Xt);
+let ye = $t;
+customElements.define("possible-issues-card", ye);
 window.customCards = window.customCards || [];
 window.customCards.push({
   type: "possible-issues-card",
   name: "Possible Issues Card",
   description: "Lists devices with unavailable entities and entities matching configurable value checks"
 });
-const ke = "/config/dashboard", Fi = [
+const ei = "/config/dashboard", Os = [
   {
     icon: "mdi:home",
     label: "Home",
@@ -2666,7 +2677,7 @@ const ke = "/config/dashboard", Fi = [
     color: "#7c3cff",
     tap_action: { action: "navigate", navigation_path: "/lovelace/lab" }
   }
-], Te = [
+], ii = [
   { value: "more-info", label: "More info" },
   { value: "toggle", label: "Toggle" },
   { value: "navigate", label: "Navigate" },
@@ -2674,7 +2685,7 @@ const ke = "/config/dashboard", Fi = [
   { value: "call-service", label: "Call service" },
   { value: "fire-dom-event", label: "Fire DOM event" },
   { value: "none", label: "None" }
-], ft = class ft extends _ {
+], At = class At extends x {
   constructor() {
     super(...arguments), this.config = {}, this.serviceDataErrors = {};
   }
@@ -2686,8 +2697,8 @@ const ke = "/config/dashboard", Fi = [
       weather_tap_action: { action: "more-info" },
       show_temperature: !0,
       use_ha_weather_icons: !1,
-      settings_navigation_path: ke,
-      tabs: Fi,
+      settings_navigation_path: ei,
+      tabs: Os,
       ...t
     };
   }
@@ -2698,7 +2709,7 @@ const ke = "/config/dashboard", Fi = [
     return c`
       <div class="editor">
         <div class="grid">
-          ${L({
+          ${O({
       hass: this.hass,
       label: "Weather entity",
       value: String(this.config.weather_entity || ""),
@@ -2707,7 +2718,7 @@ const ke = "/config/dashboard", Fi = [
     })}
           ${this.renderCheckbox("Show temperature", "show_temperature")}
           ${this.renderCheckbox("Use Home Assistant weather icons", "use_ha_weather_icons")}
-          ${L({
+          ${O({
       hass: this.hass,
       label: "Temperature entity override",
       value: String(this.config.temperature_entity || ""),
@@ -2715,10 +2726,10 @@ const ke = "/config/dashboard", Fi = [
       disabled: !this.config.show_temperature,
       onValueChanged: (t) => this.updateConfigValue("temperature_entity", t)
     })}
-          ${U({
+          ${V({
       label: "Settings navigation path",
       value: String(this.config.settings_navigation_path || ""),
-      placeholder: ke,
+      placeholder: ei,
       onInput: (t) => this.updateConfigValue("settings_navigation_path", t)
     })}
         </div>
@@ -2790,12 +2801,12 @@ const ke = "/config/dashboard", Fi = [
     `;
   }
   renderTabTextField(t, e, i, s = "") {
-    const a = this.getTab(t);
+    const n = this.getTab(t);
     return c`
       <label>
         <span>${i}</span>
         <input
-          .value=${String(a[e] || "")}
+          .value=${String(n[e] || "")}
           placeholder=${s}
           @input=${(o) => this.updateTabValue(t, e, o.target.value)}
         />
@@ -2804,27 +2815,27 @@ const ke = "/config/dashboard", Fi = [
   }
   renderTabActionEditor(t, e, i) {
     const s = this.getServiceDataErrorKey(e);
-    return Gt({
+    return ge({
       label: t,
       className: "action-editor",
       actionConfig: i,
-      actionOptions: Te,
-      onActionTypeChanged: (a) => this.updateTabActionType(e, a),
-      onActionValueChanged: (a, o) => this.updateTabActionValue(e, a, o),
-      onServiceDataChanged: (a) => this.updateServiceData(e, a),
-      formatJson: (a) => this.formatJson(a),
+      actionOptions: ii,
+      onActionTypeChanged: (n) => this.updateTabActionType(e, n),
+      onActionValueChanged: (n, o) => this.updateTabActionValue(e, n, o),
+      onServiceDataChanged: (n) => this.updateServiceData(e, n),
+      formatJson: (n) => this.formatJson(n),
       serviceDataError: this.serviceDataErrors[s]
     });
   }
   renderWeatherActionEditor(t, e) {
     const i = this.getWeatherServiceDataErrorKey();
-    return Gt({
+    return ge({
       label: t,
       className: "action-editor",
       actionConfig: e,
-      actionOptions: Te,
+      actionOptions: ii,
       onActionTypeChanged: (s) => this.updateWeatherActionType(s),
-      onActionValueChanged: (s, a) => this.updateWeatherActionValue(s, a),
+      onActionValueChanged: (s, n) => this.updateWeatherActionValue(s, n),
       onServiceDataChanged: (s) => this.updateWeatherServiceData(s),
       formatJson: (s) => this.formatJson(s),
       serviceDataError: this.serviceDataErrors[i]
@@ -2880,12 +2891,12 @@ const ke = "/config/dashboard", Fi = [
       return;
     }
     try {
-      const a = JSON.parse(i);
+      const n = JSON.parse(i);
       this.serviceDataErrors = { ...this.serviceDataErrors, [s]: void 0 }, this.updateTab(t, {
         ...this.getTab(t),
         tap_action: {
           ...this.getTab(t).tap_action || { action: "call-service" },
-          service_data: a
+          service_data: n
         }
       });
     } catch {
@@ -2976,10 +2987,10 @@ const ke = "/config/dashboard", Fi = [
     })).constructor.getConfigElement(), this.requestUpdate();
   }
 };
-ft.properties = {
+At.properties = {
   hass: { attribute: !1 },
   config: { attribute: !1 }
-}, ft.styles = w`
+}, At.styles = w`
     .editor {
       display: grid;
       gap: 18px;
@@ -3110,9 +3121,9 @@ ft.properties = {
       font-size: 12px;
     }
   `;
-let Qt = ft;
-customElements.define("welcome-card-editor", Qt);
-const ot = "/config/dashboard", Lt = { action: "more-info" }, Pi = { action: "none" }, Hi = "welcome-card:collapsed", Ee = [
+let _e = At;
+customElements.define("welcome-card-editor", _e);
+const dt = "/config/dashboard", qt = { action: "more-info" }, Fs = { action: "none" }, Hs = "welcome-card:collapsed", si = [
   {
     icon: "mdi:home",
     label: "Home",
@@ -3137,7 +3148,7 @@ const ot = "/config/dashboard", Lt = { action: "more-info" }, Pi = { action: "no
     color: "#7c3cff",
     tap_action: { action: "navigate", navigation_path: "/lovelace/lab" }
   }
-], Mt = {
+], Kt = {
   "clear-night": "🌙",
   cloudy: "☁️",
   exceptional: "🌞",
@@ -3153,7 +3164,7 @@ const ot = "/config/dashboard", Lt = { action: "more-info" }, Pi = { action: "no
   sunny: "☀️",
   windy: "🌪️",
   default: "🌡️"
-}, Bi = {
+}, Bs = {
   "clear-night": "mdi:weather-night",
   cloudy: "mdi:weather-cloudy",
   exceptional: "mdi:alert-circle-outline",
@@ -3169,7 +3180,7 @@ const ot = "/config/dashboard", Lt = { action: "more-info" }, Pi = { action: "no
   sunny: "mdi:weather-sunny",
   windy: "mdi:weather-windy",
   "windy-variant": "mdi:weather-windy-variant"
-}, vt = class vt extends O {
+}, St = class St extends z {
   constructor() {
     super(...arguments), this._collapsed = !1, this._now = /* @__PURE__ */ new Date();
   }
@@ -3179,20 +3190,20 @@ const ot = "/config/dashboard", Lt = { action: "more-info" }, Pi = { action: "no
   static getStubConfig() {
     return {
       weather_entity: "",
-      weather_tap_action: Lt,
+      weather_tap_action: qt,
       show_temperature: !0,
       use_ha_weather_icons: !1,
-      settings_navigation_path: ot,
-      tabs: Ee
+      settings_navigation_path: dt,
+      tabs: si
     };
   }
   setConfig(t) {
     this.config = {
-      weather_tap_action: Lt,
+      weather_tap_action: qt,
       show_temperature: !0,
       use_ha_weather_icons: !1,
-      settings_navigation_path: ot,
-      tabs: Ee,
+      settings_navigation_path: dt,
+      tabs: si,
       ...t
     }, this._collapsed = this.loadCollapsedState();
   }
@@ -3265,7 +3276,7 @@ const ot = "/config/dashboard", Lt = { action: "more-info" }, Pi = { action: "no
     return c`
       <button
         class="tab"
-        style=${Q(i)}
+        style=${K(i)}
         type="button"
         aria-label=${t.label}
         @click=${() => this.runTabAction(t)}
@@ -3284,10 +3295,10 @@ const ot = "/config/dashboard", Lt = { action: "more-info" }, Pi = { action: "no
     var e, i, s;
     const t = [
       ((e = this.config) == null ? void 0 : e.weather_entity) || "no-weather",
-      ((i = this.config) == null ? void 0 : i.settings_navigation_path) || ot,
-      (((s = this.config) == null ? void 0 : s.tabs) || []).map((a) => a.label || "").join("|")
+      ((i = this.config) == null ? void 0 : i.settings_navigation_path) || dt,
+      (((s = this.config) == null ? void 0 : s.tabs) || []).map((n) => n.label || "").join("|")
     ];
-    return `${Hi}${t.join(":")}`;
+    return `${Hs}${t.join(":")}`;
   }
   loadCollapsedState() {
     try {
@@ -3303,22 +3314,22 @@ const ot = "/config/dashboard", Lt = { action: "more-info" }, Pi = { action: "no
     }
   }
   handleSettingsTap() {
-    k(
+    E(
       this,
       this.hass,
       {},
       {
         action: "navigate",
-        navigation_path: this.config.settings_navigation_path || ot
+        navigation_path: this.config.settings_navigation_path || dt
       }
     );
   }
   handleWeatherTap() {
-    const t = this.config.weather_tap_action || Lt, e = t.entity || this.config.weather_entity || this.config.temperature_entity;
-    !e && t.action === "more-info" || k(this, this.hass, e ? { entity: e } : {}, t);
+    const t = this.config.weather_tap_action || qt, e = t.entity || this.config.weather_entity || this.config.temperature_entity;
+    !e && t.action === "more-info" || E(this, this.hass, e ? { entity: e } : {}, t);
   }
   runTabAction(t) {
-    k(this, this.hass, {}, t.tap_action || Pi);
+    E(this, this.hass, {}, t.tap_action || Fs);
   }
   getGreeting() {
     const t = this._now.getHours();
@@ -3339,12 +3350,12 @@ const ot = "/config/dashboard", Lt = { action: "more-info" }, Pi = { action: "no
   getWeatherIcon() {
     var e;
     const t = (e = this.getWeatherEntity()) == null ? void 0 : e.state;
-    return t && Bi[t] || "mdi:weather-cloudy";
+    return t && Bs[t] || "mdi:weather-cloudy";
   }
   getWeatherEmoji() {
     var e;
     const t = (e = this.getWeatherEntity()) == null ? void 0 : e.state;
-    return t && Mt[t] || Mt.default;
+    return t && Kt[t] || Kt.default;
   }
   renderWeatherIcon() {
     return this.config.use_ha_weather_icons ? c`<ha-icon .icon=${this.getWeatherIcon()}></ha-icon>` : c`<span class="weather-emoji" aria-hidden="true">${this.getWeatherEmoji()}</span>`;
@@ -3358,17 +3369,17 @@ const ot = "/config/dashboard", Lt = { action: "more-info" }, Pi = { action: "no
     }).format(this._now);
   }
   formatTemperature() {
-    var s, a, o, r, l, u;
+    var s, n, o, r, l, h;
     const t = this.getTemperatureEntity();
     if (t)
       return this.formatTemperatureValue(
         t.state,
         (s = t.attributes) == null ? void 0 : s.unit_of_measurement
       );
-    const e = this.getWeatherEntity(), i = (a = e == null ? void 0 : e.attributes) == null ? void 0 : a.temperature;
+    const e = this.getWeatherEntity(), i = (n = e == null ? void 0 : e.attributes) == null ? void 0 : n.temperature;
     return i == null || i === "" ? "-" : this.formatTemperatureValue(
       i,
-      ((o = e == null ? void 0 : e.attributes) == null ? void 0 : o.temperature_unit) || ((u = (l = (r = this.hass) == null ? void 0 : r.config) == null ? void 0 : l.unit_system) == null ? void 0 : u.temperature)
+      ((o = e == null ? void 0 : e.attributes) == null ? void 0 : o.temperature_unit) || ((h = (l = (r = this.hass) == null ? void 0 : r.config) == null ? void 0 : l.unit_system) == null ? void 0 : h.temperature)
     );
   }
   formatTemperatureValue(t, e) {
@@ -3379,12 +3390,12 @@ const ot = "/config/dashboard", Lt = { action: "more-info" }, Pi = { action: "no
     return t ? t.startsWith("°") ? t : t === "C" || t === "F" ? `°${t}` : t : "°";
   }
 };
-vt.properties = {
+St.properties = {
   hass: { attribute: !1 },
   config: { attribute: !1 },
   _collapsed: { state: !0 },
   _now: { state: !0 }
-}, vt.styles = w`
+}, St.styles = w`
     ha-card {
       background: var(--card-background-color);
       border: none;
@@ -3588,15 +3599,15 @@ vt.properties = {
       }
     }
   `;
-let te = vt;
-customElements.define("welcome-card", te);
+let we = St;
+customElements.define("welcome-card", we);
 window.customCards = window.customCards || [];
 window.customCards.push({
   type: "welcome-card",
   name: "Welcome Card",
   description: "Greeting, weather/date pill, and quick-action tabs"
 });
-const ze = "mdi:thermostat", Ie = "#fbb73c", Ve = "#3a8dde", De = "two_rows", bt = class bt extends _ {
+const ni = "mdi:thermostat", ai = "#fbb73c", oi = "#3a8dde", ri = "two_rows", kt = class kt extends x {
   constructor() {
     super(...arguments), this.config = {};
   }
@@ -3605,7 +3616,7 @@ const ze = "mdi:thermostat", Ie = "#fbb73c", Ve = "#3a8dde", De = "two_rows", bt
   }
   setConfig(t) {
     this.config = {
-      icon: ze,
+      icon: ni,
       compact: !1,
       show_controls: !0,
       show_modes: !1,
@@ -3614,10 +3625,10 @@ const ze = "mdi:thermostat", Ie = "#fbb73c", Ve = "#3a8dde", De = "two_rows", bt
       show_off_mode: !1,
       modes: [],
       presets: [],
-      dual_setpoint_layout: De,
+      dual_setpoint_layout: ri,
       step_amount: void 0,
-      heating_color: Ie,
-      cooling_color: Ve,
+      heating_color: ai,
+      cooling_color: oi,
       ...t
     };
   }
@@ -3625,29 +3636,29 @@ const ze = "mdi:thermostat", Ie = "#fbb73c", Ve = "#3a8dde", De = "two_rows", bt
     return t.has("config") ? !0 : t.has("hass") ? !t.get("hass") && !!this.hass : !1;
   }
   render() {
-    var s, a;
-    const t = this.getSelectedEntity(), e = this.asStringArray((s = t == null ? void 0 : t.attributes) == null ? void 0 : s.hvac_modes).filter((o) => o !== "off"), i = this.asStringArray((a = t == null ? void 0 : t.attributes) == null ? void 0 : a.preset_modes);
+    var s, n;
+    const t = this.getSelectedEntity(), e = this.asStringArray((s = t == null ? void 0 : t.attributes) == null ? void 0 : s.hvac_modes).filter((o) => o !== "off"), i = this.asStringArray((n = t == null ? void 0 : t.attributes) == null ? void 0 : n.preset_modes);
     return c`
       <div class="editor">
         <div class="grid">
-          ${U({
+          ${V({
       label: "Name",
       value: String(this.config.name || ""),
       placeholder: "Thermostat",
       onInput: (o) => this.updateConfigValue("name", o)
     })}
-          ${L({
+          ${O({
       hass: this.hass,
       label: "Climate entity",
       value: String(this.config.entity || ""),
       domains: ["climate"],
       onValueChanged: (o) => this.updateConfigValue("entity", o)
     })}
-          ${rt({
+          ${pt({
       hass: this.hass,
       label: "Icon",
       value: String(this.config.icon || ""),
-      fallback: ze,
+      fallback: ni,
       onValueChanged: (o) => this.updateConfigValue("icon", o)
     })}
         </div>
@@ -3666,8 +3677,8 @@ const ze = "mdi:thermostat", Ie = "#fbb73c", Ve = "#3a8dde", De = "two_rows", bt
 
         <fieldset>
           <legend>Colors</legend>
-          ${this.renderColorInput("Heating background", "heating_color", Ie)}
-          ${this.renderColorInput("Cooling background", "cooling_color", Ve)}
+          ${this.renderColorInput("Heating background", "heating_color", ai)}
+          ${this.renderColorInput("Cooling background", "cooling_color", oi)}
         </fieldset>
 
         <fieldset>
@@ -3714,7 +3725,7 @@ const ze = "mdi:thermostat", Ie = "#fbb73c", Ve = "#3a8dde", De = "two_rows", bt
       <label>
         <span>Dual setpoint layout</span>
         <select
-          .value=${this.config.dual_setpoint_layout || De}
+          .value=${this.config.dual_setpoint_layout || ri}
           @change=${(e) => this.updateConfigValue("dual_setpoint_layout", e.target.value)}
         >
           ${t.map((e) => c`
@@ -3734,7 +3745,7 @@ const ze = "mdi:thermostat", Ie = "#fbb73c", Ve = "#3a8dde", De = "two_rows", bt
         <input
           type="color"
           .value=${s}
-          @input=${(a) => this.updateConfigValue(e, a.target.value)}
+          @input=${(n) => this.updateConfigValue(e, n.target.value)}
         />
       </label>
     `;
@@ -3750,13 +3761,13 @@ const ze = "mdi:thermostat", Ie = "#fbb73c", Ve = "#3a8dde", De = "two_rows", bt
           step="0.1"
           .value=${s}
           placeholder=${i}
-          @input=${(a) => this.updateNumberConfigValue(e, a.target.value)}
+          @input=${(n) => this.updateNumberConfigValue(e, n.target.value)}
         />
       </label>
     `;
   }
   renderOptionList(t) {
-    const { options: e, selected: i, emptyMessage: s, onChanged: a } = t;
+    const { options: e, selected: i, emptyMessage: s, onChanged: n } = t;
     return e.length ? c`
       <div class="option-list">
         ${e.map((o) => {
@@ -3766,7 +3777,7 @@ const ze = "mdi:thermostat", Ie = "#fbb73c", Ve = "#3a8dde", De = "two_rows", bt
               <input
                 type="checkbox"
                 .checked=${r}
-                @change=${(l) => this.updateOptionList(e, i, o, l.target.checked, a)}
+                @change=${(l) => this.updateOptionList(e, i, o, l.target.checked, n)}
               />
               <span>${this.toLabel(o)}</span>
             </label>
@@ -3775,9 +3786,9 @@ const ze = "mdi:thermostat", Ie = "#fbb73c", Ve = "#3a8dde", De = "two_rows", bt
       </div>
     ` : c`<div class="hint">${s}</div>`;
   }
-  updateOptionList(t, e, i, s, a) {
+  updateOptionList(t, e, i, s, n) {
     const o = s ? [...e, i] : e.filter((r) => r !== i);
-    a(t.filter((r) => o.includes(r)));
+    n(t.filter((r) => o.includes(r)));
   }
   updateConfigValue(t, e) {
     const i = this.normalizeConfigValue(e), s = {
@@ -3820,10 +3831,10 @@ const ze = "mdi:thermostat", Ie = "#fbb73c", Ve = "#3a8dde", De = "two_rows", bt
     })).constructor.getConfigElement(), this.requestUpdate();
   }
 };
-bt.properties = {
+kt.properties = {
   hass: { attribute: !1 },
   config: { attribute: !1 }
-}, bt.styles = w`
+}, kt.styles = w`
     .editor {
       display: grid;
       gap: 18px;
@@ -3912,9 +3923,9 @@ bt.properties = {
       font-size: 12px;
     }
   `;
-let ee = bt;
-customElements.define("thermostat-card-editor", ee);
-const Nt = "mdi:thermostat", Ot = "#fbb73c", Ut = "#3a8dde", Rt = "two_rows", Wi = 3e4, yt = class yt extends O {
+let xe = kt;
+customElements.define("thermostat-card-editor", xe);
+const Gt = "mdi:thermostat", Yt = "#fbb73c", Jt = "#3a8dde", Zt = "two_rows", Ws = 3e4, Ct = class Ct extends z {
   constructor() {
     super(...arguments), this.selectedDualTarget = "low", this.isCollapsed = !1;
   }
@@ -3925,16 +3936,16 @@ const Nt = "mdi:thermostat", Ot = "#fbb73c", Ut = "#3a8dde", Rt = "two_rows", Wi
     return {
       entity: "",
       name: "Thermostat",
-      icon: Nt,
+      icon: Gt,
       show_controls: !0,
       show_modes: !1,
       show_presets: !1,
       show_fan_mode: !1,
       show_off_mode: !1,
-      dual_setpoint_layout: Rt,
+      dual_setpoint_layout: Zt,
       step_amount: void 0,
-      heating_color: Ot,
-      cooling_color: Ut
+      heating_color: Yt,
+      cooling_color: Jt
     };
   }
   setConfig(t) {
@@ -3943,7 +3954,7 @@ const Nt = "mdi:thermostat", Ot = "#fbb73c", Ut = "#3a8dde", Rt = "two_rows", Wi
     if (!t.entity.startsWith("climate."))
       throw new Error("Thermostat Card only supports climate entities");
     this.config = {
-      icon: Nt,
+      icon: Gt,
       show_controls: !0,
       show_modes: !1,
       show_presets: !1,
@@ -3951,10 +3962,10 @@ const Nt = "mdi:thermostat", Ot = "#fbb73c", Ut = "#3a8dde", Rt = "two_rows", Wi
       show_off_mode: !1,
       modes: [],
       presets: [],
-      dual_setpoint_layout: Rt,
+      dual_setpoint_layout: Zt,
       step_amount: void 0,
-      heating_color: Ot,
-      cooling_color: Ut,
+      heating_color: Yt,
+      cooling_color: Jt,
       ...t
     };
   }
@@ -3969,18 +3980,18 @@ const Nt = "mdi:thermostat", Ot = "#fbb73c", Ut = "#3a8dde", Rt = "two_rows", Wi
     t.has("hass") && this.clearAcknowledgedOptimisticState();
   }
   render() {
-    const t = this.getClimateEntity(), e = this.isHeating(t), i = this.isCooling(t), s = !!(this.config.compact || this.isCollapsed), a = !!this.config.show_controls && !s, o = !!this.config.show_modes && !s, r = !!this.config.show_presets && !s, l = {
-      "--thermostat-heating-color": this.config.heating_color || Ot,
-      "--thermostat-cooling-color": this.config.cooling_color || Ut
+    const t = this.getClimateEntity(), e = this.isHeating(t), i = this.isCooling(t), s = !!(this.config.compact || this.isCollapsed), n = !!this.config.show_controls && !s, o = !!this.config.show_modes && !s, r = !!this.config.show_presets && !s, l = {
+      "--thermostat-heating-color": this.config.heating_color || Yt,
+      "--thermostat-cooling-color": this.config.cooling_color || Jt
     };
     return c`
       <ha-card
         class=${`${e ? "heating" : ""} ${i ? "cooling" : ""}`}
-        style=${Q(l)}
+        style=${K(l)}
       >
         <div class="card">
           ${this.renderHeader(t, s)}
-          ${a ? this.renderControls(t) : ""}
+          ${n ? this.renderControls(t) : ""}
           ${o ? this.renderModeRow(t) : ""}
           ${r ? this.renderPresetRow(t) : ""}
         </div>
@@ -3988,8 +3999,8 @@ const Nt = "mdi:thermostat", Ot = "#fbb73c", Ut = "#3a8dde", Rt = "two_rows", Wi
     `;
   }
   renderHeader(t, e) {
-    var a;
-    const i = this.config.name || ((a = t == null ? void 0 : t.attributes) == null ? void 0 : a.friendly_name) || "Thermostat", s = this.getSubtitle(t);
+    var n;
+    const i = this.config.name || ((n = t == null ? void 0 : t.attributes) == null ? void 0 : n.friendly_name) || "Thermostat", s = this.getSubtitle(t);
     return c`
       <div class="header">
         <button
@@ -3999,7 +4010,7 @@ const Nt = "mdi:thermostat", Ot = "#fbb73c", Ut = "#3a8dde", Rt = "two_rows", Wi
           aria-expanded=${e ? "false" : "true"}
           @click=${this.toggleCollapsed}
         >
-          <ha-icon .icon=${this.config.icon || Nt}></ha-icon>
+          <ha-icon .icon=${this.config.icon || Gt}></ha-icon>
         </button>
 
         <div class="heading">
@@ -4025,18 +4036,18 @@ const Nt = "mdi:thermostat", Ot = "#fbb73c", Ut = "#3a8dde", Rt = "two_rows", Wi
     `;
   }
   renderDualControls(t) {
-    const e = this.asNumber(t.attributes.target_temp_low), i = this.asNumber(t.attributes.target_temp_high), s = this.config.dual_setpoint_layout || Rt;
+    const e = this.asNumber(t.attributes.target_temp_low), i = this.asNumber(t.attributes.target_temp_high), s = this.config.dual_setpoint_layout || Zt;
     if (e === void 0 || i === void 0)
       return "";
     if (s === "single_row_toggle") {
-      const a = this.selectedDualTarget === "low" ? e : i;
+      const n = this.selectedDualTarget === "low" ? e : i;
       return c`
         <div class="controls">
           <div class="target-toggle" role="group" aria-label="Setpoint target">
             ${this.renderTargetToggleButton("low", "Heat", e)}
             ${this.renderTargetToggleButton("high", "Cool", i)}
           </div>
-          ${this.renderSetpointRow(t, this.selectedDualTarget, a, this.selectedDualTarget === "low" ? "Heat setpoint" : "Cool setpoint")}
+          ${this.renderSetpointRow(t, this.selectedDualTarget, n, this.selectedDualTarget === "low" ? "Heat setpoint" : "Cool setpoint")}
         </div>
       `;
     }
@@ -4055,11 +4066,11 @@ const Nt = "mdi:thermostat", Ot = "#fbb73c", Ut = "#3a8dde", Rt = "two_rows", Wi
   renderSetpointRow(t, e, i, s) {
     return c`
       <div class="setpoint-row" aria-label=${s}>
-        <button type="button" @click=${(a) => this.adjustTemperature(a, t, e, -1)} aria-label=${`Decrease ${s}`}>
+        <button type="button" @click=${(n) => this.adjustTemperature(n, t, e, -1)} aria-label=${`Decrease ${s}`}>
           −
         </button>
         <div class="setpoint-value">${this.formatTemperature(i, t)}</div>
-        <button type="button" @click=${(a) => this.adjustTemperature(a, t, e, 1)} aria-label=${`Increase ${s}`}>
+        <button type="button" @click=${(n) => this.adjustTemperature(n, t, e, 1)} aria-label=${`Increase ${s}`}>
           +
         </button>
       </div>
@@ -4070,11 +4081,11 @@ const Nt = "mdi:thermostat", Ot = "#fbb73c", Ut = "#3a8dde", Rt = "two_rows", Wi
       <div class="compact-setpoint" aria-label=${`${s} setpoint`}>
         <div class="setpoint-label">${s}</div>
         <div class="compact-controls">
-          <button type="button" @click=${(a) => this.adjustTemperature(a, t, e, -1)} aria-label=${`Decrease ${s} setpoint`}>
+          <button type="button" @click=${(n) => this.adjustTemperature(n, t, e, -1)} aria-label=${`Decrease ${s} setpoint`}>
             −
           </button>
           <div class="setpoint-value">${this.formatTemperature(i, t)}</div>
-          <button type="button" @click=${(a) => this.adjustTemperature(a, t, e, 1)} aria-label=${`Increase ${s} setpoint`}>
+          <button type="button" @click=${(n) => this.adjustTemperature(n, t, e, 1)} aria-label=${`Increase ${s} setpoint`}>
             +
           </button>
         </div>
@@ -4087,7 +4098,7 @@ const Nt = "mdi:thermostat", Ot = "#fbb73c", Ut = "#3a8dde", Rt = "two_rows", Wi
       <button
         class=${`target-toggle-button ${s ? "active" : ""}`}
         type="button"
-        @click=${(a) => this.selectDualTarget(a, t)}
+        @click=${(n) => this.selectDualTarget(n, t)}
         aria-pressed=${s ? "true" : "false"}
       >
         <span>${e}</span>
@@ -4100,11 +4111,11 @@ const Nt = "mdi:thermostat", Ot = "#fbb73c", Ut = "#3a8dde", Rt = "two_rows", Wi
       return "";
     const e = this.asStringArray(t.attributes.hvac_modes), s = this.asStringArray(this.config.modes).filter((o) => e.includes(o));
     this.config.show_off_mode && e.includes("off") && !s.includes("off") && s.push("off");
-    const a = !!this.config.show_fan_mode && this.asStringArray(t.attributes.fan_modes).length > 0;
-    return !s.length && !a ? "" : c`
+    const n = !!this.config.show_fan_mode && this.asStringArray(t.attributes.fan_modes).length > 0;
+    return !s.length && !n ? "" : c`
       <div class="chip-row mode-row">
         ${s.map((o) => this.renderModeButton(t, o))}
-        ${a ? this.renderFanButton(t) : ""}
+        ${n ? this.renderFanButton(t) : ""}
       </div>
     `;
   }
@@ -4140,10 +4151,10 @@ const Nt = "mdi:thermostat", Ot = "#fbb73c", Ut = "#3a8dde", Rt = "two_rows", Wi
   renderPresetRow(t) {
     if (!t)
       return "";
-    const e = this.asStringArray(t.attributes.preset_modes), s = this.asStringArray(this.config.presets).filter((a) => e.includes(a));
+    const e = this.asStringArray(t.attributes.preset_modes), s = this.asStringArray(this.config.presets).filter((n) => e.includes(n));
     return s.length ? c`
       <div class="chip-row preset-row">
-        ${s.map((a) => this.renderPresetButton(t, a))}
+        ${s.map((n) => this.renderPresetButton(t, n))}
       </div>
     ` : "";
   }
@@ -4162,10 +4173,10 @@ const Nt = "mdi:thermostat", Ot = "#fbb73c", Ut = "#3a8dde", Rt = "two_rows", Wi
   }
   adjustTemperature(t, e, i, s) {
     t.stopPropagation();
-    const a = i === "single" ? this.getTargetTemperature(e) : this.asNumber(e.attributes[i === "low" ? "target_temp_low" : "target_temp_high"]);
-    if (a === void 0)
+    const n = i === "single" ? this.getTargetTemperature(e) : this.asNumber(e.attributes[i === "low" ? "target_temp_low" : "target_temp_high"]);
+    if (n === void 0)
       return;
-    const o = this.clampTemperature(e, a + this.getStep(e) * s), r = {
+    const o = this.clampTemperature(e, n + this.getStep(e) * s), r = {
       entity_id: this.config.entity
     };
     if (i === "single")
@@ -4173,8 +4184,8 @@ const Nt = "mdi:thermostat", Ot = "#fbb73c", Ut = "#3a8dde", Rt = "two_rows", Wi
         attributes: { temperature: o }
       });
     else {
-      const l = this.asNumber(e.attributes.target_temp_low), u = this.asNumber(e.attributes.target_temp_high);
-      r.target_temp_low = i === "low" ? o : l, r.target_temp_high = i === "high" ? o : u, this.setOptimisticClimateState({
+      const l = this.asNumber(e.attributes.target_temp_low), h = this.asNumber(e.attributes.target_temp_high);
+      r.target_temp_low = i === "low" ? o : l, r.target_temp_high = i === "high" ? o : h, this.setOptimisticClimateState({
         attributes: {
           target_temp_low: r.target_temp_low,
           target_temp_high: r.target_temp_high
@@ -4205,12 +4216,12 @@ const Nt = "mdi:thermostat", Ot = "#fbb73c", Ut = "#3a8dde", Rt = "two_rows", Wi
     const i = this.asStringArray(e.attributes.fan_modes);
     if (!i.length)
       return;
-    const s = i.indexOf(String(e.attributes.fan_mode || "")), a = i[(s + 1) % i.length];
+    const s = i.indexOf(String(e.attributes.fan_mode || "")), n = i[(s + 1) % i.length];
     this.setOptimisticClimateState({
-      attributes: { fan_mode: a }
+      attributes: { fan_mode: n }
     }), this.hass.callService("climate", "set_fan_mode", {
       entity_id: this.config.entity,
-      fan_mode: a
+      fan_mode: n
     });
   }
   getClimateEntity() {
@@ -4246,13 +4257,13 @@ const Nt = "mdi:thermostat", Ot = "#fbb73c", Ut = "#3a8dde", Rt = "two_rows", Wi
     return i ? i(t, "hvac_action") : this.toLabel(String(e));
   }
   formatTemperature(t, e) {
-    var a;
+    var n;
     const i = this.asNumber(t), s = this.getTemperatureUnit(e);
-    return i === void 0 ? `-${s}` : `${ti(i, (a = this.hass) == null ? void 0 : a.locale)}${s}`;
+    return i === void 0 ? `-${s}` : `${Oi(i, (n = this.hass) == null ? void 0 : n.locale)}${s}`;
   }
   getTemperatureUnit(t) {
-    var e, i, s, a;
-    return ((e = t == null ? void 0 : t.attributes) == null ? void 0 : e.temperature_unit) || ((a = (s = (i = this.hass) == null ? void 0 : i.config) == null ? void 0 : s.unit_system) == null ? void 0 : a.temperature) || "";
+    var e, i, s, n;
+    return ((e = t == null ? void 0 : t.attributes) == null ? void 0 : e.temperature_unit) || ((n = (s = (i = this.hass) == null ? void 0 : i.config) == null ? void 0 : s.unit_system) == null ? void 0 : n.temperature) || "";
   }
   getStep(t) {
     const e = this.asNumber(this.config.step_amount);
@@ -4284,14 +4295,14 @@ const Nt = "mdi:thermostat", Ot = "#fbb73c", Ut = "#3a8dde", Rt = "two_rows", Wi
   scheduleOptimisticStateClear() {
     this.optimisticStateTimer && window.clearTimeout(this.optimisticStateTimer), this.optimisticStateTimer = window.setTimeout(() => {
       this.optimisticState = void 0, this.optimisticStateTimer = void 0;
-    }, Wi);
+    }, Ws);
   }
   clearAcknowledgedOptimisticState() {
     const t = this.getRawClimateEntity(), e = this.getOptimisticState();
     if (!t || !e)
       return;
     const i = e.state === void 0 || t.state === e.state, s = Object.entries(e.attributes || {}).every(
-      ([a, o]) => this.areValuesEqual(t.attributes[a], o)
+      ([n, o]) => this.areValuesEqual(t.attributes[n], o)
     );
     i && s && (this.optimisticStateTimer && (window.clearTimeout(this.optimisticStateTimer), this.optimisticStateTimer = void 0), this.optimisticState = void 0);
   }
@@ -4300,7 +4311,7 @@ const Nt = "mdi:thermostat", Ot = "#fbb73c", Ut = "#3a8dde", Rt = "two_rows", Wi
     return i !== void 0 && s !== void 0 ? i === s : t === e;
   }
   clampTemperature(t, e) {
-    const i = this.asNumber(t.attributes.min_temp), s = this.asNumber(t.attributes.max_temp), a = i === void 0 ? e : Math.max(e, i), o = s === void 0 ? a : Math.min(a, s);
+    const i = this.asNumber(t.attributes.min_temp), s = this.asNumber(t.attributes.max_temp), n = i === void 0 ? e : Math.max(e, i), o = s === void 0 ? n : Math.min(n, s);
     return Number(o.toFixed(2));
   }
   hasDualSetpoints(t) {
@@ -4362,13 +4373,13 @@ const Nt = "mdi:thermostat", Ot = "#fbb73c", Ut = "#3a8dde", Rt = "two_rows", Wi
     return t.replace(/_/g, " ").replace(/\b\w/g, (e) => e.toUpperCase());
   }
 };
-yt.properties = {
+Ct.properties = {
   hass: { attribute: !1 },
   config: { attribute: !1 },
   selectedDualTarget: { state: !0 },
   isCollapsed: { state: !0 },
   optimisticState: { state: !0 }
-}, yt.styles = w`
+}, Ct.styles = w`
     ha-card {
       --thermostat-heating-color: #fbb73c;
       --thermostat-cooling-color: #3a8dde;
@@ -4654,28 +4665,219 @@ yt.properties = {
       }
     }
   `;
-let ie = yt;
-customElements.define("thermostat-card", ie);
+let $e = Ct;
+customElements.define("thermostat-card", $e);
 window.customCards = window.customCards || [];
 window.customCards.push({
   type: "thermostat-card",
   name: "Thermostat Card",
   description: "Climate entity card with setpoints and modes"
 });
-const Le = "Assist debug", Ft = "preferred", Me = 5, Ne = "compact", Oe = "waveform", Ue = "below_chat", Re = 56, Fe = "var(--primary-color)", Pe = "var(--secondary-text-color)", He = "transparent", ji = "#03a9f4", qi = "#727272", Gi = "#000000", Be = 0.75, We = 0, _t = class _t extends _ {
+const Ve = 5, js = 0, qs = 20, Hi = "assist-chat-card:last-used-pipeline", Bi = "assist-chat-card:follow-up-hint-dismissed";
+function Ks() {
+  try {
+    return window.localStorage.getItem(Hi);
+  } catch {
+    return null;
+  }
+}
+function li(a) {
+  try {
+    window.localStorage.setItem(Hi, a);
+  } catch {
+  }
+}
+function Gs() {
+  try {
+    return window.localStorage.getItem(Bi) === "true";
+  } catch {
+    return !1;
+  }
+}
+function Ys() {
+  try {
+    window.localStorage.setItem(Bi, "true");
+  } catch {
+  }
+}
+function Js(a) {
+  const t = a == null ? void 0 : a.conversation_engine;
+  return !t || t === "conversation.home_assistant";
+}
+function De(a) {
+  return a.callWS({
+    type: "assist_pipeline/pipeline/list"
+  });
+}
+function Wi(a, t) {
+  return a.callWS({
+    type: "assist_pipeline/pipeline_debug/list",
+    pipeline_id: t
+  });
+}
+function ji(a, t, e) {
+  return a.callWS({
+    type: "assist_pipeline/pipeline_debug/get",
+    pipeline_id: t,
+    pipeline_run_id: e
+  });
+}
+function Zs(a) {
+  const t = a == null ? void 0 : a.code;
+  return t === "unauthorized" || t === "not_allowed" || t === "forbidden";
+}
+function ci(a, t, e) {
+  return a.connection.subscribeMessage(t, {
+    ...e,
+    type: "assist_pipeline/run"
+  });
+}
+function qi(a, t) {
+  var e, i;
+  if (a === "last_used") {
+    const s = Ks();
+    return s && t.pipelines.some((n) => n.id === s) ? s : t.preferred_pipeline || ((e = t.pipelines[0]) == null ? void 0 : e.id) || "";
+  }
+  return a && a !== "preferred" ? a : t.preferred_pipeline || ((i = t.pipelines[0]) == null ? void 0 : i.id) || "";
+}
+function Le(a, t = Ve, e = js, i = qs) {
+  const s = Number(a ?? t);
+  return Number.isFinite(s) ? Math.min(Math.max(Math.round(s), e), i) : t;
+}
+function Ki(a, t = Ve) {
+  const e = Le(t);
+  return [...a].sort((i, s) => new Date(s.timestamp).getTime() - new Date(i.timestamp).getTime()).slice(0, e);
+}
+function gt() {
+  return {
+    stage: "ready",
+    stages: {
+      stt: { key: "stt", label: "STT", status: "idle" },
+      intent: { key: "intent", label: "Intent", status: "idle" },
+      tts: { key: "tts", label: "TTS", status: "idle" }
+    },
+    toolCalls: []
+  };
+}
+function Xs(a) {
+  var l, h, p, u;
+  const t = gt();
+  let e = "", i = "", s = "", n = "", o = null, r = "";
+  for (const d of Qs(a)) {
+    const g = d.data || {};
+    if (Gi(t, d), d.type === "stt-end")
+      e = X((l = g.stt_output) == null ? void 0 : l.text) || e;
+    else if (d.type === "intent-start")
+      e = X(g.intent_input) || e;
+    else if (d.type === "intent-progress" && g.chat_log_delta) {
+      const m = g.chat_log_delta;
+      m.role && (r = m.role), r === "assistant" ? ("content" in m && m.content && (i += m.content), "thinking_content" in m && m.thinking_content && (s += m.thinking_content), "tool_calls" in m && Array.isArray(m.tool_calls) && (t.toolCalls = ft(t.toolCalls, m.tool_calls))) : r === "tool_result" && "tool_call_id" in m && m.tool_call_id && (t.toolCalls = ft(t.toolCalls, [
+        {
+          id: m.tool_call_id,
+          tool_name: m.tool_name || "tool",
+          tool_result: "tool_result" in m ? m.tool_result : void 0
+        }
+      ]));
+    } else d.type === "intent-end" ? (o = ((h = g.intent_output) == null ? void 0 : h.conversation_id) || o, i = Re(g.intent_output) || i, ((u = (p = g.intent_output) == null ? void 0 : p.response) == null ? void 0 : u.response_type) === "error" && (n = i || "The assistant run failed.")) : d.type === "tts-start" ? i = X(g.tts_input) || i : d.type === "error" && (n = X(g.message) || X(g.code) || "The assistant run failed.");
+  }
+  return {
+    userText: e,
+    assistantText: i,
+    thinking: tn(s),
+    toolCalls: [...t.toolCalls],
+    errorText: n,
+    conversationId: o,
+    process: Yi(t)
+  };
+}
+function Re(a) {
+  var e, i, s, n, o, r, l, h;
+  const t = ((s = (i = (e = a == null ? void 0 : a.response) == null ? void 0 : e.speech) == null ? void 0 : i.plain) == null ? void 0 : s.speech) || ((l = (r = (o = (n = a == null ? void 0 : a.response) == null ? void 0 : n.speech) == null ? void 0 : o.plain) == null ? void 0 : r.extra_data) == null ? void 0 : l.speech) || ((h = a == null ? void 0 : a.response) == null ? void 0 : h.speech) || "";
+  return typeof t == "string" ? t : "";
+}
+function Gi(a, t) {
+  var i, s;
+  const e = t.timestamp || (/* @__PURE__ */ new Date()).toISOString();
+  t.type === "run-start" ? (a.started = e, a.stage = "ready") : t.type === "stt-start" ? Xt(a, "stt", e) : t.type === "stt-vad-end" ? (a.stage = "stt", a.stages.stt = {
+    ...a.stages.stt,
+    status: a.stages.stt.status === "idle" ? "running" : a.stages.stt.status,
+    started: e
+  }) : t.type === "stt-end" ? Qt(a, "stt", e) : t.type === "intent-start" ? Xt(a, "intent", e) : t.type === "intent-end" ? Qt(a, "intent", e) : t.type === "tts-start" ? Xt(a, "tts", e) : t.type === "tts-end" ? Qt(a, "tts", e) : t.type === "run-end" ? (a.stage = "done", a.finished = e) : t.type === "error" && (a.stage = "error", a.finished = e, a.error = String(((i = t.data) == null ? void 0 : i.message) || ((s = t.data) == null ? void 0 : s.code) || ""), Object.values(a.stages).forEach((n) => {
+    n.status === "running" && (n.status = "error", n.ended = e);
+  }));
+}
+function Xt(a, t, e) {
+  a.stage = t, a.stages[t] = {
+    ...a.stages[t],
+    status: "running",
+    started: a.stages[t].started || e,
+    ended: void 0
+  };
+}
+function Qt(a, t, e) {
+  a.stages[t] = {
+    ...a.stages[t],
+    status: "done",
+    ended: e
+  };
+}
+function Yi(a) {
+  return {
+    ...a,
+    stages: {
+      stt: { ...a.stages.stt },
+      intent: { ...a.stages.intent },
+      tts: { ...a.stages.tts }
+    },
+    toolCalls: [...a.toolCalls]
+  };
+}
+function Qs(a) {
+  return [...a].sort((t, e) => new Date(t.timestamp).getTime() - new Date(e.timestamp).getTime());
+}
+function ft(a, t) {
+  const e = [...a];
+  for (const i of t) {
+    if (!i.id)
+      continue;
+    const s = e.findIndex((o) => o.id === i.id);
+    if (s === -1) {
+      e.push({ ...i });
+      continue;
+    }
+    const n = e[s];
+    e[s] = {
+      ...n,
+      tool_name: i.tool_name || n.tool_name,
+      tool_args: i.tool_args ?? n.tool_args,
+      tool_result: i.tool_result !== void 0 ? i.tool_result : n.tool_result
+    };
+  }
+  return e;
+}
+function X(a) {
+  return typeof a == "string" ? a : "";
+}
+function tn(a) {
+  return a.replace(/\r\n/g, `
+`).split(`
+`).map((t) => t.trimStart()).join(`
+`).trim();
+}
+const di = "Assist debug", te = "preferred", hi = 5, ui = "compact", pi = "waveform", gi = "below_chat", mi = 56, fi = "var(--primary-color)", bi = "var(--secondary-text-color)", vi = "transparent", en = "#03a9f4", sn = "#727272", nn = "#000000", yi = 0.75, _i = 0, Tt = class Tt extends x {
   constructor() {
     super(...arguments), this.config = {};
   }
   setConfig(t) {
     this.config = {
-      title: Le,
-      pipeline_id: Ft,
-      run_count: Me,
+      title: di,
+      pipeline_id: te,
+      run_count: hi,
       minimalistic_mode: !1,
       visualization_only: !1,
       conversation_only: !1,
       show_conversation: !1,
-      metadata_mode: Ne,
+      metadata_mode: ui,
       show_raw: !0,
       show_thinking: !0,
       show_summary: !0,
@@ -4684,14 +4886,14 @@ const Le = "Assist debug", Ft = "preferred", Me = 5, Ne = "compact", Oe = "wavef
       show_tts: !0,
       mask_transcripts: !1,
       audio_visualization: !1,
-      audio_visualization_type: Oe,
-      audio_visualization_position: Ue,
-      audio_visualization_height: Re,
-      audio_visualization_color: Fe,
-      audio_visualization_secondary_color: Pe,
-      audio_visualization_background: He,
-      audio_visualization_opacity: Be,
-      audio_visualization_start_delay: We,
+      audio_visualization_type: pi,
+      audio_visualization_position: gi,
+      audio_visualization_height: mi,
+      audio_visualization_color: fi,
+      audio_visualization_secondary_color: bi,
+      audio_visualization_background: vi,
+      audio_visualization_opacity: yi,
+      audio_visualization_start_delay: _i,
       ...t
     };
   }
@@ -4702,19 +4904,19 @@ const Le = "Assist debug", Ft = "preferred", Me = 5, Ne = "compact", Oe = "wavef
     return c`
       <div class="editor">
         <div class="grid">
-          ${U({
+          ${V({
       label: "Title",
       value: String(this.config.title || ""),
-      placeholder: Le,
+      placeholder: di,
       onInput: (t) => this.updateConfigValue("title", t)
     })}
-          ${U({
+          ${V({
       label: "Pipeline ID",
-      value: String(this.config.pipeline_id || Ft),
+      value: String(this.config.pipeline_id || te),
       placeholder: "preferred or a pipeline id",
-      onInput: (t) => this.updateConfigValue("pipeline_id", t || Ft)
+      onInput: (t) => this.updateConfigValue("pipeline_id", t || te)
     })}
-          ${this.renderNumberField("Recent runs", "run_count", Me, 1, 20)}
+          ${this.renderNumberField("Recent runs", "run_count", hi, 1, 20)}
           ${this.renderMetadataModeField()}
         </div>
 
@@ -4742,32 +4944,32 @@ const Le = "Assist debug", Ft = "preferred", Me = 5, Ne = "compact", Oe = "wavef
           ${this.renderCheckbox("Enable audio visualization", "audio_visualization")}
           ${this.renderAudioVisualizationTypeField()}
           ${this.config.audio_visualization_type === "glow" ? "" : this.renderAudioVisualizationPositionField()}
-          ${this.renderNumberField("Height", "audio_visualization_height", Re, 24, 180)}
-          ${this.renderNumberField("Visualization start delay (ms)", "audio_visualization_start_delay", We, 0, 1e4)}
-          ${this.renderDecimalField("Opacity", "audio_visualization_opacity", Be, 0.05, 1, 0.05)}
+          ${this.renderNumberField("Height", "audio_visualization_height", mi, 24, 180)}
+          ${this.renderNumberField("Visualization start delay (ms)", "audio_visualization_start_delay", _i, 0, 1e4)}
+          ${this.renderDecimalField("Opacity", "audio_visualization_opacity", yi, 0.05, 1, 0.05)}
           ${this.renderColorInput(
       "Primary color",
       "audio_visualization_color",
-      Fe,
-      ji
+      fi,
+      en
     )}
           ${this.renderColorInput(
       "Secondary color",
       "audio_visualization_secondary_color",
-      Pe,
-      qi
+      bi,
+      sn
     )}
           ${this.renderColorInput(
       "Background",
       "audio_visualization_background",
-      He,
-      Gi
+      vi,
+      nn
     )}
         </fieldset>
       </div>
     `;
   }
-  renderNumberField(t, e, i, s, a) {
+  renderNumberField(t, e, i, s, n) {
     const o = Number(this.config[e] ?? i);
     return c`
       <label>
@@ -4775,14 +4977,14 @@ const Le = "Assist debug", Ft = "preferred", Me = 5, Ne = "compact", Oe = "wavef
         <input
           type="number"
           min=${String(s)}
-          max=${String(a)}
+          max=${String(n)}
           .value=${String(o)}
-          @input=${(r) => this.updateNumberValue(e, r.target.value, i, s, a)}
+          @input=${(r) => this.updateNumberValue(e, r.target.value, i, s, n)}
         />
       </label>
     `;
   }
-  renderDecimalField(t, e, i, s, a, o) {
+  renderDecimalField(t, e, i, s, n, o) {
     const r = Number(this.config[e] ?? i);
     return c`
       <label>
@@ -4790,29 +4992,29 @@ const Le = "Assist debug", Ft = "preferred", Me = 5, Ne = "compact", Oe = "wavef
         <input
           type="number"
           min=${String(s)}
-          max=${String(a)}
+          max=${String(n)}
           step=${String(o)}
           .value=${String(r)}
-          @input=${(l) => this.updateDecimalValue(e, l.target.value, i, s, a)}
+          @input=${(l) => this.updateDecimalValue(e, l.target.value, i, s, n)}
         />
       </label>
     `;
   }
   renderColorInput(t, e, i, s) {
-    const a = this.toColorInputValue(String(this.config[e] || i), s);
+    const n = this.toColorInputValue(String(this.config[e] || i), s);
     return c`
       <label>
         <span>${t}</span>
         <input
           type="color"
-          .value=${a}
+          .value=${n}
           @input=${(o) => this.updateConfigValue(e, o.target.value)}
         />
       </label>
     `;
   }
   renderMetadataModeField() {
-    const t = this.config.metadata_mode || Ne;
+    const t = this.config.metadata_mode || ui;
     return c`
       <label>
         <span>Metadata display</span>
@@ -4825,7 +5027,7 @@ const Le = "Assist debug", Ft = "preferred", Me = 5, Ne = "compact", Oe = "wavef
     `;
   }
   renderAudioVisualizationTypeField() {
-    const t = this.config.audio_visualization_type || Oe;
+    const t = this.config.audio_visualization_type || pi;
     return c`
       <label>
         <span>Visualization type</span>
@@ -4840,7 +5042,7 @@ const Le = "Assist debug", Ft = "preferred", Me = 5, Ne = "compact", Oe = "wavef
     `;
   }
   renderAudioVisualizationPositionField() {
-    const t = this.config.audio_visualization_position || Ue;
+    const t = this.config.audio_visualization_position || gi;
     return c`
       <label>
         <span>Position</span>
@@ -4871,12 +5073,12 @@ const Le = "Assist debug", Ft = "preferred", Me = 5, Ne = "compact", Oe = "wavef
       [t]: e === "" ? void 0 : e
     });
   }
-  updateNumberValue(t, e, i, s, a) {
-    const o = Number(e), r = Number.isFinite(o) ? Math.min(Math.max(Math.round(o), s), a) : i;
+  updateNumberValue(t, e, i, s, n) {
+    const o = Number(e), r = Number.isFinite(o) ? Math.min(Math.max(Math.round(o), s), n) : i;
     this.updateConfigValue(t, r);
   }
-  updateDecimalValue(t, e, i, s, a) {
-    const o = Number(e), r = Number.isFinite(o) ? Math.min(Math.max(o, s), a) : i;
+  updateDecimalValue(t, e, i, s, n) {
+    const o = Number(e), r = Number.isFinite(o) ? Math.min(Math.max(o, s), n) : i;
     this.updateConfigValue(t, r);
   }
   toColorInputValue(t, e) {
@@ -4886,10 +5088,10 @@ const Le = "Assist debug", Ft = "preferred", Me = 5, Ne = "compact", Oe = "wavef
     this.config = t, A(this, "config-changed", { config: t });
   }
 };
-_t.properties = {
+Tt.properties = {
   hass: { attribute: !1 },
   config: { attribute: !1 }
-}, _t.styles = w`
+}, Tt.styles = w`
     .editor {
       display: grid;
       gap: 18px;
@@ -4945,21 +5147,21 @@ _t.properties = {
       width: auto;
     }
   `;
-let ct = _t;
-class Ki extends ct {
+let bt = Tt;
+class an extends bt {
 }
-customElements.define("assist-debug-card-editor", ct);
-customElements.get("conversation-debug-card-editor") || customElements.define("conversation-debug-card-editor", Ki);
-const Pt = "Assist debug", j = "preferred", q = 5, Ht = "compact", Bt = "waveform", Wt = "below_chat", Ji = "#39ff14", Yi = "#000000", Zi = 2e3, Xi = 48, Qi = /* @__PURE__ */ new Set([
+customElements.define("assist-debug-card-editor", bt);
+customElements.get("conversation-debug-card-editor") || customElements.define("conversation-debug-card-editor", an);
+const ee = "Assist debug", ie = "preferred", ht = 5, se = "compact", ne = "waveform", ae = "below_chat", on = "#39ff14", rn = "#000000", ln = 2e3, cn = 48, dn = /* @__PURE__ */ new Set([
   "text",
   "intent_input",
   "tts_input",
   "speech",
   "content",
   "thinking_content"
-]), F = class F extends O {
+]), W = class W extends z {
   constructor() {
-    super(...arguments), this.audioVisualizationId = `assist-debug-audio-${F.nextAudioVisualizationId++}`, this.loading = !1, this.error = "", this.pipelines = [], this.runs = [], this.selectedRunId = "", this.resolvedPipelineId = "", this.sessionStartedAt = Date.now(), this.loadToken = 0, this.lastLoadKey = "", this.thinkingDetailsOpen = !1, this.thinkingDetailsUserCollapsed = !1, this.thinkingDetailsRunId = "", this.thinkingScrollRunId = "", this.thinkingLastScrolledLength = 0, this.thinkingAutoScrollEnabled = !0, this.ulysse31RotationX = 0, this.ulysse31RotationY = 0, this.ulysse31LastFrameAt = 0, this.audioKey = "", this.audioSourceEnded = !1, this.audioAnimationStartedAt = 0, this.audioVisualizationStatus = "", this.audioVisualizationLoading = !1, this.audioVisualizationError = "", this.audioFetchUnavailable = !1, this.audioVisualizationPainted = !1, this.audioNeedsUserStart = !1, this.audioIsVisible = !0, this.handleDocumentVisibilityChange = () => {
+    super(...arguments), this.audioVisualizationId = `assist-debug-audio-${W.nextAudioVisualizationId++}`, this.loading = !1, this.error = "", this.pipelines = [], this.runs = [], this.selectedRunId = "", this.resolvedPipelineId = "", this.sessionStartedAt = Date.now(), this.loadToken = 0, this.lastLoadKey = "", this.thinkingDetailsOpen = !1, this.thinkingDetailsUserCollapsed = !1, this.thinkingDetailsRunId = "", this.thinkingScrollRunId = "", this.thinkingLastScrolledLength = 0, this.thinkingAutoScrollEnabled = !0, this.ulysse31RotationX = 0, this.ulysse31RotationY = 0, this.ulysse31LastFrameAt = 0, this.audioKey = "", this.audioSourceEnded = !1, this.audioAnimationStartedAt = 0, this.audioVisualizationStatus = "", this.audioVisualizationLoading = !1, this.audioVisualizationError = "", this.audioFetchUnavailable = !1, this.audioVisualizationPainted = !1, this.audioNeedsUserStart = !1, this.audioIsVisible = !0, this.handleDocumentVisibilityChange = () => {
       this.audioIsVisible = !document.hidden, this.syncAudioAnimation(), this.syncUlysse31IdleAnimation();
     };
   }
@@ -4968,14 +5170,14 @@ const Pt = "Assist debug", j = "preferred", q = 5, Ht = "compact", Bt = "wavefor
   }
   static getStubConfig() {
     return {
-      title: Pt,
-      pipeline_id: j,
-      run_count: q,
+      title: ee,
+      pipeline_id: ie,
+      run_count: ht,
       minimalistic_mode: !1,
       visualization_only: !1,
       conversation_only: !1,
       show_conversation: !1,
-      metadata_mode: Ht,
+      metadata_mode: se,
       show_raw: !0,
       show_thinking: !0,
       show_summary: !0,
@@ -4984,20 +5186,20 @@ const Pt = "Assist debug", j = "preferred", q = 5, Ht = "compact", Bt = "wavefor
       show_tts: !0,
       mask_transcripts: !1,
       audio_visualization: !1,
-      audio_visualization_type: Bt,
-      audio_visualization_position: Wt
+      audio_visualization_type: ne,
+      audio_visualization_position: ae
     };
   }
   setConfig(t) {
     this.config = {
-      title: Pt,
-      pipeline_id: j,
-      run_count: q,
+      title: ee,
+      pipeline_id: ie,
+      run_count: ht,
       minimalistic_mode: !1,
       visualization_only: !1,
       conversation_only: !1,
       show_conversation: !1,
-      metadata_mode: Ht,
+      metadata_mode: se,
       show_raw: !0,
       show_thinking: !0,
       show_summary: !0,
@@ -5006,8 +5208,8 @@ const Pt = "Assist debug", j = "preferred", q = 5, Ht = "compact", Bt = "wavefor
       show_tts: !0,
       mask_transcripts: !1,
       audio_visualization: !1,
-      audio_visualization_type: Bt,
-      audio_visualization_position: Wt,
+      audio_visualization_type: ne,
+      audio_visualization_position: ae,
       ...t
     };
   }
@@ -5030,9 +5232,9 @@ const Pt = "Assist debug", j = "preferred", q = 5, Ht = "compact", Bt = "wavefor
     }
   }
   render() {
-    const t = this.config.title || Pt, e = this.getPipelineName(this.resolvedPipelineId), i = this.getCardStyles();
+    const t = this.config.title || ee, e = this.getPipelineName(this.resolvedPipelineId), i = this.getCardStyles();
     return c`
-      <ha-card style=${Q(i)}>
+      <ha-card style=${K(i)}>
         <div class=${this.config.visualization_only ? "card visualization-only-card" : "card"}>
           ${this.renderCardGlowVisualization()}
           ${this.config.visualization_only ? this.renderVisualizationOnlyContent() : c`
@@ -5119,10 +5321,10 @@ const Pt = "Assist debug", j = "preferred", q = 5, Ht = "compact", Bt = "wavefor
   }
   renderConversationOnly(t, e = !0) {
     var d;
-    const i = this.getAudioVisualizationPosition(), s = this.renderAudioVisualization("background"), a = e ? this.renderAudioVisualization("top") : "", o = this.renderAudioVisualization("below_chat");
+    const i = this.getAudioVisualizationPosition(), s = this.renderAudioVisualization("background"), n = e ? this.renderAudioVisualization("top") : "", o = this.renderAudioVisualization("below_chat");
     if (!t)
       return c`
-        ${a}
+        ${n}
         <div class=${i === "background" ? "conversation-shell has-background-visualization" : "conversation-shell"}>
           ${s}
           <div class="conversation conversation-only">
@@ -5134,18 +5336,18 @@ const Pt = "Assist debug", j = "preferred", q = 5, Ht = "compact", Bt = "wavefor
         </div>
         ${o}
       `;
-    const { userText: r, assistantText: l } = this.getConversationMessages(t), u = !!l, p = t.stage === "error", h = !u && !p;
+    const { userText: r, assistantText: l } = this.getConversationMessages(t), h = !!l, p = t.stage === "error", u = !h && !p;
     return c`
-      ${a}
+      ${n}
       <div class=${i === "background" ? "conversation-shell has-background-visualization" : "conversation-shell"}>
         ${s}
         <div class="conversation conversation-only">
           ${r ? c`<div class="bubble user">${r}</div>` : ""}
           ${this.renderAudioVisualization("between")}
-          ${u ? c`<div class="bubble assistant">${l}</div>` : p ? c`<div class="bubble assistant error-bubble">${((d = t.error) == null ? void 0 : d.message) || "The assistant run failed."}</div>` : c`
+          ${h ? c`<div class="bubble assistant">${l}</div>` : p ? c`<div class="bubble assistant error-bubble">${((d = t.error) == null ? void 0 : d.message) || "The assistant run failed."}</div>` : c`
                   <div class="bubble assistant loading">
                     ${this.renderTypingDots()}
-                    <span>${this.getConversationLoadingText(t, h)}</span>
+                    <span>${this.getConversationLoadingText(t, u)}</span>
                   </div>
                 `}
         </div>
@@ -5154,8 +5356,8 @@ const Pt = "Assist debug", j = "preferred", q = 5, Ht = "compact", Bt = "wavefor
     `;
   }
   renderAudioVisualization(t) {
-    var a;
-    if (!this.config.audio_visualization || this.getAudioVisualizationType() === "glow" || this.getAudioVisualizationPosition() !== t || !(this.getAudioVisualizationType() === "ulysse31") && !((a = this.runModel) != null && a.ttsAudio) && !this.audioVisualizationLoading && !this.audioVisualizationError)
+    var n;
+    if (!this.config.audio_visualization || this.getAudioVisualizationType() === "glow" || this.getAudioVisualizationPosition() !== t || !(this.getAudioVisualizationType() === "ulysse31") && !((n = this.runModel) != null && n.ttsAudio) && !this.audioVisualizationLoading && !this.audioVisualizationError)
       return "";
     const s = t === "background" && !this.audioVisualizationPainted ? "audio-visualization audio-visualization-background is-pending" : `audio-visualization audio-visualization-${t}`;
     return c`
@@ -5252,7 +5454,7 @@ const Pt = "Assist debug", j = "preferred", q = 5, Ht = "compact", Bt = "wavefor
     `;
   }
   renderStage(t, e, i) {
-    const s = this.getStageStatus(e, i), a = this.config.metadata_mode || Ht, o = s === "running" || s === "error", r = this.maskText((i == null ? void 0 : i.output) || (i == null ? void 0 : i.input) || "");
+    const s = this.getStageStatus(e, i), n = this.config.metadata_mode || se, o = s === "running" || s === "error", r = this.maskText((i == null ? void 0 : i.output) || (i == null ? void 0 : i.input) || "");
     return c`
       <details class="section" ?open=${o}>
         <summary>
@@ -5265,7 +5467,7 @@ const Pt = "Assist debug", j = "preferred", q = 5, Ht = "compact", Bt = "wavefor
         </summary>
         <div class="section-body">
           ${r ? c`<p class="stage-text">${r}</p>` : c`<p class="muted">No data recorded for this stage.</p>`}
-          ${a !== "hidden" && i ? this.renderStageMetadata(e, i, a) : ""}
+          ${n !== "hidden" && i ? this.renderStageMetadata(e, i, n) : ""}
         </div>
       </details>
     `;
@@ -5279,10 +5481,10 @@ const Pt = "Assist debug", j = "preferred", q = 5, Ht = "compact", Bt = "wavefor
       const o = e;
       s.push(["Prefer local", o == null ? void 0 : o.preferLocalIntents]), s.push(["Processed locally", o == null ? void 0 : o.processedLocally]);
     }
-    const a = s.filter(([, o]) => o != null && o !== "");
-    return a.length ? c`
+    const n = s.filter(([, o]) => o != null && o !== "");
+    return n.length ? c`
       <dl class=${i === "full" ? "meta-grid full" : "meta-grid"}>
-        ${a.map(
+        ${n.map(
       ([o, r]) => c`
             <div>
               <dt>${o}</dt>
@@ -5302,7 +5504,7 @@ const Pt = "Assist debug", j = "preferred", q = 5, Ht = "compact", Bt = "wavefor
       return "";
     const s = this.isThinkingLive(t);
     this.syncThinkingDetailsOpen(t, s);
-    const a = s ? "Streaming…" : e ? `${e.length} chars` : "";
+    const n = s ? "Streaming…" : e ? `${e.length} chars` : "";
     return c`
       <details
         class="section thinking"
@@ -5314,7 +5516,7 @@ const Pt = "Assist debug", j = "preferred", q = 5, Ht = "compact", Bt = "wavefor
             <ha-icon icon="mdi:brain"></ha-icon>
           </span>
           <span class="section-title">Thinking</span>
-          <span class="duration">${a}</span>
+          <span class="duration">${n}</span>
           <ha-icon class="chevron" icon="mdi:chevron-down"></ha-icon>
         </summary>
         <pre
@@ -5337,7 +5539,7 @@ const Pt = "Assist debug", j = "preferred", q = 5, Ht = "compact", Bt = "wavefor
     if (!this.runModel || !this.isThinkingLive(this.runModel))
       return;
     const i = e.scrollHeight - e.scrollTop - e.clientHeight;
-    this.thinkingAutoScrollEnabled = i <= Xi;
+    this.thinkingAutoScrollEnabled = i <= cn;
   }
   scrollThinkingToEnd() {
     var e;
@@ -5374,10 +5576,10 @@ const Pt = "Assist debug", j = "preferred", q = 5, Ht = "compact", Bt = "wavefor
     `;
   }
   async loadDebugData(t = !1) {
-    var s, a;
+    var s, n;
     const e = JSON.stringify({
-      pipeline_id: this.config.pipeline_id || j,
-      run_count: this.config.run_count || q
+      pipeline_id: this.config.pipeline_id || ie,
+      run_count: this.config.run_count || ht
     });
     if (!t && e === this.lastLoadKey && this.runModel)
       return;
@@ -5385,26 +5587,21 @@ const Pt = "Assist debug", j = "preferred", q = 5, Ht = "compact", Bt = "wavefor
     const i = ++this.loadToken;
     this.loading = !0, this.error = "";
     try {
-      const o = await this.hass.callWS({
-        type: "assist_pipeline/pipeline/list"
-      });
+      const o = await De(this.hass);
       if (i !== this.loadToken)
         return;
       this.pipelines = o.pipelines || [];
-      const r = this.resolvePipelineId(o);
+      const r = qi(this.config.pipeline_id, o);
       if (this.resolvedPipelineId = r, !r) {
         this.runs = [], this.selectedRunId = "", this.runModel = void 0;
         return;
       }
-      const l = await this.hass.callWS({
-        type: "assist_pipeline/pipeline_debug/list",
-        pipeline_id: r
-      });
+      const l = await Wi(this.hass, r);
       if (i !== this.loadToken)
         return;
-      const u = ((s = this.runs[0]) == null ? void 0 : s.pipeline_run_id) || "", p = [...l.pipeline_runs || []].sort((m, v) => new Date(v.timestamp).getTime() - new Date(m.timestamp).getTime()).slice(0, this.getRunCount());
+      const h = ((s = this.runs[0]) == null ? void 0 : s.pipeline_run_id) || "", p = Ki(l.pipeline_runs || [], this.getRunCount());
       this.runs = p;
-      const h = ((a = p[0]) == null ? void 0 : a.pipeline_run_id) || "", g = t && this.isLiveConversationMode() && (!this.selectedRunId || this.selectedRunId === u) || !p.some((m) => m.pipeline_run_id === this.selectedRunId) ? h : this.selectedRunId;
+      const u = ((n = p[0]) == null ? void 0 : n.pipeline_run_id) || "", g = t && this.isLiveConversationMode() && (!this.selectedRunId || this.selectedRunId === h) || !p.some((m) => m.pipeline_run_id === this.selectedRunId) ? u : this.selectedRunId;
       if (this.selectedRunId = g, !g) {
         this.runModel = void 0;
         return;
@@ -5419,19 +5616,15 @@ const Pt = "Assist debug", j = "preferred", q = 5, Ht = "compact", Bt = "wavefor
     }
   }
   async loadRun(t, e, i = this.loadToken) {
-    const s = await this.hass.callWS({
-      type: "assist_pipeline/pipeline_debug/get",
-      pipeline_id: t,
-      pipeline_run_id: e
-    });
+    const s = await ji(this.hass, t, e);
     if (i !== this.loadToken)
       return;
-    const a = this.runs.find((o) => o.pipeline_run_id === e);
-    this.runModel = this.buildRunModel(t, e, s.events || [], a);
+    const n = this.runs.find((o) => o.pipeline_run_id === e);
+    this.runModel = this.buildRunModel(t, e, s.events || [], n);
   }
   buildRunModel(t, e, i, s) {
-    var o, r, l, u, p;
-    const a = {
+    var o, r, l, h, p;
+    const n = {
       pipelineId: t,
       pipelineName: this.getPipelineName(t),
       runId: e,
@@ -5439,48 +5632,48 @@ const Pt = "Assist debug", j = "preferred", q = 5, Ht = "compact", Bt = "wavefor
       started: s ? new Date(s.timestamp) : void 0,
       events: i
     };
-    for (const h of i) {
-      const d = h.data || {};
-      h.type === "run-start" ? (a.run = d, a.language = String(d.language || ""), a.started = new Date(h.timestamp), a.ttsAudio = this.extractTtsAudio(d.tts_output, h.timestamp) || a.ttsAudio) : h.type === "stt-start" ? (a.stage = "stt", a.stt = {
+    for (const u of i) {
+      const d = u.data || {};
+      u.type === "run-start" ? (n.run = d, n.language = String(d.language || ""), n.started = new Date(u.timestamp), n.ttsAudio = this.extractTtsAudio(d.tts_output, u.timestamp) || n.ttsAudio) : u.type === "stt-start" ? (n.stage = "stt", n.stt = {
         engine: String(d.engine || ""),
         language: (o = d.metadata) == null ? void 0 : o.language,
         done: !1,
         raw: d
-      }) : h.type === "stt-end" ? a.stt = {
-        ...a.stt || { done: !1 },
+      }) : u.type === "stt-end" ? n.stt = {
+        ...n.stt || { done: !1 },
         output: (r = d.stt_output) == null ? void 0 : r.text,
         done: !0,
-        raw: { ...((l = a.stt) == null ? void 0 : l.raw) || {}, ...d }
-      } : h.type === "intent-start" ? (a.stage = "intent", a.intent = {
+        raw: { ...((l = n.stt) == null ? void 0 : l.raw) || {}, ...d }
+      } : u.type === "intent-start" ? (n.stage = "intent", n.intent = {
         engine: String(d.engine || ""),
         language: String(d.language || ""),
         input: d.intent_input,
         preferLocalIntents: d.prefer_local_intents,
         done: !1,
         raw: d
-      }) : h.type === "intent-end" ? a.intent = {
-        ...a.intent || { done: !1 },
-        output: this.extractSpeechFromIntentOutput(d.intent_output),
+      }) : u.type === "intent-end" ? n.intent = {
+        ...n.intent || { done: !1 },
+        output: Re(d.intent_output),
         processedLocally: d.processed_locally,
         done: !0,
-        raw: { ...((u = a.intent) == null ? void 0 : u.raw) || {}, ...d }
-      } : h.type === "tts-start" ? (a.stage = "tts", a.tts = {
+        raw: { ...((h = n.intent) == null ? void 0 : h.raw) || {}, ...d }
+      } : u.type === "tts-start" ? (n.stage = "tts", n.tts = {
         engine: String(d.engine || ""),
         language: String(d.language || ""),
         voice: d.voice,
         input: d.tts_input,
         done: !1,
         raw: d
-      }) : h.type === "tts-end" ? (a.tts = {
-        ...a.tts || { done: !1 },
+      }) : u.type === "tts-end" ? (n.tts = {
+        ...n.tts || { done: !1 },
         done: !0,
-        raw: { ...((p = a.tts) == null ? void 0 : p.raw) || {}, ...d }
-      }, a.ttsAudio = this.extractTtsAudio(d.tts_output, h.timestamp) || a.ttsAudio) : h.type === "run-end" ? (a.stage = "done", a.finished = new Date(h.timestamp)) : h.type === "error" && (a.stage = "error", a.finished = new Date(h.timestamp), a.error = {
+        raw: { ...((p = n.tts) == null ? void 0 : p.raw) || {}, ...d }
+      }, n.ttsAudio = this.extractTtsAudio(d.tts_output, u.timestamp) || n.ttsAudio) : u.type === "run-end" ? (n.stage = "done", n.finished = new Date(u.timestamp)) : u.type === "error" && (n.stage = "error", n.finished = new Date(u.timestamp), n.error = {
         code: d.code,
         message: d.message
       });
     }
-    return a;
+    return n;
   }
   async selectRun(t) {
     if (!this.resolvedPipelineId || t === this.selectedRunId)
@@ -5516,7 +5709,7 @@ const Pt = "Assist debug", j = "preferred", q = 5, Ht = "compact", Bt = "wavefor
     }
     this.conversationRefreshTimer === void 0 && (this.conversationRefreshTimer = window.setInterval(() => {
       this.loading || this.loadDebugData(!0);
-    }, Zi));
+    }, ln));
   }
   shouldLiveRefresh() {
     return this.isLiveConversationMode() ? !0 : !this.config.show_thinking || !this.runModel || !this.isLatestSelectedRun() ? !1 : !this.isRunFinished(this.runModel);
@@ -5537,7 +5730,7 @@ const Pt = "Assist debug", j = "preferred", q = 5, Ht = "compact", Bt = "wavefor
     return !!this.config.show_thinking && this.isLatestSelectedRun() && !this.isRunFinished(t);
   }
   extractThinkingFromEvents(t) {
-    var s, a;
+    var s, n;
     const e = [...t].sort(
       (o, r) => new Date(o.timestamp).getTime() - new Date(r.timestamp).getTime()
     );
@@ -5545,7 +5738,7 @@ const Pt = "Assist debug", j = "preferred", q = 5, Ht = "compact", Bt = "wavefor
     for (const o of e) {
       if (o.type !== "intent-progress")
         continue;
-      const r = (a = (s = o.data) == null ? void 0 : s.chat_log_delta) == null ? void 0 : a.thinking_content;
+      const r = (n = (s = o.data) == null ? void 0 : s.chat_log_delta) == null ? void 0 : n.thinking_content;
       typeof r == "string" && r && (i += r);
     }
     return this.config.mask_transcripts && i ? "[masked]" : this.trimThinkingWhitespace(i);
@@ -5574,12 +5767,12 @@ const Pt = "Assist debug", j = "preferred", q = 5, Ht = "compact", Bt = "wavefor
     document.removeEventListener("visibilitychange", this.handleDocumentVisibilityChange), (t = this.intersectionObserver) == null || t.disconnect(), this.intersectionObserver = void 0;
   }
   async syncAudioVisualization(t = !1) {
-    var s, a, o, r;
+    var s, n, o, r;
     if (!((s = this.config) != null && s.audio_visualization) || !this.hass) {
       this.cleanupAudioVisualization();
       return;
     }
-    if (!((o = (a = this.runModel) == null ? void 0 : a.ttsAudio) != null && o.url)) {
+    if (!((o = (n = this.runModel) == null ? void 0 : n.ttsAudio) != null && o.url)) {
       this.getAudioVisualizationType() === "ulysse31" ? this.showUlysse31IdleVisualization() : this.cleanupAudioVisualization();
       return;
     }
@@ -5600,14 +5793,14 @@ const Pt = "Assist debug", j = "preferred", q = 5, Ht = "compact", Bt = "wavefor
     }
     this.cleanupAudioVisualization(!1), this.audioKey = i, this.audioFetchUnavailable = !1, this.audioVisualizationPainted = !1, this.audioVisualizationLoading = !0, this.audioVisualizationError = "", this.audioNeedsUserStart = !1, this.audioVisualizationStatus = "fetching audio";
     try {
-      const l = this.getAudioContext(), u = await this.fetchAudio(e);
-      if (!u.ok) {
+      const l = this.getAudioContext(), h = await this.fetchAudio(e);
+      if (!h.ok) {
         if (i !== this.audioKey)
           return;
         await this.showIdleAudioVisualization();
         return;
       }
-      const p = await l.decodeAudioData(await u.arrayBuffer());
+      const p = await l.decodeAudioData(await h.arrayBuffer());
       if (i !== this.audioKey)
         return;
       this.audioBuffer = p, this.audioStaticData = this.createStaticWaveformData(p), this.audioPlaybackData = this.createPlaybackWaveformData(p), this.audioVisualizationLoading = !1, this.audioVisualizationStatus = "decoded audio", await this.updateComplete, this.getAudioVisualizationPosition() === "background" ? this.drawFlatAudioVisualization() : this.getAudioVisualizationType() === "ulysse31" ? (this.drawStaticAudioVisualization(), this.syncUlysse31IdleAnimation()) : this.drawStaticAudioVisualization(), this.prepareAudioAnalyser(), this.audioNeedsUserStart = !1, this.shouldAnimateTtsAudio((r = this.runModel) == null ? void 0 : r.ttsAudio) ? this.scheduleAudioAnimationStart(i) : (this.audioSourceEnded = !0, this.audioVisualizationStatus = "past tts", this.drawFlatAudioVisualization());
@@ -5683,10 +5876,10 @@ const Pt = "Assist debug", j = "preferred", q = 5, Ht = "compact", Bt = "wavefor
       this.audioAnimationFrame = window.requestAnimationFrame(() => this.drawAudioVisualization());
       return;
     }
-    const s = window.devicePixelRatio || 1, a = Math.max(1, Math.floor(i.width * s)), o = Math.max(1, Math.floor(i.height * s));
-    (t.width !== a || t.height !== o) && (t.width = a, t.height = o), e.clearRect(0, 0, a, o), this.fillAudioVisualizationBackground(e, a, o), this.audioAnimationStartedAt || (this.audioAnimationStartedAt = performance.now());
-    const r = performance.now() - this.audioAnimationStartedAt, l = Math.min(1, r / Math.max(1, this.audioBuffer.duration * 1e3)), u = this.getAudioLevelAtProgress(this.audioPlaybackData, l), p = this.getAudioVisualizationType();
-    if (p === "spectrum" ? this.drawAnimatedSpectrum(e, a, o, u, l) : p === "meter" ? this.drawMeter(e, a, o, this.scaleAudioFrame(this.audioStaticData || this.audioPlaybackData, u)) : p === "glow" ? this.drawGlow(e, a, o, u) : p === "ulysse31" ? (this.cancelUlysse31Animation(), this.drawUlysse31Wireframe(e, a, o, u)) : this.drawWaveform(e, a, o, this.scaleAudioFrame(this.audioStaticData || this.audioPlaybackData, u)), l >= 1) {
+    const s = window.devicePixelRatio || 1, n = Math.max(1, Math.floor(i.width * s)), o = Math.max(1, Math.floor(i.height * s));
+    (t.width !== n || t.height !== o) && (t.width = n, t.height = o), e.clearRect(0, 0, n, o), this.fillAudioVisualizationBackground(e, n, o), this.audioAnimationStartedAt || (this.audioAnimationStartedAt = performance.now());
+    const r = performance.now() - this.audioAnimationStartedAt, l = Math.min(1, r / Math.max(1, this.audioBuffer.duration * 1e3)), h = this.getAudioLevelAtProgress(this.audioPlaybackData, l), p = this.getAudioVisualizationType();
+    if (p === "spectrum" ? this.drawAnimatedSpectrum(e, n, o, h, l) : p === "meter" ? this.drawMeter(e, n, o, this.scaleAudioFrame(this.audioStaticData || this.audioPlaybackData, h)) : p === "glow" ? this.drawGlow(e, n, o, h) : p === "ulysse31" ? (this.cancelUlysse31Animation(), this.drawUlysse31Wireframe(e, n, o, h)) : this.drawWaveform(e, n, o, this.scaleAudioFrame(this.audioStaticData || this.audioPlaybackData, h)), l >= 1) {
       this.audioSourceEnded = !0, this.audioVisualizationStatus = "audio ended", this.cancelAudioAnimation(), this.drawFlatAudioVisualization();
       return;
     }
@@ -5702,20 +5895,20 @@ const Pt = "Assist debug", j = "preferred", q = 5, Ht = "compact", Bt = "wavefor
     const e = t.getContext("2d"), i = t.getBoundingClientRect();
     if (!e || i.width === 0 || i.height === 0)
       return;
-    const s = window.devicePixelRatio || 1, a = Math.max(1, Math.floor(i.width * s)), o = Math.max(1, Math.floor(i.height * s));
-    if ((t.width !== a || t.height !== o) && (t.width = a, t.height = o), e.clearRect(0, 0, a, o), this.fillAudioVisualizationBackground(e, a, o), this.getAudioVisualizationType() === "meter") {
-      this.drawMeter(e, a, o, this.audioStaticData);
+    const s = window.devicePixelRatio || 1, n = Math.max(1, Math.floor(i.width * s)), o = Math.max(1, Math.floor(i.height * s));
+    if ((t.width !== n || t.height !== o) && (t.width = n, t.height = o), e.clearRect(0, 0, n, o), this.fillAudioVisualizationBackground(e, n, o), this.getAudioVisualizationType() === "meter") {
+      this.drawMeter(e, n, o, this.audioStaticData);
       return;
     }
     if (this.getAudioVisualizationType() === "glow") {
-      this.drawGlow(e, a, o, 0);
+      this.drawGlow(e, n, o, 0);
       return;
     }
     if (this.getAudioVisualizationType() === "ulysse31") {
-      this.drawUlysse31Wireframe(e, a, o, this.getWaveformLevel(this.audioStaticData));
+      this.drawUlysse31Wireframe(e, n, o, this.getWaveformLevel(this.audioStaticData));
       return;
     }
-    this.drawWaveform(e, a, o, this.audioStaticData);
+    this.drawWaveform(e, n, o, this.audioStaticData);
   }
   drawFlatAudioVisualization() {
     const t = this.getAudioVisualizationCanvas();
@@ -5726,59 +5919,59 @@ const Pt = "Assist debug", j = "preferred", q = 5, Ht = "compact", Bt = "wavefor
       this.getAudioVisualizationPosition() === "background" && !this.audioVisualizationPainted && window.requestAnimationFrame(() => this.drawFlatAudioVisualization());
       return;
     }
-    const s = window.devicePixelRatio || 1, a = Math.max(1, Math.floor(i.width * s)), o = Math.max(1, Math.floor(i.height * s));
-    (t.width !== a || t.height !== o) && (t.width = a, t.height = o), e.clearRect(0, 0, a, o), this.fillAudioVisualizationBackground(e, a, o);
+    const s = window.devicePixelRatio || 1, n = Math.max(1, Math.floor(i.width * s)), o = Math.max(1, Math.floor(i.height * s));
+    (t.width !== n || t.height !== o) && (t.width = n, t.height = o), e.clearRect(0, 0, n, o), this.fillAudioVisualizationBackground(e, n, o);
     const r = this.getAudioVisualizationType();
     if (r === "spectrum")
-      this.drawIdleSpectrum(e, a, o);
+      this.drawIdleSpectrum(e, n, o);
     else if (r === "meter")
-      this.drawIdleMeter(e, a, o);
+      this.drawIdleMeter(e, n, o);
     else if (r === "glow")
-      this.drawGlow(e, a, o, 0);
+      this.drawGlow(e, n, o, 0);
     else if (r === "ulysse31") {
-      this.drawUlysse31Wireframe(e, a, o, 0), this.markBackgroundVisualizationReady(), this.syncUlysse31IdleAnimation();
+      this.drawUlysse31Wireframe(e, n, o, 0), this.markBackgroundVisualizationReady(), this.syncUlysse31IdleAnimation();
       return;
     } else
-      this.drawIdleWaveform(e, a, o);
+      this.drawIdleWaveform(e, n, o);
     this.markBackgroundVisualizationReady();
   }
   showUlysse31IdleVisualization() {
     this.clearAudioStartDelayTimer(), this.cancelAudioAnimation(), this.cleanupAudioNodes(), this.audioBuffer = void 0, this.analyser = void 0, this.audioData = void 0, this.audioStaticData = void 0, this.audioPlaybackData = void 0, this.audioSourceEnded = !0, this.audioAnimationStartedAt = 0, this.audioVisualizationLoading = !1, this.audioVisualizationError = "", this.audioFetchUnavailable = !1, this.audioNeedsUserStart = !1, this.audioVisualizationStatus = "idle", this.audioKey = "", this.updateComplete.then(() => this.drawFlatAudioVisualization());
   }
   createStaticWaveformData(t) {
-    const e = t.getChannelData(0), i = 512, s = new Uint8Array(i), a = Math.max(1, Math.floor(e.length / i));
+    const e = t.getChannelData(0), i = 512, s = new Uint8Array(i), n = Math.max(1, Math.floor(e.length / i));
     for (let o = 0; o < i; o += 1) {
       let r = 1, l = -1;
-      const u = o * a, p = Math.min(u + a, e.length);
-      for (let d = u; d < p; d += 1) {
+      const h = o * n, p = Math.min(h + n, e.length);
+      for (let d = h; d < p; d += 1) {
         const g = e[d] || 0;
         r = Math.min(r, g), l = Math.max(l, g);
       }
-      const h = Math.max(Math.abs(r), Math.abs(l));
-      s[o] = Math.round((h * 0.5 + 0.5) * 255);
+      const u = Math.max(Math.abs(r), Math.abs(l));
+      s[o] = Math.round((u * 0.5 + 0.5) * 255);
     }
     return s;
   }
   createPlaybackWaveformData(t) {
     const e = t.getChannelData(0), i = Math.max(512, Math.min(8192, Math.floor(t.duration * 1200))), s = new Uint8Array(i);
-    for (let a = 0; a < i; a += 1) {
-      const o = Math.min(e.length - 1, Math.floor(a / i * e.length)), r = Math.max(-1, Math.min(1, e[o] || 0));
-      s[a] = Math.round((r * 0.5 + 0.5) * 255);
+    for (let n = 0; n < i; n += 1) {
+      const o = Math.min(e.length - 1, Math.floor(n / i * e.length)), r = Math.max(-1, Math.min(1, e[o] || 0));
+      s[n] = Math.round((r * 0.5 + 0.5) * 255);
     }
     return s;
   }
   getAudioLevelAtProgress(t, e) {
-    const s = Math.max(0, t.length - 96), a = Math.min(s, Math.floor(e * s));
+    const s = Math.max(0, t.length - 96), n = Math.min(s, Math.floor(e * s));
     let o = 0;
     for (let r = 0; r < 96; r += 1)
-      o += Math.abs((t[a + r] ?? 128) - 128) / 128;
+      o += Math.abs((t[n + r] ?? 128) - 128) / 128;
     return Math.min(1, Math.max(0.08, o / 96 * 2.8));
   }
   scaleAudioFrame(t, e) {
     const i = new Uint8Array(t.length);
     for (let s = 0; s < t.length; s += 1) {
-      const a = (t[s] ?? 128) - 128;
-      i[s] = Math.max(0, Math.min(255, Math.round(128 + a * e)));
+      const n = (t[s] ?? 128) - 128;
+      i[s] = Math.max(0, Math.min(255, Math.round(128 + n * e)));
     }
     return i;
   }
@@ -5791,68 +5984,68 @@ const Pt = "Assist debug", j = "preferred", q = 5, Ht = "compact", Bt = "wavefor
       return 0;
     const e = Math.sqrt(
       t.reduce((i, s) => {
-        const a = (s - 128) / 128;
-        return i + a * a;
+        const n = (s - 128) / 128;
+        return i + n * n;
       }, 0) / t.length
     );
     return Math.min(1, Math.max(0, e * 2.4));
   }
-  projectUlysse31Point(t, e, i, s, a, o, r, l, u) {
-    let p = (i + s * Math.cos(e)) * Math.cos(t), h = (i + s * Math.cos(e)) * Math.sin(t), d = s * Math.sin(e);
-    const g = Math.cos(a), m = Math.sin(a), v = h * g - d * m, $ = h * m + d * g;
-    h = v, d = $;
-    const b = Math.cos(o), T = Math.sin(o), y = p * b + d * T;
-    d = -p * T + d * b, p = y;
-    const H = 2.8 / (2.8 + d);
+  projectUlysse31Point(t, e, i, s, n, o, r, l, h) {
+    let p = (i + s * Math.cos(e)) * Math.cos(t), u = (i + s * Math.cos(e)) * Math.sin(t), d = s * Math.sin(e);
+    const g = Math.cos(n), m = Math.sin(n), f = u * g - d * m, v = u * m + d * g;
+    u = f, d = v;
+    const b = Math.cos(o), S = Math.sin(o), $ = p * b + d * S;
+    d = -p * S + d * b, p = $;
+    const Y = 2.8 / (2.8 + d);
     return {
-      x: r + p * u * H,
-      y: l + h * u * H * 0.82,
+      x: r + p * h * Y,
+      y: l + u * h * Y * 0.82,
       depth: d
     };
   }
   drawUlysse31Wireframe(t, e, i, s) {
-    const a = getComputedStyle(t.canvas), o = a.color, r = a.borderTopColor || o, l = 0.08 + s * 0.92, { rotX: u, rotY: p } = this.advanceUlysse31Rotation(s), h = e / 2, d = i / 2, g = Math.min(e, i) * (0.24 + l * 0.08), m = 1, v = 0.34, $ = 28, b = 14;
+    const n = getComputedStyle(t.canvas), o = n.color, r = n.borderTopColor || o, l = 0.08 + s * 0.92, { rotX: h, rotY: p } = this.advanceUlysse31Rotation(s), u = e / 2, d = i / 2, g = Math.min(e, i) * (0.24 + l * 0.08), m = 1, f = 0.34, v = 28, b = 14;
     this.drawUlysse31Backdrop(t, e, i, r), t.save(), t.strokeStyle = o, t.lineWidth = Math.max(1, e / 420), t.shadowBlur = 6 + l * 14, t.shadowColor = o, t.globalAlpha = 0.72 + l * 0.28;
-    const T = (y, H) => {
+    const S = ($, Y) => {
       t.beginPath();
-      let tt = !1;
-      if (H !== null)
-        for (let E = 0; E <= $; E += 1) {
-          const $t = E / $ * Math.PI * 2, x = this.projectUlysse31Point(
-            $t,
-            H,
+      let at = !1;
+      if (Y !== null)
+        for (let D = 0; D <= v; D += 1) {
+          const Lt = D / v * Math.PI * 2, k = this.projectUlysse31Point(
+            Lt,
+            Y,
             m,
-            v,
-            u,
-            p,
+            f,
             h,
+            p,
+            u,
             d,
             g
           );
-          tt ? t.lineTo(x.x, x.y) : (t.moveTo(x.x, x.y), tt = !0);
+          at ? t.lineTo(k.x, k.y) : (t.moveTo(k.x, k.y), at = !0);
         }
-      else if (y !== null)
-        for (let E = 0; E <= b; E += 1) {
-          const $t = E / b * Math.PI * 2, x = this.projectUlysse31Point(
-            y,
-            $t,
+      else if ($ !== null)
+        for (let D = 0; D <= b; D += 1) {
+          const Lt = D / b * Math.PI * 2, k = this.projectUlysse31Point(
+            $,
+            Lt,
             m,
-            v,
-            u,
-            p,
+            f,
             h,
+            p,
+            u,
             d,
             g
           );
-          tt ? t.lineTo(x.x, x.y) : (t.moveTo(x.x, x.y), tt = !0);
+          at ? t.lineTo(k.x, k.y) : (t.moveTo(k.x, k.y), at = !0);
         }
       t.stroke();
     };
-    for (let y = 0; y <= b; y += 1)
-      T(null, y / b * Math.PI * 2);
-    for (let y = 0; y < $; y += 2)
-      T(y / $ * Math.PI * 2, null);
-    t.globalAlpha = 0.45 + l * 0.35, t.lineWidth = Math.max(1, e / 520), t.beginPath(), t.ellipse(h, d, g * 0.34, g * 0.22, p * 0.18, 0, Math.PI * 2), t.stroke(), t.restore();
+    for (let $ = 0; $ <= b; $ += 1)
+      S(null, $ / b * Math.PI * 2);
+    for (let $ = 0; $ < v; $ += 2)
+      S($ / v * Math.PI * 2, null);
+    t.globalAlpha = 0.45 + l * 0.35, t.lineWidth = Math.max(1, e / 520), t.beginPath(), t.ellipse(u, d, g * 0.34, g * 0.22, p * 0.18, 0, Math.PI * 2), t.stroke(), t.restore();
   }
   advanceUlysse31Rotation(t) {
     const e = performance.now();
@@ -5861,8 +6054,8 @@ const Pt = "Assist debug", j = "preferred", q = 5, Ht = "compact", Bt = "wavefor
         rotX: this.ulysse31RotationX,
         rotY: this.ulysse31RotationY
       };
-    const i = Math.min(Math.max((e - this.ulysse31LastFrameAt) / 1e3, 0), 0.1), s = Math.min(Math.max(t, 0), 1), a = Math.PI * 2;
-    return this.ulysse31LastFrameAt = e, this.ulysse31RotationX = (this.ulysse31RotationX + i * (0.35 + s * 1.1)) % a, this.ulysse31RotationY = (this.ulysse31RotationY + i * (0.52 + s * 0.95)) % a, {
+    const i = Math.min(Math.max((e - this.ulysse31LastFrameAt) / 1e3, 0), 0.1), s = Math.min(Math.max(t, 0), 1), n = Math.PI * 2;
+    return this.ulysse31LastFrameAt = e, this.ulysse31RotationX = (this.ulysse31RotationX + i * (0.35 + s * 1.1)) % n, this.ulysse31RotationY = (this.ulysse31RotationY + i * (0.52 + s * 0.95)) % n, {
       rotX: this.ulysse31RotationX,
       rotY: this.ulysse31RotationY
     };
@@ -5872,10 +6065,10 @@ const Pt = "Assist debug", j = "preferred", q = 5, Ht = "compact", Bt = "wavefor
     for (let o = 0; o < i; o += Math.max(3, Math.floor(i / 28)))
       t.beginPath(), t.moveTo(0, o + 0.5), t.lineTo(e, o + 0.5), t.stroke();
     t.globalAlpha = 0.18;
-    const a = 18;
-    for (let o = 0; o < a; o += 1) {
-      const r = o * 7919, l = r * 37 % 1e3 / 1e3 * e, u = r * 53 % 1e3 / 1e3 * i, p = 1 + r * 17 % 100 / 100;
-      t.fillStyle = s, t.fillRect(l, u, p, p);
+    const n = 18;
+    for (let o = 0; o < n; o += 1) {
+      const r = o * 7919, l = r * 37 % 1e3 / 1e3 * e, h = r * 53 % 1e3 / 1e3 * i, p = 1 + r * 17 % 100 / 100;
+      t.fillStyle = s, t.fillRect(l, h, p, p);
     }
     t.restore();
   }
@@ -5897,17 +6090,17 @@ const Pt = "Assist debug", j = "preferred", q = 5, Ht = "compact", Bt = "wavefor
       this.syncUlysse31IdleAnimation();
       return;
     }
-    const s = window.devicePixelRatio || 1, a = Math.max(1, Math.floor(i.width * s)), o = Math.max(1, Math.floor(i.height * s));
-    (t.width !== a || t.height !== o) && (t.width = a, t.height = o), e.clearRect(0, 0, a, o), this.fillAudioVisualizationBackground(e, a, o), this.drawUlysse31Wireframe(e, a, o, 0), this.markBackgroundVisualizationReady(), !(!this.audioIsVisible || document.hidden) && (this.ulysse31AnimationFrame = window.requestAnimationFrame(() => this.drawUlysse31IdleFrame()));
+    const s = window.devicePixelRatio || 1, n = Math.max(1, Math.floor(i.width * s)), o = Math.max(1, Math.floor(i.height * s));
+    (t.width !== n || t.height !== o) && (t.width = n, t.height = o), e.clearRect(0, 0, n, o), this.fillAudioVisualizationBackground(e, n, o), this.drawUlysse31Wireframe(e, n, o, 0), this.markBackgroundVisualizationReady(), !(!this.audioIsVisible || document.hidden) && (this.ulysse31AnimationFrame = window.requestAnimationFrame(() => this.drawUlysse31IdleFrame()));
   }
   cancelUlysse31Animation() {
     this.ulysse31AnimationFrame !== void 0 && (window.cancelAnimationFrame(this.ulysse31AnimationFrame), this.ulysse31AnimationFrame = void 0);
   }
   drawWaveform(t, e, i, s) {
     t.lineWidth = Math.max(2, e / 220), t.strokeStyle = getComputedStyle(t.canvas).color, t.beginPath();
-    const a = e / s.length;
+    const n = e / s.length;
     for (let o = 0; o < s.length; o += 1) {
-      const r = o * a, l = s[o] / 255 * i;
+      const r = o * n, l = s[o] / 255 * i;
       o === 0 ? t.moveTo(r, l) : t.lineTo(r, l);
     }
     t.stroke();
@@ -5916,49 +6109,49 @@ const Pt = "Assist debug", j = "preferred", q = 5, Ht = "compact", Bt = "wavefor
     t.lineWidth = Math.max(2, e / 220), t.strokeStyle = getComputedStyle(t.canvas).color, t.beginPath(), t.moveTo(0, i / 2), t.lineTo(e, i / 2), t.stroke();
   }
   drawSpectrum(t, e, i, s) {
-    const a = Math.max(1, e / 180), o = Math.max(2, e / s.length - a), r = getComputedStyle(t.canvas), l = r.color, u = r.borderTopColor, p = t.createLinearGradient(0, 0, 0, i);
-    p.addColorStop(0, l), p.addColorStop(1, u || l), t.fillStyle = p, s.forEach((h, d) => {
-      const g = Math.max(2, h / 255 * i), m = d * (o + a);
+    const n = Math.max(1, e / 180), o = Math.max(2, e / s.length - n), r = getComputedStyle(t.canvas), l = r.color, h = r.borderTopColor, p = t.createLinearGradient(0, 0, 0, i);
+    p.addColorStop(0, l), p.addColorStop(1, h || l), t.fillStyle = p, s.forEach((u, d) => {
+      const g = Math.max(2, u / 255 * i), m = d * (o + n);
       t.fillRect(m, i - g, o, g);
     });
   }
   drawIdleSpectrum(t, e, i) {
-    const s = getComputedStyle(t.canvas), a = 32, o = Math.max(1, e / 180), r = Math.max(2, e / a - o);
+    const s = getComputedStyle(t.canvas), n = 32, o = Math.max(1, e / 180), r = Math.max(2, e / n - o);
     t.fillStyle = s.borderTopColor || s.color, t.globalAlpha = 0.35;
-    for (let l = 0; l < a; l += 1) {
-      const u = l * (r + o);
-      t.fillRect(u, i - 2, r, 2);
+    for (let l = 0; l < n; l += 1) {
+      const h = l * (r + o);
+      t.fillRect(h, i - 2, r, 2);
     }
     t.globalAlpha = 1;
   }
-  drawAnimatedSpectrum(t, e, i, s, a) {
-    const o = getComputedStyle(t.canvas), r = o.color, l = o.borderTopColor, u = t.createLinearGradient(0, 0, 0, i);
-    u.addColorStop(0, r), u.addColorStop(1, l || r), t.fillStyle = u;
-    const p = 34, h = Math.max(1, e / 180), d = Math.max(2, e / p - h);
+  drawAnimatedSpectrum(t, e, i, s, n) {
+    const o = getComputedStyle(t.canvas), r = o.color, l = o.borderTopColor, h = t.createLinearGradient(0, 0, 0, i);
+    h.addColorStop(0, r), h.addColorStop(1, l || r), t.fillStyle = h;
+    const p = 34, u = Math.max(1, e / 180), d = Math.max(2, e / p - u);
     for (let g = 0; g < p; g += 1) {
-      const m = 0.35 + 0.65 * Math.sin(g / (p - 1) * Math.PI), v = 0.72 + 0.28 * ((Math.sin(g * 1.7) + 1) / 2), $ = 0.92 + 0.08 * Math.sin(a * Math.PI * 10), b = Math.max(3, i * (0.08 + s * m * v * $)), T = g * (d + h);
-      t.fillRect(T, i - b, d, b);
+      const m = 0.35 + 0.65 * Math.sin(g / (p - 1) * Math.PI), f = 0.72 + 0.28 * ((Math.sin(g * 1.7) + 1) / 2), v = 0.92 + 0.08 * Math.sin(n * Math.PI * 10), b = Math.max(3, i * (0.08 + s * m * f * v)), S = g * (d + u);
+      t.fillRect(S, i - b, d, b);
     }
   }
   drawMeter(t, e, i, s) {
-    const a = Math.sqrt(
-      s.reduce((p, h) => {
-        const d = (h - 128) / 128;
+    const n = Math.sqrt(
+      s.reduce((p, u) => {
+        const d = (u - 128) / 128;
         return p + d * d;
       }, 0) / s.length
-    ), o = Math.min(1, a * 2.4), r = i / 2, l = getComputedStyle(t.canvas);
+    ), o = Math.min(1, n * 2.4), r = i / 2, l = getComputedStyle(t.canvas);
     t.fillStyle = l.borderTopColor, t.globalAlpha = 0.25, t.fillRect(0, i * 0.28, e, i * 0.44), t.globalAlpha = 1, t.fillStyle = l.color;
-    const u = Math.max(r, e * o);
-    t.fillRect((e - u) / 2, i * 0.28, u, i * 0.44);
+    const h = Math.max(r, e * o);
+    t.fillRect((e - h) / 2, i * 0.28, h, i * 0.44);
   }
   drawIdleMeter(t, e, i) {
-    const s = getComputedStyle(t.canvas), a = i / 2;
+    const s = getComputedStyle(t.canvas), n = i / 2;
     t.fillStyle = s.borderTopColor, t.globalAlpha = 0.25, t.fillRect(0, i * 0.28, e, i * 0.44), t.globalAlpha = 1, t.fillStyle = s.color;
-    const o = Math.max(2, a * 0.18);
+    const o = Math.max(2, n * 0.18);
     t.fillRect((e - o) / 2, i * 0.28, o, i * 0.44);
   }
   drawGlow(t, e, i, s) {
-    const a = getComputedStyle(t.canvas), o = a.color, r = a.borderTopColor || o, l = Math.min(1, Math.max(0, s)), u = e * 0.5, p = i * 0.5, h = Math.max(e, i) * (0.45 + l * 0.25), d = t.createRadialGradient(u, p, 0, u, p, h);
+    const n = getComputedStyle(t.canvas), o = n.color, r = n.borderTopColor || o, l = Math.min(1, Math.max(0, s)), h = e * 0.5, p = i * 0.5, u = Math.max(e, i) * (0.45 + l * 0.25), d = t.createRadialGradient(h, p, 0, h, p, u);
     d.addColorStop(0, this.withAlpha(o, 0.1 + l * 0.72)), d.addColorStop(0.52, this.withAlpha(r, 0.05 + l * 0.24)), d.addColorStop(1, "rgba(0, 0, 0, 0)"), t.fillStyle = d, t.fillRect(0, 0, e, i);
   }
   withAlpha(t, e) {
@@ -5984,19 +6177,13 @@ const Pt = "Assist debug", j = "preferred", q = 5, Ht = "compact", Bt = "wavefor
     (e = this.audioSource) == null || e.disconnect(), (i = this.analyser) == null || i.disconnect(), (s = this.silentGain) == null || s.disconnect(), this.audioSource = void 0, this.silentGain = void 0;
   }
   openDebugPage(t) {
-    t.stopPropagation(), this.resolvedPipelineId && k(this, this.hass, {}, {
+    t.stopPropagation(), this.resolvedPipelineId && E(this, this.hass, {}, {
       action: "navigate",
       navigation_path: `/config/voice-assistants/debug/${this.resolvedPipelineId}`
     });
   }
-  resolvePipelineId(t) {
-    var i, s;
-    const e = this.config.pipeline_id || j;
-    return e !== j ? e : t.preferred_pipeline || ((s = (i = t.pipelines) == null ? void 0 : i[0]) == null ? void 0 : s.id) || "";
-  }
   getRunCount() {
-    const t = Number(this.config.run_count || q);
-    return Number.isFinite(t) ? Math.min(Math.max(Math.round(t), 1), 20) : q;
+    return Le(this.config.run_count, ht, 1);
   }
   getPipelineName(t) {
     var e;
@@ -6007,11 +6194,11 @@ const Pt = "Assist debug", j = "preferred", q = 5, Ht = "compact", Bt = "wavefor
     return e ? ((i = this.runModel) == null ? void 0 : i.stage) === "error" && !e.done ? "error" : e.done ? "done" : ((s = this.runModel) == null ? void 0 : s.stage) === t ? "running" : "idle" : "idle";
   }
   getStageDuration(t) {
-    var a, o, r, l, u, p;
+    var n, o, r, l, h, p;
     const e = t === "stt" ? "stt-vad-end" : `${t}-start`;
-    let i = (o = (a = this.runModel) == null ? void 0 : a.events.find((h) => h.type === e)) == null ? void 0 : o.timestamp;
-    t === "stt" && !i && (i = (l = (r = this.runModel) == null ? void 0 : r.events.find((h) => h.type === "stt-start")) == null ? void 0 : l.timestamp);
-    const s = (p = (u = this.runModel) == null ? void 0 : u.events.find((h) => h.type === `${t}-end`)) == null ? void 0 : p.timestamp;
+    let i = (o = (n = this.runModel) == null ? void 0 : n.events.find((u) => u.type === e)) == null ? void 0 : o.timestamp;
+    t === "stt" && !i && (i = (l = (r = this.runModel) == null ? void 0 : r.events.find((u) => u.type === "stt-start")) == null ? void 0 : l.timestamp);
+    const s = (p = (h = this.runModel) == null ? void 0 : h.events.find((u) => u.type === `${t}-end`)) == null ? void 0 : p.timestamp;
     return this.formatDuration(i ? new Date(i) : void 0, s ? new Date(s) : void 0);
   }
   getStatusIcon(t) {
@@ -6076,18 +6263,13 @@ const Pt = "Assist debug", j = "preferred", q = 5, Ht = "compact", Bt = "wavefor
     return Array.isArray(t) ? t.map((e) => this.maskRaw(e)) : t && typeof t == "object" ? Object.fromEntries(
       Object.entries(t).map(([e, i]) => [
         e,
-        Qi.has(e) ? "[masked]" : this.maskRaw(i)
+        dn.has(e) ? "[masked]" : this.maskRaw(i)
       ])
     ) : t;
   }
   extractAssistantSpeech(t) {
     var e;
     return ((e = t.intent) == null ? void 0 : e.output) || "";
-  }
-  extractSpeechFromIntentOutput(t) {
-    var i, s, a, o, r, l, u, p;
-    const e = ((a = (s = (i = t == null ? void 0 : t.response) == null ? void 0 : i.speech) == null ? void 0 : s.plain) == null ? void 0 : a.speech) || ((u = (l = (r = (o = t == null ? void 0 : t.response) == null ? void 0 : o.speech) == null ? void 0 : r.plain) == null ? void 0 : l.extra_data) == null ? void 0 : u.speech) || ((p = t == null ? void 0 : t.response) == null ? void 0 : p.speech) || "";
-    return typeof e == "string" ? e : "";
   }
   formatError(t) {
     if (t && typeof t == "object") {
@@ -6106,11 +6288,11 @@ const Pt = "Assist debug", j = "preferred", q = 5, Ht = "compact", Bt = "wavefor
   }
   getAudioVisualizationType() {
     const t = this.config.audio_visualization_type;
-    return t === "spectrum" || t === "meter" || t === "waveform" || t === "glow" || t === "ulysse31" ? t : Bt;
+    return t === "spectrum" || t === "meter" || t === "waveform" || t === "glow" || t === "ulysse31" ? t : ne;
   }
   getAudioVisualizationPosition() {
     const t = this.config.audio_visualization_position;
-    return t === "background" || t === "top" || t === "between" || t === "below_chat" ? t : Wt;
+    return t === "background" || t === "top" || t === "between" || t === "below_chat" ? t : ae;
   }
   getAudioVisualizationHeight() {
     const t = Number(this.config.audio_visualization_height || 56);
@@ -6140,14 +6322,14 @@ const Pt = "Assist debug", j = "preferred", q = 5, Ht = "compact", Bt = "wavefor
       "--assist-debug-assistant-chat": this.config.assistant_chat_color || "#2b2b2b",
       "--assist-debug-assistant-chat-text": this.config.assistant_chat_text_color || "var(--assist-debug-text)",
       "--assist-debug-audio-height": `${this.getAudioVisualizationHeight()}px`,
-      "--assist-debug-audio-color": this.config.audio_visualization_color || (e ? Ji : "var(--assist-debug-accent)"),
+      "--assist-debug-audio-color": this.config.audio_visualization_color || (e ? on : "var(--assist-debug-accent)"),
       "--assist-debug-audio-secondary-color": this.config.audio_visualization_secondary_color || "var(--assist-debug-secondary-text)",
-      "--assist-debug-audio-background": this.config.audio_visualization_background || (e ? Yi : "transparent"),
+      "--assist-debug-audio-background": this.config.audio_visualization_background || (e ? rn : "transparent"),
       "--assist-debug-audio-opacity": String(this.getAudioVisualizationOpacity())
     };
   }
 };
-F.nextAudioVisualizationId = 0, F.properties = {
+W.nextAudioVisualizationId = 0, W.properties = {
   hass: { attribute: !1 },
   config: { attribute: !1 },
   loading: { state: !0 },
@@ -6163,7 +6345,7 @@ F.nextAudioVisualizationId = 0, F.properties = {
   audioNeedsUserStart: { state: !0 },
   audioVisualizationStatus: { state: !0 },
   thinkingDetailsOpen: { state: !0 }
-}, F.styles = w`
+}, W.styles = w`
     ha-card {
       background: var(--assist-debug-background);
       border: 0;
@@ -6653,14 +6835,2485 @@ F.nextAudioVisualizationId = 0, F.properties = {
       }
     }
   `;
-let dt = F;
-class ts extends dt {
+let vt = W;
+class hn extends vt {
 }
-customElements.define("assist-debug-card", dt);
-customElements.get("conversation-debug-card") || customElements.define("conversation-debug-card", ts);
+customElements.define("assist-debug-card", vt);
+customElements.get("conversation-debug-card") || customElements.define("conversation-debug-card", hn);
 window.customCards = window.customCards || [];
 window.customCards.push({
   type: "assist-debug-card",
   name: "Assist Debug Card",
   description: "Modern debug view for Home Assistant Assist pipeline runs"
+});
+/**
+ * @license
+ * Copyright 2020 Google LLC
+ * SPDX-License-Identifier: BSD-3-Clause
+ */
+const { I: un } = ys, wi = (a) => a, xi = () => document.createComment(""), Q = (a, t, e) => {
+  var n;
+  const i = a._$AA.parentNode, s = t === void 0 ? a._$AB : t._$AA;
+  if (e === void 0) {
+    const o = i.insertBefore(xi(), s), r = i.insertBefore(xi(), s);
+    e = new un(o, r, a, a.options);
+  } else {
+    const o = e._$AB.nextSibling, r = e._$AM, l = r !== a;
+    if (l) {
+      let h;
+      (n = e._$AQ) == null || n.call(e, a), e._$AM = a, e._$AP !== void 0 && (h = a._$AU) !== r._$AU && e._$AP(h);
+    }
+    if (o !== s || l) {
+      let h = e._$AA;
+      for (; h !== o; ) {
+        const p = wi(h).nextSibling;
+        wi(i).insertBefore(h, s), h = p;
+      }
+    }
+  }
+  return e;
+}, R = (a, t, e = a) => (a._$AI(t, e), a), pn = {}, gn = (a, t = pn) => a._$AH = t, mn = (a) => a._$AH, oe = (a) => {
+  a._$AR(), a._$AA.remove();
+};
+/**
+ * @license
+ * Copyright 2017 Google LLC
+ * SPDX-License-Identifier: BSD-3-Clause
+ */
+const $i = (a, t, e) => {
+  const i = /* @__PURE__ */ new Map();
+  for (let s = t; s <= e; s++) i.set(a[s], s);
+  return i;
+}, fn = Mi(class extends Ui {
+  constructor(a) {
+    if (super(a), a.type !== Ri.CHILD) throw Error("repeat() can only be used in text expressions");
+  }
+  dt(a, t, e) {
+    let i;
+    e === void 0 ? e = t : t !== void 0 && (i = t);
+    const s = [], n = [];
+    let o = 0;
+    for (const r of a) s[o] = i ? i(r, o) : o, n[o] = e(r, o), o++;
+    return { values: n, keys: s };
+  }
+  render(a, t, e) {
+    return this.dt(a, t, e).values;
+  }
+  update(a, [t, e, i]) {
+    const s = mn(a), { values: n, keys: o } = this.dt(t, e, i);
+    if (!Array.isArray(s)) return this.ut = o, n;
+    const r = this.ut ?? (this.ut = []), l = [];
+    let h, p, u = 0, d = s.length - 1, g = 0, m = n.length - 1;
+    for (; u <= d && g <= m; ) if (s[u] === null) u++;
+    else if (s[d] === null) d--;
+    else if (r[u] === o[g]) l[g] = R(s[u], n[g]), u++, g++;
+    else if (r[d] === o[m]) l[m] = R(s[d], n[m]), d--, m--;
+    else if (r[u] === o[m]) l[m] = R(s[u], n[m]), Q(a, l[m + 1], s[u]), u++, m--;
+    else if (r[d] === o[g]) l[g] = R(s[d], n[g]), Q(a, s[u], s[d]), d--, g++;
+    else if (h === void 0 && (h = $i(o, g, m), p = $i(r, u, d)), h.has(r[u])) if (h.has(r[d])) {
+      const f = p.get(o[g]), v = f !== void 0 ? s[f] : null;
+      if (v === null) {
+        const b = Q(a, s[u]);
+        R(b, n[g]), l[g] = b;
+      } else l[g] = R(v, n[g]), Q(a, s[u], v), s[f] = null;
+      g++;
+    } else oe(s[d]), d--;
+    else oe(s[u]), u++;
+    for (; g <= m; ) {
+      const f = Q(a, l[m + 1]);
+      R(f, n[g]), l[g++] = f;
+    }
+    for (; u <= d; ) {
+      const f = s[u++];
+      f !== null && oe(f);
+    }
+    return this.ut = o, gn(a, l), I;
+  }
+}), Dt = 0.01, bn = 0.02;
+function vn(a) {
+  if (!a.length)
+    return { rms: 0, peak: 0 };
+  let t = 0, e = 0;
+  for (let i = 0; i < a.length; i += 1) {
+    const s = Math.abs(a[i]) / 32768;
+    e = Math.max(e, s), t += s * s;
+  }
+  return {
+    rms: Math.sqrt(t / a.length),
+    peak: e
+  };
+}
+function yn(a, t = Dt) {
+  if (!a.length)
+    return !1;
+  const { rms: e, peak: i } = vn(a);
+  return e >= t || i >= bn;
+}
+const _n = `
+class RecorderProcessor extends AudioWorkletProcessor {
+  process(inputList) {
+    if (!inputList[0]?.length) {
+      return true;
+    }
+
+    const float32Data = inputList[0][0];
+    const int16Data = new Int16Array(float32Data.length);
+
+    for (let index = 0; index < float32Data.length; index += 1) {
+      const sample = Math.max(-1, Math.min(1, float32Data[index]));
+      int16Data[index] = sample < 0 ? sample * 0x8000 : sample * 0x7fff;
+    }
+
+    this.port.postMessage(int16Data);
+    return true;
+  }
+}
+
+registerProcessor("assist-recorder-worklet", RecorderProcessor);
+`;
+class M {
+  constructor(t) {
+    this.active = !1, this.onChunk = t;
+  }
+  getAnalyser() {
+    return this.analyser;
+  }
+  static isInsecureConnection() {
+    const { protocol: t, hostname: e } = window.location;
+    return t === "https:" || t === "http:" && (e === "localhost" || e === "127.0.0.1" || e === "[::1]") ? !1 : t === "http:" ? !0 : !window.isSecureContext;
+  }
+  static isSupported() {
+    return !!(!M.isInsecureConnection() && (window.AudioContext || window.webkitAudioContext));
+  }
+  async start() {
+    var e;
+    if (this.active)
+      return;
+    if (!((e = navigator.mediaDevices) != null && e.getUserMedia))
+      throw new DOMException(
+        "Microphone access is not available in this browser.",
+        "NotSupportedError"
+      );
+    const t = window.AudioContext || window.webkitAudioContext;
+    if (this.audioContext = new t(), this.sampleRate = this.audioContext.sampleRate, this.audioContext.state === "suspended" && await this.audioContext.resume(), this.stream = await navigator.mediaDevices.getUserMedia({
+      audio: {
+        echoCancellation: !0,
+        noiseSuppression: !0,
+        autoGainControl: !0
+      }
+    }), this.source = this.audioContext.createMediaStreamSource(this.stream), this.setupAnalyser(), await this.startWorkletRecorder()) {
+      this.active = !0;
+      return;
+    }
+    this.startScriptProcessorRecorder(), this.active = !0;
+  }
+  stop() {
+    var t, e, i, s, n;
+    !this.active && !this.stream && !this.processor && !this.worklet && !this.source || (this.active = !1, (t = this.processor) == null || t.disconnect(), (e = this.worklet) == null || e.disconnect(), (i = this.analyser) == null || i.disconnect(), (s = this.source) == null || s.disconnect(), this.processor = void 0, this.worklet = void 0, this.analyser = void 0, this.source = void 0, (n = this.stream) == null || n.getTracks().forEach((o) => o.stop()), this.stream = void 0);
+  }
+  async close() {
+    this.stop(), this.audioContext && this.audioContext.state !== "closed" && await this.audioContext.close(), this.workletUrl && (URL.revokeObjectURL(this.workletUrl), this.workletUrl = void 0), this.audioContext = void 0, this.sampleRate = void 0;
+  }
+  setupAnalyser() {
+    !this.audioContext || !this.source || (this.analyser = this.audioContext.createAnalyser(), this.analyser.fftSize = 64, this.source.connect(this.analyser));
+  }
+  async startWorkletRecorder() {
+    if (!this.audioContext || !this.analyser || !this.audioContext.audioWorklet)
+      return !1;
+    try {
+      return this.workletUrl = URL.createObjectURL(
+        new Blob([_n], { type: "application/javascript" })
+      ), await this.audioContext.audioWorklet.addModule(this.workletUrl), this.worklet = new AudioWorkletNode(this.audioContext, "assist-recorder-worklet"), this.worklet.port.onmessage = (t) => {
+        this.active && this.onChunk(t.data);
+      }, this.analyser.connect(this.worklet), !0;
+    } catch {
+      return this.workletUrl && (URL.revokeObjectURL(this.workletUrl), this.workletUrl = void 0), this.worklet = void 0, !1;
+    }
+  }
+  startScriptProcessorRecorder() {
+    !this.audioContext || !this.analyser || (this.processor = this.audioContext.createScriptProcessor(4096, 1, 1), this.processor.onaudioprocess = (t) => {
+      this.active && this.onChunk(this.toInt16(t.inputBuffer.getChannelData(0)));
+    }, this.analyser.connect(this.processor), this.processor.connect(this.audioContext.destination));
+  }
+  toInt16(t) {
+    const e = new Int16Array(t.length);
+    for (let i = 0; i < t.length; i += 1) {
+      const s = Math.max(-1, Math.min(1, t[i] || 0));
+      e[i] = s < 0 ? s * 32768 : s * 32767;
+    }
+    return e;
+  }
+}
+const re = 24, wn = 3;
+function xn(a, t, e) {
+  const i = e && e.length === t.frequencyBinCount ? e : new Uint8Array(t.frequencyBinCount);
+  t.getByteFrequencyData(i);
+  const s = a.getContext("2d"), n = a.getBoundingClientRect();
+  if (!s || n.width === 0 || n.height === 0)
+    return i;
+  const o = window.devicePixelRatio || 1, r = Math.max(1, Math.floor(n.width * o)), l = Math.max(1, Math.floor(n.height * o));
+  (a.width !== r || a.height !== l) && (a.width = r, a.height = l), s.clearRect(0, 0, r, l);
+  const p = getComputedStyle(a).color, u = Math.max(1, r / 120), d = Math.max(2, r / re - u), g = l / 2;
+  s.fillStyle = p;
+  for (let m = 0; m < re; m += 1) {
+    const f = Math.floor(m / re * i.length), v = i[f] / 255, b = Math.max(wn, v * l * 0.85), S = m * (d + u);
+    s.fillRect(S, g - b / 2, d, b);
+  }
+  return i;
+}
+class $n {
+  start(t, e) {
+    this.stop();
+    const i = () => {
+      const s = e();
+      s && (this.dataBuffer = xn(t, s, this.dataBuffer)), this.frameId = window.requestAnimationFrame(i);
+    };
+    i();
+  }
+  stop() {
+    this.frameId !== void 0 && (window.cancelAnimationFrame(this.frameId), this.frameId = void 0, this.dataBuffer = void 0);
+  }
+}
+const An = /* @__PURE__ */ new Set([
+  "pending",
+  "listening",
+  "waiting",
+  "thinking",
+  "preparing"
+]);
+function Ji(a) {
+  return a.role === "assistant" && An.has(a.status);
+}
+function Ae(a) {
+  return a.status === "streaming" || a.status === "done" || a.status === "error";
+}
+function Zi(a) {
+  return Object.values(a.stages).some((t) => t.status !== "idle") || a.toolCalls.length > 0;
+}
+function Xi(a) {
+  const t = a.stages.stt.status !== "idle", e = a.stages.intent.status !== "idle", i = a.stages.tts.status !== "idle";
+  return t && !e && !i && a.toolCalls.length === 0;
+}
+function Se(a) {
+  return a.role !== "assistant" || a.status === "error" ? !1 : a.status === "listening" ? !0 : !a.process || !Xi(a.process) ? !1 : !a.text || a.status === "cancelled";
+}
+function G(a) {
+  return a.some((t) => t.type === "run-end" || t.type === "error");
+}
+function Sn(a) {
+  const t = a.some((i) => i.type === "intent-start"), e = a.some(
+    (i) => i.type === "stt-start" || i.type === "stt-end" || i.type === "stt-vad-end"
+  );
+  return t && !e;
+}
+function Qi(a, t) {
+  if (t.assistantText || t.errorText || !t.userText || !G(a))
+    return !1;
+  const e = a.some((s) => s.type === "intent-start"), i = a.some((s) => s.type === "intent-end");
+  return e && !i;
+}
+function kn(a, t) {
+  if (a.userText || G(t) || Sn(t))
+    return !1;
+  const { process: e } = a, i = t.some((r) => r.type === "stt-end"), s = t.some((r) => r.type === "stt-vad-end"), n = t.some((r) => r.type === "stt-start"), o = t.some(
+    (r) => r.type === "wake_word-start" || r.type === "wake_word-end"
+  );
+  return i || s ? !1 : e.stage === "stt" || e.stages.stt.status === "running" || n || o || !!e.started && !t.some((r) => r.type === "intent-start");
+}
+function Cn(a, t, e) {
+  if (e || G(t))
+    return "pending";
+  const i = a.process.stage;
+  return i === "intent" ? "thinking" : i === "tts" ? "preparing" : "waiting";
+}
+function Tn(a, t, e, i) {
+  return a.userText || a.assistantText || a.errorText || a.thinking ? !0 : e ? i : Xi(a.process) || G(t) ? !1 : Zi(a.process);
+}
+function En(a, t, e) {
+  if (a.finished)
+    return a.finished;
+  const i = t[t.length - 1];
+  return (i == null ? void 0 : i.timestamp) || e;
+}
+function In(a, t) {
+  return t === null ? a : a.filter((e) => new Date(e.timestamp).getTime() > t);
+}
+function zn(a, t) {
+  const e = [];
+  let i = null;
+  const n = [...In(a, t.clearedAt)].sort(
+    (o, r) => new Date(o.timestamp).getTime() - new Date(r.timestamp).getTime()
+  );
+  for (const [o, r] of n.entries()) {
+    const l = r.events || [], h = r.conversation, p = kn(h, l), u = o === n.length - 1;
+    h.conversationId && (i = h.conversationId), h.userText ? e.push({
+      id: `${r.pipeline_run_id}-user`,
+      role: "user",
+      text: h.userText,
+      status: "done",
+      timestamp: r.timestamp
+    }) : p && u && t.active && e.push({
+      id: `${r.pipeline_run_id}-assistant-listening`,
+      role: "assistant",
+      text: "",
+      status: "listening"
+    });
+    const d = !G(l), g = Qi(l, h), m = h.assistantText || h.errorText || h.thinking, f = Zi(h.process) && !p, v = d && !p && !!h.userText && !h.errorText && !g;
+    if (Tn(h, l, p, t.active) && (m || f || v)) {
+      const b = h.errorText ? "error" : g ? "cancelled" : h.assistantText ? "done" : Cn(h, l, p);
+      e.push({
+        id: `${r.pipeline_run_id}-assistant`,
+        role: "assistant",
+        text: h.errorText || h.assistantText || "",
+        status: b,
+        timestamp: En(h.process, l, r.timestamp),
+        thinking: g ? void 0 : h.thinking || void 0,
+        process: h.process
+      });
+    }
+  }
+  return { messages: e, conversationId: i };
+}
+function Vn(a) {
+  return a.map((t) => {
+    const e = t.events || [], i = t.conversation, s = e[e.length - 1];
+    return [
+      t.pipeline_run_id,
+      e.length,
+      (s == null ? void 0 : s.type) || "",
+      (s == null ? void 0 : s.timestamp) || "",
+      i.userText,
+      i.assistantText,
+      i.errorText,
+      i.thinking,
+      Qi(e, i),
+      i.process.stage,
+      i.process.stages.stt.status,
+      i.process.stages.intent.status,
+      i.process.stages.tts.status,
+      i.process.toolCalls.length
+    ].join(":");
+  }).join("|");
+}
+function Ai(a) {
+  return a.role === "assistant" && a.status === "listening";
+}
+function le(a, t) {
+  return !(a.persistLocal && t);
+}
+function Dn(a, t) {
+  const e = a[0], i = t.findIndex((s) => s.id === e.id);
+  if (i !== -1)
+    return i;
+  if (!e.text)
+    return -1;
+  for (let s = t.length - 1; s >= 0; s--) {
+    const n = t[s];
+    if (n.role === e.role && n.text === e.text)
+      return s;
+  }
+  return -1;
+}
+function Si(a, t, e) {
+  if (e)
+    return a;
+  const i = new Set(a.map((n) => n.id)), s = t.filter(
+    (n) => n.persistLocal && !i.has(n.id)
+  );
+  return s.length ? [...a, ...s] : a;
+}
+function ki(a, t) {
+  const e = /* @__PURE__ */ new Map();
+  for (let i = 0; i < t.length; i++) {
+    const s = t[i];
+    if (s.role !== "assistant" || s.status !== "cancelled")
+      continue;
+    const n = t[i - 1];
+    if ((n == null ? void 0 : n.role) === "user") {
+      const o = e.get(n.text) || [];
+      o.push(s), e.set(n.text, o);
+    }
+  }
+  return e.size ? a.map((i, s) => {
+    if (i.role !== "assistant")
+      return i;
+    const n = a[s - 1];
+    if ((n == null ? void 0 : n.role) !== "user")
+      return i;
+    const o = e.get(n.text);
+    if (!(o != null && o.length) || Ae(i) && i.text)
+      return i;
+    const r = o.shift();
+    return {
+      ...i,
+      text: r.text,
+      status: "cancelled",
+      thinking: void 0
+    };
+  }) : a;
+}
+function Ln(a, t, e) {
+  const { dropPersistLocal: i } = e;
+  if (!a.length)
+    return t.filter((r) => le(r, i));
+  if (!t.length)
+    return a;
+  const s = Dn(a, t);
+  if (s === -1) {
+    const r = new Set(t.map((l) => l.id));
+    return Si(
+      ki(
+        [
+          ...t.filter(
+            (l) => le(l, i) && !Ai(l)
+          ),
+          ...a.filter((l) => !r.has(l.id))
+        ],
+        t
+      ),
+      t,
+      i
+    );
+  }
+  const n = new Set(a.map((r) => r.id)), o = t.slice(0, s).filter(
+    (r) => le(r, i) && !n.has(r.id) && !Ai(r)
+  );
+  return Si(
+    ki([...o, ...a], t),
+    t,
+    i
+  );
+}
+function Rn(a) {
+  return a.map((t) => {
+    if (!Se(t))
+      return t.role === "assistant" && Ji(t) ? {
+        ...t,
+        status: "cancelled",
+        thinking: void 0
+      } : t;
+  }).filter((t) => !!t);
+}
+const ts = {
+  title: "Assist",
+  pipeline_id: "preferred",
+  run_count: Ve,
+  show_header: !0,
+  text_input: !0,
+  voice_input: !1,
+  continue_conversation: !1,
+  always_continue_conversation: !1,
+  session_conversation: !0,
+  disable_speech: !1,
+  enable_audio_playback: !1,
+  speech_rms_threshold: Dt,
+  show_process: !0,
+  show_thinking_until_response: !1,
+  show_message_time: !1,
+  suggested_prompts: "",
+  show_suggested_prompts: !0,
+  always_show_suggested_prompts: !1,
+  background_color: "var(--card-background-color)",
+  surface_color: "var(--secondary-background-color, #2b2b2b)",
+  user_chat_color: `var(--primary-color, ${Vt})`,
+  user_chat_text_color: "var(--text-primary-color, #ffffff)",
+  assistant_chat_color: "var(--secondary-background-color, #2b2b2b)",
+  assistant_chat_text_color: "var(--primary-text-color, #ffffff)"
+}, Mn = {
+  background_color: "#1d1d1d",
+  surface_color: "#2b2b2b",
+  user_chat_color: Vt,
+  user_chat_text_color: "#ffffff",
+  assistant_chat_color: "#2b2b2b",
+  assistant_chat_text_color: "#ffffff"
+};
+function ke(a) {
+  return Array.isArray(a) ? a.map((t) => String(t).trim()).filter(Boolean).join(`
+`) : typeof a == "string" ? a : "";
+}
+const tt = ts, Et = class Et extends x {
+  constructor() {
+    super(...arguments), this.config = {}, this.pipelines = [], this.pipelinesLoading = !1, this.pipelineError = "", this.haComponentsVersion = 0;
+  }
+  /**
+   * Keep the stored config as-is. Defaults are applied at read time via
+   * `getValue` so the editor only ever emits keys the user actually set —
+   * baking defaults in here is how card and editor previously diverged.
+   */
+  setConfig(t) {
+    this.config = t || {};
+  }
+  getValue(t) {
+    const e = this.config[t];
+    return e === void 0 ? tt[t] : e;
+  }
+  shouldUpdate(t) {
+    return t.size === 1 && t.has("hass") ? !t.get("hass") && !!this.hass : !0;
+  }
+  connectedCallback() {
+    super.connectedCallback(), this.loadHomeAssistantPickers();
+  }
+  updated(t) {
+    t.has("hass") && !t.get("hass") && this.loadPipelines();
+  }
+  render() {
+    return c`
+      <div class="editor">
+        ${this.renderNonAdminNotice()}
+        <div class="grid">
+          ${V({
+      label: "Title",
+      value: String(this.config.title || ""),
+      placeholder: tt.title,
+      onInput: (t) => this.updateConfigValue("title", t)
+    })}
+          ${this.renderCheckbox("Show header (title, pipeline, status)", "show_header")}
+          ${this.renderPipelineField()}
+          ${this.renderNumberInput("Recent runs", "run_count", tt.run_count, 0, 20)}
+        </div>
+
+        <fieldset>
+          <legend>Input</legend>
+          ${this.renderCheckbox("Enable text input", "text_input")}
+          ${this.renderCheckbox(
+      "Keep conversation in this card only (like built-in Assist)",
+      "session_conversation"
+    )}
+        </fieldset>
+
+        <fieldset>
+          <legend>Voice</legend>
+          ${this.renderCheckbox("Enable voice input", "voice_input")}
+          ${this.renderCheckbox("Enable audio playback", "enable_audio_playback")}
+          <p class="hint">
+            When enabled, runs the TTS pipeline stage and plays reply audio for text and voice input.
+          </p>
+          ${this.renderCheckbox(
+      "Continue listening for follow-up questions",
+      "continue_conversation",
+      !this.getValue("voice_input")
+    )}
+          ${this.renderCheckbox(
+      "Always continue listening after replies",
+      "always_continue_conversation",
+      !this.getValue("voice_input")
+    )}
+          ${this.renderCheckbox("Disable speech controls", "disable_speech", !this.getValue("voice_input"))}
+         
+          ${this.renderFloatInput(
+      "Speech RMS threshold",
+      "speech_rms_threshold",
+      Dt,
+      0,
+      0.5,
+      1e-3,
+      !this.getValue("voice_input")
+    )}
+          <p class="hint">
+            Minimum audio level (0–1) required before voice is sent for speech-to-text. Lower values
+            pick up quieter speech; higher values ignore more background noise.
+          </p>
+        </fieldset>
+
+        <fieldset>
+          <legend>Prompts</legend>
+          ${this.renderSuggestedPromptsField()}
+          ${this.renderCheckbox("Show suggested prompts when chat is empty", "show_suggested_prompts")}
+          ${this.renderCheckbox(
+      "Always show suggested prompts",
+      "always_show_suggested_prompts",
+      !this.getValue("show_suggested_prompts")
+    )}
+        </fieldset>
+
+        <fieldset>
+          <legend>Process</legend>
+          ${this.renderCheckbox("Show process and timings", "show_process")}
+          ${this.renderCheckbox("Show thinking until response", "show_thinking_until_response")}
+          ${this.renderCheckbox("Show message time", "show_message_time")}
+        </fieldset>
+
+        <fieldset>
+          <legend>Style</legend>
+          <div class="style-grid">
+            ${this.renderColorInput("Background", "background_color")}
+            ${this.renderColorInput("Surface", "surface_color")}
+            ${this.renderColorInput("User bubble", "user_chat_color")}
+            ${this.renderColorInput("User text", "user_chat_text_color")}
+            ${this.renderColorInput("Assistant bubble", "assistant_chat_color")}
+            ${this.renderColorInput("Assistant text", "assistant_chat_text_color")}
+          </div>
+          <p class="hint">
+            Colors follow the active theme by default; picking a color overrides the theme for that
+            element.
+          </p>
+        </fieldset>
+      </div>
+    `;
+  }
+  isNonAdminUser() {
+    var t;
+    return !!((t = this.hass) != null && t.user && !this.hass.user.is_admin);
+  }
+  renderNonAdminNotice() {
+    return this.isNonAdminUser() ? c`
+      <div class="notice" role="note">
+        <strong>Limited for non-admin users</strong>
+        <p>
+          You are signed in without administrator access. Home Assistant only allows admins to use the
+          Assist pipeline debug APIs (<code>assist_pipeline/pipeline_debug/*</code>).
+        </p>
+        <p>The following will not work on this card:</p>
+        <ul>
+          <li>Recent run history (<code>run_count</code>)</li>
+          <li>Live updates from external or wake-word conversations</li>
+          <li>Reloading past messages, thinking text, or process chips after a refresh</li>
+        </ul>
+        <p>The following still works:</p>
+        <ul>
+          <li>Live text chat in the current browser session</li>
+          <li>Voice input and playback while you are actively using the card</li>
+          <li>Thinking and process details for conversations you start yourself</li>
+        </ul>
+      </div>
+    ` : "";
+  }
+  renderPipelineField() {
+    const t = this.getValue("pipeline_id");
+    return c`
+      <label>
+        <span>Pipeline</span>
+        <select
+          .value=${t}
+          ?disabled=${this.pipelinesLoading}
+          @change=${(e) => this.updateConfigValue("pipeline_id", e.target.value)}
+        >
+          <option value=${tt.pipeline_id} ?selected=${t === tt.pipeline_id}>
+            Preferred pipeline
+          </option>
+          <option value="last_used" ?selected=${t === "last_used"}>Last used pipeline</option>
+          ${this.pipelines.map(
+      (e) => c`
+              <option value=${e.id} ?selected=${t === e.id}>
+                ${e.name || e.id}
+              </option>
+            `
+    )}
+        </select>
+        ${this.pipelineError ? c`<small class="error">${this.pipelineError}</small> ` : ""}
+      </label>
+    `;
+  }
+  renderSuggestedPromptsField() {
+    return c`
+      ${pe({
+      hass: this.hass,
+      label: "Suggested prompts (one per line)",
+      fieldName: "suggested_prompts",
+      value: ke(this.config.suggested_prompts),
+      onValueChanged: (t) => this.updateConfigValue("suggested_prompts", t)
+    })}
+      <p class="hint">
+        Supports Home Assistant templating (<a href="https://www.home-assistant.io/docs/templating/" target="_blank" rel="noopener noreferrer">docs</a>).
+        Each rendered line becomes a prompt chip.
+      </p>
+    `;
+  }
+  async loadHomeAssistantPickers() {
+    try {
+      await Fi() && (this.haComponentsVersion += 1);
+    } catch (t) {
+      console.warn("assist-chat-card: Failed to load Home Assistant editor components", t);
+    }
+  }
+  renderCheckbox(t, e, i = !1) {
+    return c`
+      <label class="checkbox">
+        <input
+          type="checkbox"
+          .checked=${!!this.getValue(e)}
+          ?disabled=${i}
+          @change=${(s) => this.updateConfigValue(e, s.target.checked)}
+        />
+        <span>${t}</span>
+      </label>
+    `;
+  }
+  renderColorInput(t, e) {
+    const i = Mn[e] || "#000000";
+    return c`
+      <label>
+        <span>${t}</span>
+        <input
+          type="color"
+          .value=${this.toColorInputValue(String(this.config[e] || ""), i)}
+          @change=${(s) => this.updateConfigValue(e, s.target.value)}
+        />
+      </label>
+    `;
+  }
+  renderNumberInput(t, e, i, s, n) {
+    const o = Number(this.getValue(e));
+    return c`
+      <label>
+        <span>${t}</span>
+        <input
+          type="number"
+          min=${String(s)}
+          max=${String(n)}
+          .value=${String(Number.isFinite(o) ? o : i)}
+          @change=${(r) => this.updateNumberValue(e, r.target.value, i, s, n)}
+        />
+      </label>
+    `;
+  }
+  renderFloatInput(t, e, i, s, n, o, r = !1) {
+    const l = Number(this.getValue(e));
+    return c`
+      <label>
+        <span>${t}</span>
+        <input
+          type="number"
+          min=${String(s)}
+          max=${String(n)}
+          step=${String(o)}
+          ?disabled=${r}
+          .value=${String(Number.isFinite(l) ? l : i)}
+          @change=${(h) => this.updateFloatValue(e, h.target.value, i, s, n)}
+        />
+      </label>
+    `;
+  }
+  async loadPipelines() {
+    if (!(!this.hass || this.pipelinesLoading)) {
+      this.pipelinesLoading = !0, this.pipelineError = "";
+      try {
+        const t = await De(this.hass);
+        this.pipelines = t.pipelines || [];
+      } catch (t) {
+        this.pipelineError = this.formatError(t);
+      } finally {
+        this.pipelinesLoading = !1;
+      }
+    }
+  }
+  updateConfigValue(t, e) {
+    this.updateConfig({
+      ...this.config,
+      [t]: e
+    });
+  }
+  updateNumberValue(t, e, i, s, n) {
+    const o = Number(e), r = Number.isFinite(o) ? Math.min(Math.max(Math.round(o), s), n) : i;
+    this.updateConfigValue(t, r);
+  }
+  updateFloatValue(t, e, i, s, n) {
+    const o = Number(e), r = Number.isFinite(o) ? Math.min(Math.max(o, s), n) : i;
+    this.updateConfigValue(t, r);
+  }
+  updateConfig(t) {
+    this.config = t, A(this, "config-changed", { config: t });
+  }
+  toColorInputValue(t, e) {
+    return /^#[0-9a-f]{6}$/i.test(t) ? t : e;
+  }
+  formatError(t) {
+    if (t && typeof t == "object") {
+      const e = t;
+      return e.message || e.code || "Unable to load pipelines.";
+    }
+    return "Unable to load pipelines.";
+  }
+};
+Et.properties = {
+  hass: { attribute: !1 },
+  config: { attribute: !1 },
+  pipelines: { state: !0 },
+  pipelinesLoading: { state: !0 },
+  pipelineError: { state: !0 },
+  haComponentsVersion: { state: !0 }
+}, Et.styles = w`
+    .editor {
+      display: grid;
+      gap: 16px;
+    }
+
+    .grid,
+    fieldset {
+      display: grid;
+      gap: 12px;
+    }
+
+    .style-grid {
+      display: grid;
+      gap: 12px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    fieldset {
+      border: 1px solid var(--divider-color, #ddd);
+      border-radius: 12px;
+      margin: 0;
+      padding: 12px;
+    }
+
+    legend {
+      color: var(--secondary-text-color);
+      font-size: 12px;
+      font-weight: 700;
+      padding: 0 6px;
+    }
+
+    label {
+      color: var(--primary-text-color);
+      display: grid;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    input,
+    select,
+    textarea {
+      background: var(--card-background-color, #fff);
+      border: 1px solid var(--divider-color, #ddd);
+      border-radius: 10px;
+      box-sizing: border-box;
+      color: var(--primary-text-color);
+      font: inherit;
+      min-height: 40px;
+      padding: 8px 10px;
+    }
+
+    textarea {
+      min-height: 96px;
+      resize: vertical;
+    }
+
+    input[type="color"] {
+      padding: 4px;
+    }
+
+    .checkbox {
+      align-items: center;
+      display: flex;
+      flex-direction: row;
+      gap: 10px;
+    }
+
+    .checkbox input {
+      min-height: auto;
+      width: auto;
+    }
+
+    input:disabled,
+    select:disabled {
+      cursor: default;
+      opacity: 0.55;
+    }
+
+    small,
+    .error {
+      color: var(--error-color, #db4437);
+      font-size: 11px;
+      font-weight: 500;
+    }
+
+    .notice {
+      background: rgba(var(--rgb-warning-color, 255, 166, 0), 0.12);
+      border: 1px solid var(--warning-color, #ffa600);
+      border-radius: 12px;
+      color: var(--primary-text-color);
+      display: grid;
+      font-size: 12px;
+      font-weight: 400;
+      gap: 8px;
+      line-height: 1.45;
+      padding: 12px;
+    }
+
+    .notice strong {
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .notice p {
+      margin: 0;
+    }
+
+    .notice ul {
+      margin: 0;
+      padding-left: 18px;
+    }
+
+    .notice li + li {
+      margin-top: 4px;
+    }
+
+    .notice code {
+      font-size: 11px;
+    }
+
+    .hint {
+      color: var(--secondary-text-color);
+      font-size: 11px;
+      font-weight: 400;
+      line-height: 1.45;
+      margin: 0;
+    }
+
+    .hint a {
+      color: var(--primary-color);
+    }
+  `;
+let Ce = Et;
+customElements.define("assist-chat-card-editor", Ce);
+const _ = ts, ce = 2e3, Un = 6e4, Nn = 48, Pn = {
+  listening: { fallback: "Listening..." },
+  thinking: { fallback: "Thinking..." },
+  preparing_reply: { fallback: "Preparing reply..." },
+  waiting_reply: { fallback: "Waiting for reply..." },
+  cancelled: { fallback: "Cancelled" },
+  start_listening: { fallback: "Start listening" },
+  stop_listening: { fallback: "Stop listening" },
+  cancel: { fallback: "Cancel" },
+  clear_conversation: { fallback: "Clear conversation" },
+  dismiss: { fallback: "Dismiss" },
+  conversation: { fallback: "Conversation" },
+  status_idle: { fallback: "Idle" },
+  status_listening: { fallback: "Listening" },
+  status_thinking: { fallback: "Thinking" },
+  listening_for_speech: { fallback: "Listening for speech" },
+  preferred_pipeline: { fallback: "Preferred pipeline" },
+  thinking_summary: { fallback: "Thinking" },
+  thought: { fallback: "Thought" },
+  thought_for: { fallback: "Thought for {duration}" },
+  thought_for_cancelled: { fallback: "Thought for {duration} (cancelled)" },
+  tool_arguments: { fallback: "Arguments" },
+  tool_result: { fallback: "Result" },
+  follow_up_hint: {
+    fallback: "Follow-up questions after voice replies require an LLM conversation agent (OpenAI, Ollama, etc.). The built-in Home Assistant agent supports single-turn commands only."
+  },
+  no_pipeline: { fallback: "No Assist pipeline is available." },
+  voice_requires_stt: {
+    fallback: "Voice input requires an Assist pipeline with speech-to-text configured."
+  },
+  voice_not_supported: { fallback: "Voice input is not supported in this browser." },
+  run_failed: { fallback: "Assist run failed." },
+  request_rejected: { fallback: "Home Assistant rejected the Assist request." },
+  mic_denied: {
+    fallback: "Microphone access was denied. Allow microphone permission for Home Assistant in your device settings."
+  },
+  mic_not_found: { fallback: "No microphone was found on this device." },
+  mic_https: {
+    haKey: "ui.dialogs.voice_command.not_supported_microphone_browser",
+    fallback: "Your connection to Home Assistant is not secured using HTTPS. This causes browsers to block Home Assistant from accessing the microphone."
+  },
+  mic_docs_link: {
+    haKey: "ui.dialogs.voice_command.not_supported_microphone_documentation_link",
+    fallback: "the documentation"
+  },
+  mic_docs: {
+    haKey: "ui.dialogs.voice_command.not_supported_microphone_documentation",
+    fallback: "Use the Home Assistant app or visit {documentation_link} to learn how to use a secure URL"
+  },
+  how_can_i_help: {
+    haKey: "ui.dialogs.voice_command.how_can_i_help",
+    fallback: "How can I help?"
+  },
+  input_placeholder: {
+    haKey: "ui.dialogs.voice_command.input_text",
+    fallback: "Ask Nabu"
+  }
+}, It = class It extends z {
+  constructor() {
+    super(...arguments), this.pipelines = [], this.resolvedPipelineId = "", this.messages = [], this.inputValue = "", this.processing = !1, this.listening = !1, this.loadingPipelines = !1, this.loadingHistory = !1, this.error = "", this.conversationId = null, this.currentDeltaRole = "", this.continueConversationAfterRun = !1, this.stickToBottom = !0, this.stickThinkingToBottom = !0, this.loadToken = 0, this.lastHistoryKey = "", this.lastRunsSnapshot = "", this.conversationClearedAt = null, this.lastSeenRunTimestamp = 0, this.historyPollActive = !1, this.historyPollDelay = ce, this.historyDisabled = !1, this.historyErrorLogged = !1, this.runCache = /* @__PURE__ */ new Map(), this.followUpHintDismissed = Gs(), this.httpsWarningDismissed = !1, this.suggestedPrompts = [], this.suggestedPromptsTemplateKey = "", this.suggestedPromptsToken = 0, this.voiceInputHasSpeech = !1, this.userStartedRecordingOnce = !1, this.cardStyles = {}, this.handleMessagesScroll = (t) => {
+      const e = t.currentTarget;
+      this.stickToBottom = this.isNearBottom(e);
+    }, this.handleThinkingScroll = (t) => {
+      const e = t.currentTarget, i = this.renderRoot.querySelectorAll(".thinking-content"), s = i[i.length - 1];
+      e === s && (this.stickThinkingToBottom = this.isNearBottom(e));
+    }, this.handleVisibilityChange = () => {
+      document.hidden ? this.clearConversationRefreshTimer() : this.syncConversationRefreshTimer();
+    }, this.handleAudioEnded = () => {
+      this.unloadAudio(), this.maybeContinueConversationAfterRun();
+    }, this.unloadAudio = () => {
+      this.audio && (this.audio.removeEventListener("ended", this.handleAudioEnded), this.audio.removeEventListener("pause", this.unloadAudio), this.audio.pause(), this.audio.removeAttribute("src"), this.audio = void 0);
+    }, this.handleDismissFollowUpHint = () => {
+      Ys(), this.followUpHintDismissed = !0;
+    };
+  }
+  static getConfigElement() {
+    return document.createElement("assist-chat-card-editor");
+  }
+  static getStubConfig() {
+    return {
+      title: _.title,
+      pipeline_id: _.pipeline_id,
+      text_input: _.text_input,
+      voice_input: _.voice_input,
+      show_process: _.show_process
+    };
+  }
+  setConfig(t) {
+    this.config = {
+      ..._,
+      ...t,
+      suggested_prompts: ke(t.suggested_prompts)
+    }, this.cardStyles = {
+      "--assist-chat-background": this.config.background_color || _.background_color,
+      "--assist-chat-surface": this.config.surface_color || _.surface_color,
+      "--assist-chat-user-bubble": this.config.user_chat_color || _.user_chat_color,
+      "--assist-chat-user-text": this.config.user_chat_text_color || _.user_chat_text_color,
+      "--assist-chat-assistant-bubble": this.config.assistant_chat_color || _.assistant_chat_color,
+      "--assist-chat-assistant-text": this.config.assistant_chat_text_color || _.assistant_chat_text_color
+    };
+  }
+  connectedCallback() {
+    super.connectedCallback(), document.addEventListener("visibilitychange", this.handleVisibilityChange), this.scheduleScrollToEnd(3, !0), this.syncConversationRefreshTimer(), this.syncSuggestedPromptsTemplate();
+  }
+  disconnectedCallback() {
+    var t;
+    super.disconnectedCallback(), document.removeEventListener("visibilitychange", this.handleVisibilityChange), this.scrollFrame !== void 0 && (window.cancelAnimationFrame(this.scrollFrame), this.scrollFrame = void 0), this.stopMicVisualizer(), this.clearConversationRefreshTimer(), this.stopActiveRun(), (t = this.audioRecorder) == null || t.close(), this.unloadAudio(), this.unsubscribeSuggestedPromptsTemplate();
+  }
+  shouldUpdate(t) {
+    return t.size === 1 && t.has("hass") ? !t.get("hass") && !!this.hass : !0;
+  }
+  updated(t) {
+    if (t.has("messages") && this.scheduleScrollToEnd(), !this.hass || !this.config)
+      return;
+    const e = t.has("hass") && !t.get("hass");
+    (e || t.has("config") || t.has("resolvedPipelineId") || t.has("processing") || t.has("listening")) && this.syncConversationRefreshTimer(), (e || t.has("config")) && (this.loadPipelines(), this.syncSuggestedPromptsTemplate()), t.has("listening") && (this.listening ? this.updateComplete.then(() => this.startMicVisualizer()) : this.stopMicVisualizer());
+  }
+  render() {
+    const t = this.isVoicePipelineConfigured(), e = this.needsHttpsForVoice();
+    return c`
+      <ha-card style=${K(this.cardStyles)}>
+        <div class="card">
+          ${this.renderHeader()}
+          ${this.renderCapabilityHint()}
+          ${this.renderMessages()}
+          ${this.renderSuggestedPrompts()}
+          ${this.error ? c`<div class="error" role="alert">${this.error}</div>` : ""}
+          <form class="input-row" @submit=${this.handleSubmit}>
+            ${this.config.voice_input ? c`
+                  <button
+                    class=${this.listening ? "icon-button listening" : "icon-button"}
+                    type="button"
+                    title=${e ? this.getMicrophoneNotSupportedText().split(`
+
+`)[0] : this.listening ? this.text("stop_listening") : this.text("start_listening")}
+                    aria-label=${this.listening ? this.text("stop_listening") : this.text("start_listening")}
+                    ?disabled=${!this.listening && this.processing || !t}
+                    @click=${this.handleListeningClick}
+                  >
+                    <ha-icon icon=${this.listening ? "mdi:microphone" : "mdi:microphone-outline"}></ha-icon>
+                  </button>
+                ` : ""}
+            ${this.listening ? this.renderListeningVisualizer() : this.config.text_input ? c`
+                    <input
+                      .value=${this.inputValue}
+                      placeholder=${this.getInputPlaceholder()}
+                      aria-label=${this.getInputPlaceholder()}
+                      @input=${this.handleInput}
+                    />
+                    <button
+                      class="send-button"
+                      type="submit"
+                      ?disabled=${this.processing || !this.inputValue.trim()}
+                    >
+                      <ha-icon icon="mdi:send"></ha-icon>
+                    </button>
+                  ` : ""}
+            ${this.processing ? c`
+                  <button
+                    class="icon-button cancel-button"
+                    type="button"
+                    title=${this.text("cancel")}
+                    aria-label=${this.text("cancel")}
+                    @click=${this.cancelActiveRun}
+                  >
+                    <ha-icon icon="mdi:stop"></ha-icon>
+                  </button>
+                ` : ""}
+            ${this.messages.length && !this.processing ? c`
+                  <button
+                    class="icon-button"
+                    type="button"
+                    title=${this.text("clear_conversation")}
+                    aria-label=${this.text("clear_conversation")}
+                    @click=${this.clearConversation}
+                  >
+                    <ha-icon icon="mdi:close-circle-outline"></ha-icon>
+                  </button>
+                ` : ""}
+          </form>
+        </div>
+      </ha-card>
+    `;
+  }
+  renderHeader() {
+    if (this.config.show_header === !1)
+      return "";
+    const t = this.config.title || _.title, e = this.getPipelineName(this.resolvedPipelineId), i = this.getCardStatus();
+    return c`
+      <header class="header">
+        <div class="header-text">
+          <h2 class="header-title">${t}</h2>
+          <p class="header-pipeline">
+            ${e || this.resolvedPipelineId || this.text("preferred_pipeline")}
+          </p>
+        </div>
+        <span class=${`status-pill ${i}`} role="status">${this.getCardStatusLabel(i)}</span>
+      </header>
+    `;
+  }
+  renderCapabilityHint() {
+    return this.followUpHintDismissed || !this.shouldOfferFollowUpConversation() || !this.config.voice_input || !Js(this.getActivePipeline()) ? "" : c`
+      <div class="info-banner" role="note">
+        <span>${this.text("follow_up_hint")}</span>
+        <button
+          class="icon-button dismiss-button"
+          type="button"
+          title=${this.text("dismiss")}
+          aria-label=${this.text("dismiss")}
+          @click=${this.handleDismissFollowUpHint}
+        >
+          <ha-icon icon="mdi:close"></ha-icon>
+        </button>
+      </div>
+    `;
+  }
+  renderSuggestedPrompts() {
+    const t = this.suggestedPrompts;
+    return this.config.show_suggested_prompts === !1 || !t.length || this.messages.length && !this.config.always_show_suggested_prompts ? "" : c`
+      <div class="suggested-prompts">
+        ${t.map(
+      (e, i) => c`
+            <button
+              class="prompt-chip"
+              type="button"
+              data-index=${i}
+              ?disabled=${this.processing || this.listening}
+              @click=${this.handleSuggestedPromptClick}
+            >
+              ${e}
+            </button>
+          `
+    )}
+      </div>
+    `;
+  }
+  renderMessages() {
+    return this.messages.length ? c`
+      <div
+        class="messages"
+        role="log"
+        aria-live="polite"
+        aria-busy=${this.processing ? "true" : "false"}
+        aria-label=${this.text("conversation")}
+        @scroll=${this.handleMessagesScroll}
+      >
+        ${fn(
+      this.messages,
+      (t) => t.id,
+      (t) => this.renderMessage(t)
+    )}
+      </div>
+    ` : c`
+        <div class="messages" role="log" aria-live="polite" aria-label=${this.text("conversation")}>
+          <div class="empty-state">
+            <ha-icon icon="mdi:message-processing-outline"></ha-icon>
+            <span>${this.text("how_can_i_help")}</span>
+          </div>
+        </div>
+      `;
+  }
+  renderMessage(t) {
+    const e = Ji(t), i = t.status === "error" ? "bubble error-bubble" : t.status === "cancelled" ? "bubble cancelled-bubble" : e ? "bubble loading" : "bubble";
+    return c`
+      <div class=${t.role === "user" ? "message user" : "message assistant"}>
+        <div class=${i}>
+          ${this.renderThinkingSection(t)}
+          ${e ? this.renderLoadingStatus(t) : t.text ? t.status !== "error" && t.status !== "cancelled" ? c`<ha-markdown .content=${t.text}></ha-markdown>` : c`<span>${t.text}</span>` : t.status === "cancelled" ? c`<span>${this.text("cancelled")}</span>` : c`<div class="loading-status">${this.renderTypingDots()}</div>`}
+          ${t.process ? this.renderProcess(t) : ""}
+          ${this.config.show_message_time && t.timestamp && !e ? c`<span class="message-time">${this.formatMessageTime(t.timestamp)}</span>` : ""}
+        </div>
+      </div>
+    `;
+  }
+  renderLoadingStatus(t) {
+    const e = this.getLoadingLabel(t.status), i = t.status === "listening";
+    return c`
+      <div class="loading-status">
+        ${i ? this.renderTypingDots() : ""}
+        ${e ? c`<span>${e}</span>` : ""}
+        ${i ? "" : this.renderTypingDots()}
+      </div>
+    `;
+  }
+  getLoadingLabel(t) {
+    switch (t) {
+      case "listening":
+        return this.text("listening");
+      case "thinking":
+        return this.text("thinking");
+      case "preparing":
+        return this.text("preparing_reply");
+      case "waiting":
+        return this.text("waiting_reply");
+      default:
+        return "";
+    }
+  }
+  renderThinkingSection(t) {
+    var i, s;
+    if (t.role !== "assistant" || !t.thinking || t.status === "cancelled")
+      return "";
+    const e = this.formatDuration(
+      (i = t.process) == null ? void 0 : i.stages.intent.started,
+      (s = t.process) == null ? void 0 : s.stages.intent.ended
+    );
+    return c`
+      <details class="thinking" ?open=${this.shouldOpenThinking(t)}>
+        <summary>${this.getThinkingSummary(t, e)}</summary>
+        <pre class="thinking-content" @scroll=${this.handleThinkingScroll}>${t.thinking}</pre>
+      </details>
+    `;
+  }
+  getThinkingSummary(t, e) {
+    return t.status === "cancelled" ? e ? this.text("thought_for_cancelled", { duration: e }) : this.text("cancelled") : Ae(t) ? e ? this.text("thought_for", { duration: e }) : this.text("thought") : this.text("thinking_summary");
+  }
+  shouldOpenThinking(t) {
+    return !!(this.config.show_thinking_until_response && !Ae(t) && t.status !== "cancelled");
+  }
+  isNearBottom(t, e = Nn) {
+    return t.scrollHeight - t.scrollTop - t.clientHeight <= e;
+  }
+  scheduleScrollToEnd(t = 3, e = !1) {
+    if (!e && !this.stickToBottom && !this.stickThinkingToBottom)
+      return;
+    this.scrollFrame !== void 0 && (window.cancelAnimationFrame(this.scrollFrame), this.scrollFrame = void 0);
+    const i = (s) => {
+      this.scrollFrame = window.requestAnimationFrame(() => {
+        this.scrollFrame = void 0, (e || this.stickToBottom) && this.scrollMessagesToEnd(), (e || this.stickThinkingToBottom) && this.scrollThinkingToEnd(), s > 0 && i(s - 1);
+      });
+    };
+    i(t);
+  }
+  scrollMessagesToEnd() {
+    const t = this.renderRoot.querySelector(".messages");
+    t && (t.scrollTop = t.scrollHeight);
+  }
+  scrollThinkingToEnd() {
+    const t = this.renderRoot.querySelectorAll(".thinking-content"), e = t[t.length - 1];
+    e && (e.scrollTop = e.scrollHeight);
+  }
+  renderProcess(t) {
+    if (!this.config.show_process || !t.process)
+      return "";
+    const e = t.status === "cancelled", i = Object.values(t.process.stages).filter((n) => n.status !== "idle"), s = t.process.toolCalls.filter((n) => n.tool_name);
+    return !i.length && !s.length ? "" : c`
+      <div class="process">
+        ${i.map((n) => {
+      var h;
+      const o = this.getProcessStageDisplayStatus(n.status, e), r = n.ended || (o === "cancelled" ? (h = t.process) == null ? void 0 : h.finished : void 0), l = this.formatDuration(n.started, r);
+      return c`
+            <span class=${`process-chip ${o}`}>
+              <ha-icon icon=${this.getStageIcon(o)}></ha-icon>
+              ${n.label}${l ? c` · ${l}` : ""}
+            </span>
+          `;
+    })}
+        ${s.map((n) => this.renderToolCall(n))}
+      </div>
+    `;
+  }
+  renderToolCall(t) {
+    const e = this.formatToolCallJson(t.tool_args), i = this.formatToolCallJson(t.tool_result);
+    return !(e || i) ? c`
+        <span class="process-chip tool">
+          <ha-icon icon="mdi:tools"></ha-icon>
+          ${t.tool_name}
+        </span>
+      ` : c`
+      <details class="tool-call-chip">
+        <summary class="process-chip tool">
+          <ha-icon icon="mdi:tools"></ha-icon>
+          ${t.tool_name}
+        </summary>
+        <div class="tool-call-panel">
+          ${e ? c`
+                <div class="tool-call-section">
+                  <span class="tool-call-label">${this.text("tool_arguments")}</span>
+                  <pre>${e}</pre>
+                </div>
+              ` : ""}
+          ${i ? c`
+                <div class="tool-call-section">
+                  <span class="tool-call-label">${this.text("tool_result")}</span>
+                  <pre>${i}</pre>
+                </div>
+              ` : ""}
+        </div>
+      </details>
+    `;
+  }
+  renderTypingDots() {
+    return c`
+      <span class="typing-dots" aria-hidden="true">
+        <span></span>
+        <span></span>
+        <span></span>
+      </span>
+    `;
+  }
+  handleInput(t) {
+    this.inputValue = t.target.value;
+  }
+  handleSubmit(t) {
+    t.preventDefault();
+    const e = this.inputValue.trim();
+    !e || this.processing || this.listening || (this.inputValue = "", this.processText(e), this.updateComplete.then(() => this.focusTextInput()));
+  }
+  focusTextInput() {
+    var t;
+    !this.config.text_input || this.listening || (t = this.renderRoot.querySelector(".input-row input")) == null || t.focus();
+  }
+  async processText(t) {
+    const e = await this.ensurePipeline();
+    if (!e || !this.hass)
+      return;
+    this.stopActiveRun(), this.error = "", this.processing = !0, this.currentDeltaRole = "", this.continueConversationAfterRun = !1, this.stickToBottom = !0, this.stickThinkingToBottom = !0, this.addMessage({ role: "user", text: t, status: "done" });
+    const i = this.addMessage({
+      role: "assistant",
+      text: "",
+      status: "pending",
+      process: gt()
+    });
+    li(e.id);
+    try {
+      const s = await ci(
+        this.hass,
+        (n) => this.handleRunEvent(n, i),
+        {
+          start_stage: "intent",
+          end_stage: this.getPipelineEndStage(),
+          input: { text: t },
+          pipeline: e.id,
+          conversation_id: this.conversationId
+        }
+      );
+      this.activeUnsubscribe = s;
+    } catch (s) {
+      this.setAssistantError(i, this.formatError(s)), this.processing = !1;
+    }
+  }
+  handleListeningClick(t) {
+    t.preventDefault(), t.stopPropagation(), this.toggleListening();
+  }
+  async toggleListening() {
+    if (this.listening) {
+      this.stopListening();
+      return;
+    }
+    if (!this.isVoicePipelineConfigured()) {
+      this.error = this.text("voice_requires_stt");
+      return;
+    }
+    if (M.isInsecureConnection()) {
+      this.httpsWarningDismissed = !1, this.showMicrophoneNotSupportedMessage();
+      return;
+    }
+    if (!M.isSupported()) {
+      this.error = this.text("voice_not_supported");
+      return;
+    }
+    await this.startListening(!0);
+  }
+  async startListening(t = !1) {
+    var n;
+    if (this.processing || !this.supportsVoiceInput())
+      return;
+    t && (this.userStartedRecordingOnce = !0);
+    const e = await this.ensurePipeline();
+    if (!e || !this.hass)
+      return;
+    this.stopActiveRun(), this.unloadAudio(), this.error = "", this.processing = !0, this.listening = !0, this.currentDeltaRole = "", this.continueConversationAfterRun = !1, this.audioBuffer = [], this.voiceInputHasSpeech = !1, this.sttBinaryHandlerId = void 0, this.stickToBottom = !0, this.stickThinkingToBottom = !0;
+    let i, s = gt();
+    li(e.id);
+    try {
+      (n = this.audioRecorder) == null || n.close(), this.audioRecorder = new M((r) => this.sendAudioChunk(r)), await this.audioRecorder.start();
+      const o = await ci(
+        this.hass,
+        (r) => {
+          var l, h, p, u, d, g, m;
+          if (s = this.applyProcessEvent(s, r), r.type === "stt-end") {
+            const f = String(((h = (l = r.data) == null ? void 0 : l.stt_output) == null ? void 0 : h.text) || "").trim();
+            f && (this.addMessage({ role: "user", text: f, status: "done" }), i = this.addMessage({
+              role: "assistant",
+              text: "",
+              status: "pending",
+              process: s
+            }));
+          }
+          i ? this.handleRunEvent(r, i) : r.type === "run-end" ? (this.removeUnprocessedSttMessages(), this.finishRun()) : r.type === "error" && (this.removeUnprocessedSttMessages(), this.error = String(((p = r.data) == null ? void 0 : p.message) || this.text("run_failed")), this.finishRun()), r.type === "run-start" ? (this.sttBinaryHandlerId = (d = (u = r.data) == null ? void 0 : u.runner_data) == null ? void 0 : d.stt_binary_handler_id, this.playTtsAudio((m = (g = r.data) == null ? void 0 : g.tts_output) == null ? void 0 : m.url)) : r.type === "stt-start" ? this.flushAudioBuffer() : r.type === "stt-vad-end" ? this.sendSpeechEndChunk() : r.type === "stt-end" && (this.sttBinaryHandlerId = void 0, this.stopListening(!1));
+        },
+        {
+          start_stage: "stt",
+          end_stage: this.getPipelineEndStage(),
+          input: { sample_rate: this.audioRecorder.sampleRate || 16e3 },
+          pipeline: e.id,
+          conversation_id: this.conversationId
+        }
+      );
+      this.activeUnsubscribe = o;
+    } catch (o) {
+      this.error = this.formatError(o), this.stopListening(!1), this.processing = !1;
+    }
+  }
+  handleRunEvent(t, e) {
+    var i, s, n, o, r, l, h, p;
+    e.process = this.applyProcessEvent(e.process, t), t.type === "intent-progress" && ((i = t.data) != null && i.chat_log_delta) ? this.applyIntentDelta(e, t.data.chat_log_delta) : t.type === "intent-end" ? (this.conversationId = ((n = (s = t.data) == null ? void 0 : s.intent_output) == null ? void 0 : n.conversation_id) || this.conversationId, this.continueConversationAfterRun = !!((r = (o = t.data) == null ? void 0 : o.intent_output) != null && r.continue_conversation), this.applyIntentEnd(e, t), this.getPipelineEndStage() === "intent" && this.finishRun()) : t.type === "tts-end" ? this.playTtsAudio((h = (l = t.data) == null ? void 0 : l.tts_output) == null ? void 0 : h.url) : t.type === "run-end" ? this.finishRun() : t.type === "error" && (this.setAssistantError(e, String(((p = t.data) == null ? void 0 : p.message) || this.text("run_failed"))), this.finishRun()), this.messages = [...this.messages];
+  }
+  applyIntentDelta(t, e) {
+    e.role && (this.currentDeltaRole = e.role), this.currentDeltaRole === "assistant" ? ("content" in e && e.content && (t.text = `${t.text || ""}${e.content}`, t.status = "streaming"), "thinking_content" in e && e.thinking_content && (t.thinking = `${t.thinking || ""}${e.thinking_content}`), "tool_calls" in e && Array.isArray(e.tool_calls) && t.process && (t.process.toolCalls = ft(t.process.toolCalls, e.tool_calls))) : this.currentDeltaRole === "tool_result" && t.process && "tool_call_id" in e && e.tool_call_id && (t.process.toolCalls = ft(t.process.toolCalls, [
+      {
+        id: e.tool_call_id,
+        tool_name: e.tool_name || "tool",
+        tool_result: "tool_result" in e ? e.tool_result : void 0
+      }
+    ]));
+  }
+  applyIntentEnd(t, e) {
+    var n, o;
+    const i = (n = e.data) == null ? void 0 : n.intent_output, s = Re(i);
+    s && (t.text = s, t.status = ((o = i == null ? void 0 : i.response) == null ? void 0 : o.response_type) === "error" ? "error" : "done");
+  }
+  applyProcessEvent(t, e) {
+    const i = Yi(t || gt());
+    return Gi(i, e), i;
+  }
+  async ensurePipeline() {
+    if (!this.hass)
+      return;
+    (!this.pipelines.length || !this.resolvedPipelineId) && await this.loadPipelines();
+    const t = this.getActivePipeline();
+    if (!t) {
+      this.error = this.text("no_pipeline");
+      return;
+    }
+    return t;
+  }
+  async loadPipelines(t = !1) {
+    if (!this.hass || this.loadingPipelines)
+      return;
+    const e = ++this.loadToken;
+    this.loadingPipelines = !0;
+    try {
+      const i = await De(this.hass);
+      if (e !== this.loadToken)
+        return;
+      this.pipelines = i.pipelines || [];
+      const s = qi(this.config.pipeline_id, i);
+      this.resolvedPipelineId = s, this.error = "", s ? await this.loadRecentHistory(s, e, t) : !this.processing && !this.listening && (this.messages = [], this.conversationId = null);
+    } catch (i) {
+      e === this.loadToken && (this.error = this.formatError(i));
+    } finally {
+      e === this.loadToken && (this.loadingPipelines = !1);
+    }
+  }
+  /**
+   * Best-effort history refresh. Returns false when the fetch failed in a
+   * retryable way (drives poll backoff). History errors never surface in the
+   * user-facing error slot — that is reserved for the user's own actions.
+   */
+  async loadRecentHistory(t, e = this.loadToken, i = !1, s = this.messages, n = !1) {
+    if (!this.hass || this.processing || this.listening || this.historyDisabled)
+      return !0;
+    const o = `${t}:${this.getHistoryRunCount()}`;
+    if (!i && o === this.lastHistoryKey)
+      return !0;
+    this.loadingHistory = !0;
+    try {
+      const r = await this.fetchRunsWithCache(t, this.getHistoryRunCount());
+      if (e !== this.loadToken)
+        return !0;
+      this.historyErrorLogged = !1;
+      for (const g of r) {
+        const m = new Date(g.timestamp).getTime();
+        Number.isFinite(m) && m > this.lastSeenRunTimestamp && (this.lastSeenRunTimestamp = m);
+      }
+      const l = Vn(r);
+      if (!(l !== this.lastRunsSnapshot) && !n)
+        return this.lastHistoryKey = o, !0;
+      const { messages: p, conversationId: u } = zn(r, {
+        active: this.processing || this.listening,
+        clearedAt: this.conversationClearedAt
+      }), d = n ? Ln(p, s, {
+        dropPersistLocal: this.httpsWarningDismissed
+      }) : p;
+      return this.messages = d.filter((g) => !Se(g)), this.conversationId = this.resolveConversationId(u, n), this.lastRunsSnapshot = l, this.lastHistoryKey = o, !0;
+    } catch (r) {
+      return e !== this.loadToken ? !0 : (this.lastHistoryKey = "", Zs(r) ? (this.historyDisabled = !0, this.clearConversationRefreshTimer(), !0) : (this.historyErrorLogged || (console.warn("assist-chat-card: failed to load Assist history", r), this.historyErrorLogged = !0), !1));
+    } finally {
+      e === this.loadToken && (this.loadingHistory = !1);
+    }
+  }
+  /**
+   * Fetch recent debug runs, re-downloading details only for runs that are
+   * new or still in progress. Finished runs are immutable and served from
+   * cache, so a steady-state poll costs one `list` call.
+   */
+  async fetchRunsWithCache(t, e) {
+    if (!this.hass || e === 0)
+      return [];
+    const i = this.hass, s = await Wi(i, t), n = Ki(s.pipeline_runs || [], e), o = await Promise.all(
+      n.map(async (l) => {
+        const h = this.runCache.get(l.pipeline_run_id);
+        if (h != null && h.finished)
+          return { ...l, events: h.events, conversation: h.conversation };
+        const u = (await ji(i, t, l.pipeline_run_id)).events || [], d = Xs(u);
+        return this.runCache.set(l.pipeline_run_id, {
+          events: u,
+          conversation: d,
+          finished: G(u)
+        }), { ...l, events: u, conversation: d };
+      })
+    ), r = new Set(n.map((l) => l.pipeline_run_id));
+    for (const l of this.runCache.keys())
+      r.has(l) || this.runCache.delete(l);
+    return o;
+  }
+  removeUnprocessedSttMessages() {
+    const t = this.messages.filter((e) => !Se(e));
+    t.length !== this.messages.length && (this.messages = t);
+  }
+  syncConversationRefreshTimer() {
+    if (!this.shouldLiveRefresh()) {
+      this.clearConversationRefreshTimer();
+      return;
+    }
+    this.historyPollTimer !== void 0 || this.historyPollActive || (this.historyPollDelay = ce, this.scheduleHistoryPoll(0));
+  }
+  scheduleHistoryPoll(t) {
+    this.historyPollTimer = window.setTimeout(() => {
+      this.runHistoryPoll();
+    }, t);
+  }
+  async runHistoryPoll() {
+    if (this.historyPollTimer = void 0, !this.shouldLiveRefresh())
+      return;
+    this.historyPollActive = !0;
+    let t = !0;
+    try {
+      this.resolvedPipelineId && (t = await this.loadRecentHistory(
+        this.resolvedPipelineId,
+        this.loadToken,
+        !0,
+        this.messages,
+        !0
+      ));
+    } finally {
+      this.historyPollActive = !1;
+    }
+    !this.shouldLiveRefresh() || this.historyPollTimer !== void 0 || (this.historyPollDelay = t ? ce : Math.min(this.historyPollDelay * 2, Un), this.scheduleHistoryPoll(this.historyPollDelay));
+  }
+  shouldLiveRefresh() {
+    return !!(this.hass && this.resolvedPipelineId && !this.processing && !this.listening && !this.historyDisabled && this.isConnected && !document.hidden);
+  }
+  clearConversationRefreshTimer() {
+    this.historyPollTimer !== void 0 && (window.clearTimeout(this.historyPollTimer), this.historyPollTimer = void 0);
+  }
+  getActivePipeline() {
+    return this.pipelines.find((t) => t.id === this.resolvedPipelineId);
+  }
+  getPipelineEndStage() {
+    const t = this.getActivePipeline();
+    return !this.config.enable_audio_playback || !(t != null && t.tts_engine) ? "intent" : "tts";
+  }
+  renderListeningVisualizer() {
+    return c`
+      <div
+        class="listening-visualizer"
+        aria-live="polite"
+        aria-label=${this.text("listening_for_speech")}
+      >
+        <span class="listening-dot" aria-hidden="true"></span>
+        <span class="listening-label">${this.text("status_listening")}</span>
+        <canvas class="listening-visualizer-canvas"></canvas>
+      </div>
+    `;
+  }
+  startMicVisualizer() {
+    if (!this.listening)
+      return;
+    const t = this.renderRoot.querySelector(
+      ".listening-visualizer-canvas"
+    );
+    t && (this.micVisualizer || (this.micVisualizer = new $n()), this.micVisualizer.start(t, () => {
+      var e;
+      return (e = this.audioRecorder) == null ? void 0 : e.getAnalyser();
+    }));
+  }
+  stopMicVisualizer() {
+    var t;
+    (t = this.micVisualizer) == null || t.stop();
+  }
+  isVoicePipelineConfigured() {
+    const t = this.getActivePipeline();
+    return !!(this.config.voice_input && !this.config.disable_speech && (t != null && t.stt_engine));
+  }
+  needsHttpsForVoice() {
+    return this.isVoicePipelineConfigured() && M.isInsecureConnection();
+  }
+  supportsVoiceInput() {
+    return this.isVoicePipelineConfigured() && M.isSupported();
+  }
+  showMicrophoneNotSupportedMessage() {
+    const t = this.getMicrophoneNotSupportedText();
+    if (this.messages.some((e) => e.persistLocal && e.text === t)) {
+      this.messages = [...this.messages], this.scheduleScrollToEnd();
+      return;
+    }
+    this.addMessage({
+      role: "assistant",
+      text: t,
+      status: "done",
+      persistLocal: !0
+    }), this.scheduleScrollToEnd();
+  }
+  getMicrophoneNotSupportedText() {
+    const t = this.text("mic_https"), s = `[${this.text("mic_docs_link")}](https://www.home-assistant.io/docs/configuration/securing/#remote-access)`, n = this.text("mic_docs", { documentation_link: s });
+    return `${t}
+
+${n}`;
+  }
+  getSpeechRmsThreshold() {
+    const t = Number(this.config.speech_rms_threshold);
+    return Number.isFinite(t) && t >= 0 ? t : Dt;
+  }
+  sendSpeechEndChunk() {
+    !this.voiceInputHasSpeech || this.sttBinaryHandlerId === void 0 || this.sttBinaryHandlerId === null || this.sendAudioChunk(new Int16Array());
+  }
+  sendAudioChunk(t) {
+    var n, o, r;
+    if (t.length === 0) {
+      if (!this.voiceInputHasSpeech)
+        return;
+    } else {
+      const l = yn(t, this.getSpeechRmsThreshold());
+      if (!this.voiceInputHasSpeech && !l)
+        return;
+      l && (this.voiceInputHasSpeech = !0);
+    }
+    if (this.sttBinaryHandlerId === void 0 || this.sttBinaryHandlerId === null) {
+      (n = this.audioBuffer) == null || n.push(t);
+      return;
+    }
+    const i = (r = (o = this.hass) == null ? void 0 : o.connection) == null ? void 0 : r.socket;
+    if (!i)
+      return;
+    i.binaryType = "arraybuffer";
+    const s = new Uint8Array(1 + t.length * 2);
+    s[0] = this.sttBinaryHandlerId, s.set(new Uint8Array(t.buffer), 1), i.send(s);
+  }
+  flushAudioBuffer() {
+    if (this.audioBuffer) {
+      for (const t of this.audioBuffer)
+        this.sendAudioChunk(t);
+      this.audioBuffer = void 0;
+    }
+  }
+  stopListening(t = !0) {
+    var i, s;
+    const e = this.voiceInputHasSpeech;
+    t && (e ? (this.flushAudioBuffer(), this.sendSpeechEndChunk()) : ((i = this.activeUnsubscribe) == null || i.call(this), this.activeUnsubscribe = void 0, this.processing = !1, this.removeUnprocessedSttMessages(), this.refreshHistoryAfterRun())), this.stopMicVisualizer(), (s = this.audioRecorder) == null || s.stop(), this.audioBuffer = void 0, this.sttBinaryHandlerId = void 0, this.listening = !1, this.voiceInputHasSpeech = !1;
+  }
+  cancelActiveRun() {
+    this.processing && (this.messages = Rn(this.messages), this.unloadAudio(), this.continueConversationAfterRun = !1, this.stopActiveRun(), this.refreshHistoryAfterRun());
+  }
+  stopActiveRun() {
+    var t;
+    (t = this.activeUnsubscribe) == null || t.call(this), this.activeUnsubscribe = void 0, this.stopListening(!1), this.processing = !1;
+  }
+  finishRun() {
+    var t;
+    (t = this.activeUnsubscribe) == null || t.call(this), this.activeUnsubscribe = void 0, this.processing = !1, this.stopListening(!1), this.removeUnprocessedSttMessages(), this.refreshHistoryAfterRun(), this.maybeContinueConversationAfterRun(!this.audio);
+  }
+  refreshHistoryAfterRun() {
+    if (!this.resolvedPipelineId || this.historyDisabled)
+      return;
+    const t = ++this.loadToken;
+    this.loadRecentHistory(this.resolvedPipelineId, t, !0, this.messages, !0);
+  }
+  playTtsAudio(t) {
+    !t || !this.config.enable_audio_playback || (this.unloadAudio(), this.audio = new Audio(new URL(t, window.location.origin).toString()), this.audio.addEventListener("ended", this.handleAudioEnded), this.audio.addEventListener("pause", this.unloadAudio), this.audio.play().catch(() => {
+      this.unloadAudio();
+    }));
+  }
+  shouldOfferFollowUpConversation() {
+    return !!(this.config.continue_conversation || this.config.always_continue_conversation);
+  }
+  shouldContinueConversationAfterRun() {
+    return !this.supportsVoiceInput() || !this.shouldOfferFollowUpConversation() || !this.userStartedRecordingOnce ? !1 : !!(this.config.always_continue_conversation || this.continueConversationAfterRun);
+  }
+  maybeContinueConversationAfterRun(t = !1) {
+    t && this.audio || this.shouldContinueConversationAfterRun() && this.startListening();
+  }
+  addMessage(t) {
+    const e = {
+      id: `${Date.now()}-${Math.random().toString(36).slice(2)}`,
+      ...t,
+      timestamp: t.timestamp || (/* @__PURE__ */ new Date()).toISOString()
+    };
+    return this.messages = [...this.messages, e], e;
+  }
+  setAssistantError(t, e) {
+    t.text = e, t.status = "error", this.messages = [...this.messages];
+  }
+  clearConversation() {
+    this.stopActiveRun(), this.loadToken++, this.conversationClearedAt = this.lastSeenRunTimestamp || Date.now(), this.conversationId = null, this.userStartedRecordingOnce = !1, this.stickToBottom = !0, this.stickThinkingToBottom = !0, this.httpsWarningDismissed = !0, this.messages = [], this.error = "";
+  }
+  formatToolCallJson(t) {
+    if (t == null)
+      return "";
+    if (typeof t == "string")
+      return t;
+    try {
+      return JSON.stringify(t, null, 2);
+    } catch {
+      return String(t);
+    }
+  }
+  getPipelineName(t) {
+    var e;
+    return (e = this.pipelines.find((i) => i.id === t)) == null ? void 0 : e.name;
+  }
+  getCardStatus() {
+    return this.listening ? "listening" : this.processing ? "thinking" : "idle";
+  }
+  getCardStatusLabel(t) {
+    return t === "listening" ? this.text("status_listening") : t === "thinking" ? this.text("status_thinking") : this.text("status_idle");
+  }
+  syncSuggestedPromptsTemplate() {
+    var e, i;
+    const t = ke((e = this.config) == null ? void 0 : e.suggested_prompts).trim();
+    if (!t) {
+      this.suggestedPromptsTemplateKey = "", this.suggestedPromptsToken++, this.unsubscribeSuggestedPromptsTemplate(), this.suggestedPrompts = [];
+      return;
+    }
+    if (!((i = this.hass) != null && i.connection)) {
+      this.suggestedPrompts = this.parseSuggestedPromptLines(t);
+      return;
+    }
+    t !== this.suggestedPromptsTemplateKey && (this.suggestedPromptsTemplateKey = t, this.subscribeSuggestedPromptsTemplate(t));
+  }
+  async subscribeSuggestedPromptsTemplate(t) {
+    var i;
+    const e = ++this.suggestedPromptsToken;
+    if (await this.unsubscribeSuggestedPromptsTemplate(), e === this.suggestedPromptsToken) {
+      if (!((i = this.hass) != null && i.connection)) {
+        this.suggestedPrompts = this.parseSuggestedPromptLines(t);
+        return;
+      }
+      try {
+        const s = this.hass.connection.subscribeMessage(
+          (o) => {
+            e === this.suggestedPromptsToken && ("error" in o ? this.suggestedPrompts = this.parseSuggestedPromptLines(t) : this.suggestedPrompts = this.parseSuggestedPromptLines(
+              this.formatTemplateResult(o.result)
+            ));
+          },
+          {
+            type: "render_template",
+            template: t,
+            report_errors: !0
+          }
+        );
+        this.suggestedPromptsUnsubPromise = s;
+        const n = await s;
+        e !== this.suggestedPromptsToken && (n == null || n(), this.suggestedPromptsUnsubPromise === s && (this.suggestedPromptsUnsubPromise = void 0));
+      } catch {
+        e === this.suggestedPromptsToken && (this.suggestedPrompts = this.parseSuggestedPromptLines(t), this.suggestedPromptsUnsubPromise = void 0);
+      }
+    }
+  }
+  async unsubscribeSuggestedPromptsTemplate() {
+    const t = this.suggestedPromptsUnsubPromise;
+    if (t) {
+      this.suggestedPromptsUnsubPromise = void 0;
+      try {
+        const e = await t;
+        e == null || e();
+      } catch (e) {
+        (e == null ? void 0 : e.code) !== "not_found" && console.warn("assist-chat-card: failed to unsubscribe template listener", e);
+      }
+    }
+  }
+  formatTemplateResult(t) {
+    if (typeof t == "string")
+      return t;
+    if (t == null)
+      return "";
+    try {
+      return JSON.stringify(t);
+    } catch {
+      return String(t);
+    }
+  }
+  parseSuggestedPromptLines(t) {
+    return t.split(`
+`).map((e) => e.trim()).filter(Boolean);
+  }
+  handleSuggestedPromptClick(t) {
+    const e = Number(t.currentTarget.dataset.index), i = this.suggestedPrompts[e];
+    !i || this.processing || this.listening || this.processText(i);
+  }
+  formatDuration(t, e) {
+    if (!t || !e)
+      return "";
+    const i = Math.max(0, (new Date(e).getTime() - new Date(t).getTime()) / 1e3);
+    return Number.isFinite(i) ? `${i.toFixed(i < 10 ? 2 : 1)}s` : "";
+  }
+  formatMessageTime(t) {
+    var e;
+    try {
+      const i = new Date(t);
+      return (e = this.hass) != null && e.locale ? $s(i, this.hass.locale) : new Intl.DateTimeFormat(navigator.language, {
+        hour: "2-digit",
+        minute: "2-digit"
+      }).format(i);
+    } catch {
+      return t;
+    }
+  }
+  getProcessStageDisplayStatus(t, e) {
+    return e && t === "running" ? "cancelled" : t;
+  }
+  getStageIcon(t) {
+    return t === "done" ? "mdi:check-circle" : t === "error" ? "mdi:alert-circle" : t === "cancelled" ? "mdi:stop-circle-outline" : "mdi:progress-clock";
+  }
+  getInputPlaceholder() {
+    return this.text("input_placeholder");
+  }
+  text(t, e) {
+    const i = Pn[t];
+    let s = i.haKey && this.localize(i.haKey, e) || i.fallback;
+    if (e)
+      for (const [n, o] of Object.entries(e))
+        s = s.replace(`{${n}}`, o);
+    return s;
+  }
+  localize(t, e) {
+    var i, s;
+    try {
+      return ((s = (i = this.hass) == null ? void 0 : i.localize) == null ? void 0 : s.call(i, t, e)) || "";
+    } catch {
+      return "";
+    }
+  }
+  formatError(t) {
+    if (t instanceof DOMException)
+      return t.name === "NotAllowedError" ? this.text("mic_denied") : t.name === "NotFoundError" ? this.text("mic_not_found") : t.name === "NotSupportedError" || t.name === "SecurityError" ? this.text("mic_https") : t.message || t.name;
+    if (t && typeof t == "object") {
+      const e = t;
+      return e.message || e.code || this.text("request_rejected");
+    }
+    return this.text("request_rejected");
+  }
+  getRunCount() {
+    return Le(this.config.run_count, _.run_count);
+  }
+  getHistoryRunCount() {
+    return Math.max(this.getRunCount(), 1);
+  }
+  usesSessionConversation() {
+    return this.config.session_conversation !== !1;
+  }
+  resolveConversationId(t, e) {
+    return this.usesSessionConversation() ? e ? this.conversationId : null : t || (e ? this.conversationId : null);
+  }
+};
+It.properties = {
+  hass: { attribute: !1 },
+  config: { attribute: !1 },
+  pipelines: { state: !0 },
+  resolvedPipelineId: { state: !0 },
+  messages: { state: !0 },
+  inputValue: { state: !0 },
+  processing: { state: !0 },
+  listening: { state: !0 },
+  loadingPipelines: { state: !0 },
+  loadingHistory: { state: !0 },
+  error: { state: !0 },
+  followUpHintDismissed: { state: !0 },
+  httpsWarningDismissed: { state: !0 },
+  suggestedPrompts: { state: !0 }
+}, It.styles = w`
+    :host {
+      height: 100%;
+    }
+
+    ha-card {
+      background: var(--assist-chat-background);
+      border: 0;
+      border-radius: 20px;
+      box-sizing: border-box;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    .card {
+      background: var(--assist-chat-background);
+      box-sizing: border-box;
+      color: var(--primary-text-color);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      height: 100%;
+      min-width: 0;
+      padding: 12px;
+    }
+
+    .header {
+      align-items: flex-start;
+      display: flex;
+      gap: 10px;
+      justify-content: space-between;
+      min-width: 0;
+    }
+
+    .header-text {
+      display: grid;
+      gap: 2px;
+      min-width: 0;
+    }
+
+    .header-title {
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 1.3;
+      margin: 0;
+    }
+
+    .header-pipeline {
+      color: var(--secondary-text-color);
+      font-size: 12px;
+      line-height: 1.35;
+      margin: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .status-pill {
+      background: color-mix(in srgb, var(--primary-text-color) 8%, transparent);
+      border-radius: 999px;
+      color: var(--secondary-text-color);
+      flex: 0 0 auto;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 4px 8px;
+      white-space: nowrap;
+    }
+
+    .status-pill.listening,
+    .status-pill.thinking {
+      background: rgba(var(--rgb-primary-color, 3, 169, 244), 0.16);
+      color: var(--primary-color);
+    }
+
+    .info-banner {
+      align-items: flex-start;
+      background: rgba(var(--rgb-primary-color, 3, 169, 244), 0.12);
+      border-radius: 12px;
+      color: var(--primary-text-color);
+      display: flex;
+      font-size: 12px;
+      gap: 8px;
+      line-height: 1.45;
+      padding: 10px 12px;
+    }
+
+    .info-banner .dismiss-button {
+      flex: 0 0 auto;
+      height: 28px;
+      width: 28px;
+    }
+
+    .info-banner .dismiss-button ha-icon {
+      --mdc-icon-size: 16px;
+    }
+
+    .suggested-prompts {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      min-width: 0;
+    }
+
+    .prompt-chip {
+      background: color-mix(in srgb, var(--primary-text-color) 8%, transparent);
+      border: 0;
+      border-radius: 999px;
+      color: var(--primary-text-color);
+      cursor: pointer;
+      font: inherit;
+      font-size: 12px;
+      line-height: 1.35;
+      max-width: 100%;
+      padding: 7px 11px;
+      text-align: left;
+    }
+
+    .prompt-chip:disabled {
+      cursor: default;
+      opacity: 0.55;
+    }
+
+    .messages {
+      align-content: start;
+      box-sizing: border-box;
+      display: grid;
+      flex: 1 1 auto;
+      gap: 8px;
+      grid-auto-rows: max-content;
+      grid-template-columns: minmax(0, 1fr);
+      min-height: 0;
+      min-width: 0;
+      overflow-y: auto;
+      padding-right: 2px;
+      scrollbar-width: thin;
+      width: 100%;
+    }
+
+    .message {
+      align-items: flex-start;
+      display: flex;
+      min-width: 0;
+      width: 100%;
+    }
+
+    .message.user {
+      justify-content: flex-end;
+    }
+
+    .message.assistant {
+      justify-content: flex-start;
+    }
+
+    .bubble {
+      align-items: flex-start;
+      border-radius: 16px;
+      box-sizing: border-box;
+      display: flex;
+      flex: 0 1 auto;
+      flex-direction: column;
+      font-size: 14px;
+      gap: 8px;
+      line-height: 1.45;
+      max-width: 88%;
+      min-width: 0;
+      overflow: hidden;
+      overflow-wrap: anywhere;
+      padding: 10px 12px;
+    }
+
+    .user .bubble {
+      display: inline-flex;
+      flex-direction: column;
+      gap: 6px;
+      max-width: 100%;
+      min-width: 0;
+    }
+
+    .tool-call-chip {
+      display: inline-flex;
+      flex-direction: column;
+      gap: 6px;
+      max-width: 100%;
+      min-width: 0;
+    }
+
+    .tool-call-chip[open] {
+      flex: 1 1 100%;
+      width: 100%;
+    }
+
+    .tool-call-chip summary.process-chip {
+      cursor: pointer;
+      list-style: none;
+    }
+
+    .tool-call-chip summary.process-chip::-webkit-details-marker {
+      display: none;
+    }
+
+    .tool-call-panel {
+      background: rgba(0, 0, 0, 0.18);
+      border-radius: 12px;
+      box-sizing: border-box;
+      display: grid;
+      gap: 8px;
+      max-width: 100%;
+      min-width: 0;
+      overflow: hidden;
+      padding: 8px;
+      width: 100%;
+    }
+
+    .tool-call-section {
+      display: grid;
+      gap: 4px;
+      min-width: 0;
+    }
+
+    .tool-call-label {
+      color: var(--secondary-text-color);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+    }
+
+    .tool-call-panel pre {
+      background: rgba(0, 0, 0, 0.18);
+      border-radius: 8px;
+      box-sizing: border-box;
+      font-size: 11px;
+      line-height: 1.4;
+      margin: 0;
+      max-height: 180px;
+      max-width: 100%;
+      min-width: 0;
+      overflow: auto;
+      overflow-wrap: anywhere;
+      padding: 8px;
+      white-space: pre-wrap;
+      width: 100%;
+      word-break: break-word;
+    }
+
+    .user .bubble {
+      background: var(--assist-chat-user-bubble);
+      color: var(--assist-chat-user-text);
+    }
+
+    .assistant .bubble {
+      background: var(--assist-chat-assistant-bubble);
+      color: var(--assist-chat-assistant-text);
+    }
+
+    .assistant .bubble.loading,
+    .assistant .bubble.cancelled-bubble {
+      color: var(--secondary-text-color);
+    }
+
+    .message-time {
+      align-self: flex-end;
+      font-size: 12px;
+      line-height: 1;
+    }
+
+    .user .bubble .message-time {
+      color: color-mix(in srgb, var(--assist-chat-user-text) 80%, transparent);
+    }
+
+    .assistant .bubble .message-time {
+      color: var(--secondary-text-color);
+    }
+
+    .loading-status {
+      align-items: center;
+      display: inline-flex;
+      gap: 8px;
+    }
+
+    .error-bubble,
+    .error {
+      color: var(--error-color, #db4437);
+    }
+
+    ha-markdown {
+      --mdc-typography-body1-font-size: 14px;
+      color: inherit;
+      display: block;
+      max-width: 100%;
+      min-width: 0;
+      overflow-wrap: anywhere;
+      width: 100%;
+    }
+
+    ha-markdown::part(content) {
+      color: inherit;
+      max-width: 100%;
+      min-width: 0;
+      overflow-wrap: anywhere;
+      word-break: break-word;
+    }
+
+    .empty-state {
+      align-items: center;
+      align-self: start;
+      background: var(--assist-chat-surface);
+      border-radius: 16px;
+      color: var(--secondary-text-color);
+      display: flex;
+      font-size: 14px;
+      gap: 10px;
+      justify-self: start;
+      max-width: 100%;
+      min-height: 0;
+      padding: 10px 12px;
+      width: fit-content;
+    }
+
+    .error {
+      align-items: center;
+      background: var(--assist-chat-surface);
+      border-radius: 16px;
+      color: var(--error-color, #db4437);
+      display: flex;
+      font-size: 14px;
+      gap: 10px;
+      min-height: 0;
+      padding: 14px;
+    }
+
+    .empty-state ha-icon {
+      --mdc-icon-size: 20px;
+      color: var(--primary-color);
+    }
+
+    .process {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      min-width: 0;
+      width: 100%;
+    }
+
+    .process-chip {
+      align-items: center;
+      background: color-mix(in srgb, var(--primary-text-color) 8%, transparent);
+      border-radius: 999px;
+      color: var(--secondary-text-color);
+      display: inline-flex;
+      font-size: 12px;
+      gap: 4px;
+      max-width: 100%;
+      min-width: 0;
+      overflow-wrap: anywhere;
+      padding: 4px 7px;
+    }
+
+    .process-chip ha-icon {
+      --mdc-icon-size: 12px;
+    }
+
+    .process-chip.running {
+      color: var(--primary-color);
+    }
+
+    .process-chip.cancelled {
+      color: var(--secondary-text-color);
+    }
+
+    .user .process-chip.running {
+      color: var(--assist-chat-user-text);
+    }
+
+    .process-chip.done {
+      color: var(--success-color, #43a047);
+    }
+
+    .process-chip.error {
+      color: var(--error-color, #db4437);
+    }
+
+    .thinking {
+      max-width: 100%;
+      min-width: 0;
+      width: 100%;
+    }
+
+    .thinking summary {
+      color: var(--secondary-text-color);
+      cursor: pointer;
+      font-size: 13px;
+    }
+
+    .thinking pre {
+      background: rgba(0, 0, 0, 0.18);
+      border-radius: 12px;
+      box-sizing: border-box;
+      font-size: 12px;
+      line-height: 1.45;
+      margin: 8px 0 0;
+      max-height: 220px;
+      overflow: auto;
+      padding: 10px;
+      white-space: pre-wrap;
+      width: 100%;
+      word-break: break-word;
+    }
+
+    .input-row {
+      align-items: center;
+      display: flex;
+      flex: 0 0 auto;
+      gap: 8px;
+    }
+
+    input {
+      background: var(--assist-chat-surface);
+      border: 0;
+      border-radius: 999px;
+      box-sizing: border-box;
+      color: var(--primary-text-color);
+      flex: 1 1 auto;
+      font: inherit;
+      font-size: 14px;
+      min-width: 0;
+      outline: none;
+      padding: 11px 13px;
+    }
+
+    input::placeholder {
+      color: var(--secondary-text-color);
+    }
+
+    .listening-visualizer {
+      align-items: center;
+      background: var(--assist-chat-surface);
+      border-radius: 999px;
+      box-sizing: border-box;
+      color: var(--primary-text-color);
+      display: flex;
+      flex: 1 1 auto;
+      font-size: 14px;
+      gap: 8px;
+      min-width: 0;
+      padding: 8px 13px;
+    }
+
+    .listening-dot {
+      animation: listening-pulse 1.4s ease-in-out infinite;
+      background: var(--assist-chat-user-bubble);
+      border-radius: 50%;
+      flex: 0 0 auto;
+      height: 8px;
+      width: 8px;
+    }
+
+    .listening-label {
+      flex: 0 0 auto;
+      font-size: 14px;
+    }
+
+    .listening-visualizer-canvas {
+      display: block;
+      flex: 1 1 auto;
+      height: 32px;
+      min-width: 0;
+      width: 100%;
+    }
+
+    @keyframes listening-pulse {
+      0%,
+      100% {
+        opacity: 1;
+        transform: scale(1);
+      }
+
+      50% {
+        opacity: 0.55;
+        transform: scale(0.85);
+      }
+    }
+
+    button {
+      -webkit-tap-highlight-color: transparent;
+      cursor: pointer;
+      font: inherit;
+    }
+
+    button:disabled {
+      cursor: default;
+      opacity: 0.55;
+    }
+
+    .icon-button,
+    .send-button {
+      align-items: center;
+      background: var(--assist-chat-surface);
+      border: 0;
+      border-radius: 50%;
+      color: var(--primary-text-color);
+      display: inline-flex;
+      flex: 0 0 auto;
+      height: 42px;
+      justify-content: center;
+      padding: 0;
+      width: 42px;
+    }
+
+    .send-button,
+    .icon-button.listening {
+      background: var(--assist-chat-user-bubble);
+      color: var(--assist-chat-user-text);
+    }
+
+    .icon-button.cancel-button {
+      color: var(--error-color, #db4437);
+    }
+
+    .icon-button ha-icon,
+    .send-button ha-icon {
+      --mdc-icon-size: 20px;
+    }
+
+    .typing-dots {
+      align-items: center;
+      display: inline-flex;
+      gap: 3px;
+    }
+
+    .typing-dots span {
+      animation: typing-dot 1.2s infinite ease-in-out;
+      background: currentColor;
+      border-radius: 50%;
+      display: block;
+      height: 5px;
+      opacity: 0.45;
+      width: 5px;
+    }
+
+    .typing-dots span:nth-child(2) {
+      animation-delay: 0.15s;
+    }
+
+    .typing-dots span:nth-child(3) {
+      animation-delay: 0.3s;
+    }
+
+    @keyframes typing-dot {
+      0%,
+      80%,
+      100% {
+        transform: translateY(0);
+      }
+      40% {
+        opacity: 1;
+        transform: translateY(-3px);
+      }
+    }
+  `;
+let Te = It;
+customElements.define("assist-chat-card", Te);
+window.customCards = window.customCards || [];
+window.customCards.push({
+  type: "assist-chat-card",
+  name: "Assist Chat Card",
+  description: "Dashboard chat card for Home Assistant Assist"
 });

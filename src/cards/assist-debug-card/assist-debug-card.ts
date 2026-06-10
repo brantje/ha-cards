@@ -2,6 +2,18 @@ import { css, html, PropertyValues } from "lit";
 import { styleMap } from "lit/directives/style-map.js";
 import { handleActionConfig, HomeAssistant } from "custom-card-helpers";
 import { BaseCard } from "../../shared/base-card";
+import {
+  AssistPipeline,
+  AssistPipelineDebugRun,
+  PipelineRunEvent,
+  extractSpeechFromIntentOutput,
+  getAssistRunCount,
+  getAssistPipelineDebugRun,
+  getRecentAssistPipelineDebugRuns,
+  listAssistPipelineDebugRuns,
+  listAssistPipelines,
+  resolvePipelineId as resolveAssistPipelineId,
+} from "../../shared/assist-pipeline";
 import "./assist-debug-card-editor";
 
 type MetadataMode = "hidden" | "compact" | "full";
@@ -45,22 +57,7 @@ type AssistDebugCardConfig = {
   audio_visualization_start_delay?: number;
 };
 
-type AssistPipeline = {
-  id: string;
-  name: string;
-  language?: string;
-};
-
-type AssistRunListing = {
-  pipeline_run_id: string;
-  timestamp: string;
-};
-
-type PipelineRunEvent = {
-  type: string;
-  timestamp: string;
-  data?: Record<string, any>;
-};
+type AssistRunListing = AssistPipelineDebugRun;
 
 type TtsAudio = {
   url: string;
@@ -851,16 +848,14 @@ class AssistDebugCard extends BaseCard {
     this.error = "";
 
     try {
-      const pipelineResponse = (await (this.hass as any).callWS({
-        type: "assist_pipeline/pipeline/list",
-      })) as { pipelines: AssistPipeline[]; preferred_pipeline: string | null };
+      const pipelineResponse = await listAssistPipelines(this.hass);
 
       if (token !== this.loadToken) {
         return;
       }
 
       this.pipelines = pipelineResponse.pipelines || [];
-      const pipelineId = this.resolvePipelineId(pipelineResponse);
+      const pipelineId = resolveAssistPipelineId(this.config.pipeline_id, pipelineResponse);
       this.resolvedPipelineId = pipelineId;
 
       if (!pipelineId) {
@@ -870,19 +865,14 @@ class AssistDebugCard extends BaseCard {
         return;
       }
 
-      const runsResponse = (await (this.hass as any).callWS({
-        type: "assist_pipeline/pipeline_debug/list",
-        pipeline_id: pipelineId,
-      })) as { pipeline_runs: AssistRunListing[] };
+      const runsResponse = await listAssistPipelineDebugRuns(this.hass, pipelineId);
 
       if (token !== this.loadToken) {
         return;
       }
 
       const previousLatestRunId = this.runs[0]?.pipeline_run_id || "";
-      const recentRuns = [...(runsResponse.pipeline_runs || [])]
-        .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
-        .slice(0, this.getRunCount());
+      const recentRuns = getRecentAssistPipelineDebugRuns(runsResponse.pipeline_runs || [], this.getRunCount());
 
       this.runs = recentRuns;
       const latestRunId = recentRuns[0]?.pipeline_run_id || "";
@@ -915,11 +905,7 @@ class AssistDebugCard extends BaseCard {
   }
 
   private async loadRun(pipelineId: string, runId: string, token = this.loadToken) {
-    const runResponse = (await (this.hass as any).callWS({
-      type: "assist_pipeline/pipeline_debug/get",
-      pipeline_id: pipelineId,
-      pipeline_run_id: runId,
-    })) as { events: PipelineRunEvent[] };
+    const runResponse = await getAssistPipelineDebugRun(this.hass, pipelineId, runId);
 
     if (token !== this.loadToken) {
       return;
@@ -980,7 +966,7 @@ class AssistDebugCard extends BaseCard {
       } else if (event.type === "intent-end") {
         model.intent = {
           ...(model.intent || { done: false }),
-          output: this.extractSpeechFromIntentOutput(data.intent_output),
+          output: extractSpeechFromIntentOutput(data.intent_output),
           processedLocally: data.processed_locally,
           done: true,
           raw: { ...(model.intent?.raw || {}), ...data },
@@ -2133,19 +2119,8 @@ class AssistDebugCard extends BaseCard {
     } as any);
   }
 
-  private resolvePipelineId(response: { pipelines: AssistPipeline[]; preferred_pipeline: string | null }) {
-    const configured = this.config.pipeline_id || DEFAULT_PIPELINE_ID;
-
-    if (configured && configured !== DEFAULT_PIPELINE_ID) {
-      return configured;
-    }
-
-    return response.preferred_pipeline || response.pipelines?.[0]?.id || "";
-  }
-
   private getRunCount() {
-    const count = Number(this.config.run_count || DEFAULT_RUN_COUNT);
-    return Number.isFinite(count) ? Math.min(Math.max(Math.round(count), 1), 20) : DEFAULT_RUN_COUNT;
+    return getAssistRunCount(this.config.run_count, DEFAULT_RUN_COUNT, 1);
   }
 
   private getPipelineName(pipelineId: string) {
@@ -2293,16 +2268,6 @@ class AssistDebugCard extends BaseCard {
 
   private extractAssistantSpeech(run: RunModel) {
     return run.intent?.output || "";
-  }
-
-  private extractSpeechFromIntentOutput(output: any) {
-    const speech =
-      output?.response?.speech?.plain?.speech ||
-      output?.response?.speech?.plain?.extra_data?.speech ||
-      output?.response?.speech ||
-      "";
-
-    return typeof speech === "string" ? speech : "";
   }
 
   private formatError(error: unknown) {

@@ -2,6 +2,7 @@ import { css, html, LitElement, PropertyValues } from "lit";
 import { fireEvent, HomeAssistant } from "custom-card-helpers";
 import { renderEntityPicker, renderJinjaCodeEditor, renderTextField } from "../../shared/base-card";
 import { loadHaEditorComponents } from "../../shared/ha-component-loader";
+import { DEFAULT_ACCENT_BLUE } from "../../shared/card-colors";
 
 type RowDetailMode = "none" | "count" | "entities";
 type ValueCheckOperator = "equals" | "not_equals" | "gt" | "lt" | "lte" | "gte" | "contains" | "not_contains";
@@ -43,7 +44,7 @@ type EntityRegistryEntry = {
 };
 
 const DEFAULT_TITLE = "Possible Issues";
-const DEFAULT_BACKGROUND_COLOR = "#44739e";
+const DEFAULT_BACKGROUND_COLOR = DEFAULT_ACCENT_BLUE;
 const DEFAULT_DOMAINS = ["sensor", "light", "switch"];
 const DEFAULT_ISSUE_STATES = ["unavailable"];
 const COMMON_ISSUE_STATES = ["unavailable", "unknown", "none"];
