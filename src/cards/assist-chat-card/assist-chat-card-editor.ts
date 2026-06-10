@@ -90,7 +90,7 @@ class AssistChatCardEditor extends LitElement {
   render() {
     return html`
       <div class="editor">
-        ${this.renderNonAdminNotice()}
+        ${this.renderAdminNotice()}
         <div class="grid">
           ${renderTextField({
             label: "Title",
@@ -211,23 +211,18 @@ class AssistChatCardEditor extends LitElement {
     return Boolean(this.hass?.user && !this.hass.user.is_admin);
   }
 
-  private renderNonAdminNotice() {
-    if (!this.isNonAdminUser()) {
-      return "";
-    }
-
+  private renderAdminNotice() {
     return html`
       <div class="notice" role="note">
-        <strong>Limited for non-admin users</strong>
+        <strong>Note for admin users</strong>
         <p>
-          You are signed in without administrator access. Home Assistant only allows admins to use the
+          Home Assistant only allows admins to use the
           Assist pipeline debug APIs (<code>assist_pipeline/pipeline_debug/*</code>).
         </p>
-        <p>The following will not work on this card:</p>
+        <p>The following will not work on this card if you are not an admin:</p>
         <ul>
           <li>Recent run history (<code>run_count</code>)</li>
           <li>Live updates from external or wake-word conversations</li>
-          <li>Reloading past messages, thinking text, or process chips after a refresh</li>
         </ul>
         <p>The following still works:</p>
         <ul>

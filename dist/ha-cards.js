@@ -8036,7 +8036,7 @@ const it = rs, Pt = class Pt extends x {
   render() {
     return d`
       <div class="editor">
-        ${this.renderNonAdminNotice()}
+        ${this.renderAdminNotice()}
         <div class="grid">
           ${F({
       label: "Title",
@@ -8156,19 +8156,18 @@ const it = rs, Pt = class Pt extends x {
     var t;
     return !!((t = this.hass) != null && t.user && !this.hass.user.is_admin);
   }
-  renderNonAdminNotice() {
-    return this.isNonAdminUser() ? d`
+  renderAdminNotice() {
+    return d`
       <div class="notice" role="note">
-        <strong>Limited for non-admin users</strong>
+        <strong>Note for admin users</strong>
         <p>
-          You are signed in without administrator access. Home Assistant only allows admins to use the
+          Home Assistant only allows admins to use the
           Assist pipeline debug APIs (<code>assist_pipeline/pipeline_debug/*</code>).
         </p>
-        <p>The following will not work on this card:</p>
+        <p>The following will not work on this card if you are not an admin:</p>
         <ul>
           <li>Recent run history (<code>run_count</code>)</li>
           <li>Live updates from external or wake-word conversations</li>
-          <li>Reloading past messages, thinking text, or process chips after a refresh</li>
         </ul>
         <p>The following still works:</p>
         <ul>
@@ -8181,7 +8180,7 @@ const it = rs, Pt = class Pt extends x {
           </li>
         </ul>
       </div>
-    ` : "";
+    `;
   }
   renderPipelineField() {
     const t = this.getValue("pipeline_id");
