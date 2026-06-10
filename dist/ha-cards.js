@@ -364,7 +364,7 @@ class ws {
     for (; l !== void 0; ) {
       if (o === l.index) {
         let c;
-        l.type === 2 ? c = new G(n, n.nextSibling, this, t) : l.type === 1 ? c = new l.ctor(n, l.name, l.strings, this, t) : l.type === 6 && (c = new As(n, this, t)), this._$AV.push(c), l = i[++r];
+        l.type === 2 ? c = new G(n, n.nextSibling, this, t) : l.type === 1 ? c = new l.ctor(n, l.name, l.strings, this, t) : l.type === 6 && (c = new Cs(n, this, t)), this._$AV.push(c), l = i[++r];
       }
       o !== (l == null ? void 0 : l.index) && (n = N.nextNode(), o++);
     }
@@ -493,7 +493,7 @@ class Ss extends Ut {
     typeof this._$AH == "function" ? this._$AH.call(((e = this.options) == null ? void 0 : e.host) ?? this.element, t) : this._$AH.handleEvent(t);
   }
 }
-let As = class {
+let Cs = class {
   constructor(t, e, i) {
     this.element = t, this.type = 6, this._$AN = void 0, this._$AM = e, this.options = i;
   }
@@ -504,7 +504,7 @@ let As = class {
     K(this, t);
   }
 };
-const Cs = { I: G }, Yt = ot.litHtmlPolyfillSupport;
+const As = { I: G }, Yt = ot.litHtmlPolyfillSupport;
 Yt == null || Yt(ye, G), (ot.litHtmlVersions ?? (ot.litHtmlVersions = [])).push("3.3.2");
 const ks = (a, t, e) => {
   const i = (e == null ? void 0 : e.renderBefore) ?? t;
@@ -1816,8 +1816,8 @@ Et.properties = {
       display: inline;
     }
   `;
-let Ae = Et;
-customElements.define("ha-cards-template-text", Ae);
+let Ce = Et;
+customElements.define("ha-cards-template-text", Ce);
 async function Fi() {
   if (customElements.get("ha-form") && customElements.get("ha-entity-picker"))
     return !0;
@@ -2336,8 +2336,8 @@ zt.properties = {
       line-height: 1;
     }
   `;
-let Ce = zt;
-customElements.define("possible-issues-card-editor", Ce);
+let Ae = zt;
+customElements.define("possible-issues-card-editor", Ae);
 const ie = "Possible Issues", se = Ht, Z = ["sensor", "light", "switch"], ft = ["unavailable"], ae = "none", It = class It extends L {
   constructor() {
     super(...arguments), this.entityRegistry = [], this.deviceRegistry = [], this.registryLoading = !1, this.registryError = !1, this.registryVersion = 0;
@@ -5582,10 +5582,10 @@ Dt.properties = {
       width: auto;
     }
   `;
-let At = Dt;
-class ma extends At {
+let Ct = Dt;
+class ma extends Ct {
 }
-customElements.define("assist-debug-card-editor", At);
+customElements.define("assist-debug-card-editor", Ct);
 customElements.get("conversation-debug-card-editor") || customElements.define("conversation-debug-card-editor", ma);
 const tt = He, yi = 2e3, ba = 48, va = /* @__PURE__ */ new Set([
   "text",
@@ -6415,8 +6415,8 @@ const tt = He, yi = 2e3, ba = 48, va = /* @__PURE__ */ new Set([
     let p = (i + s * Math.cos(e)) * Math.cos(t), u = (i + s * Math.cos(e)) * Math.sin(t), h = s * Math.sin(e);
     const g = Math.cos(n), f = Math.sin(n), m = u * g - h * f, v = u * f + h * g;
     u = m, h = v;
-    const b = Math.cos(o), A = Math.sin(o), $ = p * b + h * A;
-    h = -p * A + h * b, p = $;
+    const b = Math.cos(o), C = Math.sin(o), $ = p * b + h * C;
+    h = -p * C + h * b, p = $;
     const Y = 2.8 / (2.8 + h);
     return {
       x: r + p * c * Y,
@@ -6427,12 +6427,12 @@ const tt = He, yi = 2e3, ba = 48, va = /* @__PURE__ */ new Set([
   drawUlysse31Wireframe(t, e, i, s) {
     const n = getComputedStyle(t.canvas), o = n.color, r = n.borderTopColor || o, l = 0.08 + s * 0.92, { rotX: c, rotY: p } = this.advanceUlysse31Rotation(s), u = e / 2, h = i / 2, g = Math.min(e, i) * (0.24 + l * 0.08), f = 1, m = 0.34, v = 28, b = 14;
     this.drawUlysse31Backdrop(t, e, i, r), t.save(), t.strokeStyle = o, t.lineWidth = Math.max(1, e / 420), t.shadowBlur = 6 + l * 14, t.shadowColor = o, t.globalAlpha = 0.72 + l * 0.28;
-    const A = ($, Y) => {
+    const C = ($, Y) => {
       t.beginPath();
       let ht = !1;
       if (Y !== null)
         for (let V = 0; V <= v; V += 1) {
-          const Kt = V / v * Math.PI * 2, C = this.projectUlysse31Point(
+          const Kt = V / v * Math.PI * 2, A = this.projectUlysse31Point(
             Kt,
             Y,
             f,
@@ -6443,11 +6443,11 @@ const tt = He, yi = 2e3, ba = 48, va = /* @__PURE__ */ new Set([
             h,
             g
           );
-          ht ? t.lineTo(C.x, C.y) : (t.moveTo(C.x, C.y), ht = !0);
+          ht ? t.lineTo(A.x, A.y) : (t.moveTo(A.x, A.y), ht = !0);
         }
       else if ($ !== null)
         for (let V = 0; V <= b; V += 1) {
-          const Kt = V / b * Math.PI * 2, C = this.projectUlysse31Point(
+          const Kt = V / b * Math.PI * 2, A = this.projectUlysse31Point(
             $,
             Kt,
             f,
@@ -6458,14 +6458,14 @@ const tt = He, yi = 2e3, ba = 48, va = /* @__PURE__ */ new Set([
             h,
             g
           );
-          ht ? t.lineTo(C.x, C.y) : (t.moveTo(C.x, C.y), ht = !0);
+          ht ? t.lineTo(A.x, A.y) : (t.moveTo(A.x, A.y), ht = !0);
         }
       t.stroke();
     };
     for (let $ = 0; $ <= b; $ += 1)
-      A(null, $ / b * Math.PI * 2);
+      C(null, $ / b * Math.PI * 2);
     for (let $ = 0; $ < v; $ += 2)
-      A($ / v * Math.PI * 2, null);
+      C($ / v * Math.PI * 2, null);
     t.globalAlpha = 0.45 + l * 0.35, t.lineWidth = Math.max(1, e / 520), t.beginPath(), t.ellipse(u, h, g * 0.34, g * 0.22, p * 0.18, 0, Math.PI * 2), t.stroke(), t.restore();
   }
   advanceUlysse31Rotation(t) {
@@ -6550,8 +6550,8 @@ const tt = He, yi = 2e3, ba = 48, va = /* @__PURE__ */ new Set([
     c.addColorStop(0, r), c.addColorStop(1, l || r), t.fillStyle = c;
     const p = 34, u = Math.max(1, e / 180), h = Math.max(2, e / p - u);
     for (let g = 0; g < p; g += 1) {
-      const f = 0.35 + 0.65 * Math.sin(g / (p - 1) * Math.PI), m = 0.72 + 0.28 * ((Math.sin(g * 1.7) + 1) / 2), v = 0.92 + 0.08 * Math.sin(n * Math.PI * 10), b = Math.max(3, i * (0.08 + s * f * m * v)), A = g * (h + u);
-      t.fillRect(A, i - b, h, b);
+      const f = 0.35 + 0.65 * Math.sin(g / (p - 1) * Math.PI), m = 0.72 + 0.28 * ((Math.sin(g * 1.7) + 1) / 2), v = 0.92 + 0.08 * Math.sin(n * Math.PI * 10), b = Math.max(3, i * (0.08 + s * f * m * v)), C = g * (h + u);
+      t.fillRect(C, i - b, h, b);
     }
   }
   drawMeter(t, e, i, s) {
@@ -7188,10 +7188,10 @@ q.nextAudioVisualizationId = 0, q.properties = {
     }
   `
 ];
-let Ct = q;
-class ya extends Ct {
+let At = q;
+class ya extends At {
 }
-customElements.define("assist-debug-card", Ct);
+customElements.define("assist-debug-card", At);
 customElements.get("conversation-debug-card") || customElements.define("conversation-debug-card", ya);
 window.customCards = window.customCards || [];
 window.customCards.push({
@@ -7204,7 +7204,7 @@ window.customCards.push({
  * Copyright 2020 Google LLC
  * SPDX-License-Identifier: BSD-3-Clause
  */
-const { I: _a } = Cs, _i = (a) => a, wi = () => document.createComment(""), et = (a, t, e) => {
+const { I: _a } = As, _i = (a) => a, wi = () => document.createComment(""), et = (a, t, e) => {
   var n;
   const i = a._$AA.parentNode, s = t === void 0 ? a._$AB : t._$AA;
   if (e === void 0) {
@@ -7282,8 +7282,8 @@ const xi = (a, t, e) => {
     }
     return this.ut = o, xa(a, l), R;
   }
-}), qt = 0.01, Aa = 0.02;
-function Ca(a) {
+}), qt = 0.01, Ca = 0.02;
+function Aa(a) {
   if (!a.length)
     return { rms: 0, peak: 0 };
   let t = 0, e = 0;
@@ -7299,8 +7299,8 @@ function Ca(a) {
 function ka(a, t = qt) {
   if (!a.length)
     return !1;
-  const { rms: e, peak: i } = Ca(a);
-  return e >= t || i >= Aa;
+  const { rms: e, peak: i } = Aa(a);
+  return e >= t || i >= Ca;
 }
 const Ta = `
 class RecorderProcessor extends AudioWorkletProcessor {
@@ -7448,8 +7448,8 @@ function za(a, t, e) {
   const p = getComputedStyle(a).color, u = Math.max(1, r / 120), h = Math.max(2, r / me - u), g = l / 2;
   s.fillStyle = p;
   for (let f = 0; f < me; f += 1) {
-    const m = Math.floor(f / me * i.length), v = i[m] / 255, b = Math.max(Ea, v * l * 0.85), A = f * (h + u);
-    s.fillRect(A, g - b / 2, h, b);
+    const m = Math.floor(f / me * i.length), v = i[m] / 255, b = Math.max(Ea, v * l * 0.85), C = f * (h + u);
+    s.fillRect(C, g - b / 2, h, b);
   }
   return i;
 }
@@ -7760,7 +7760,7 @@ function ja(a, t) {
   }
   return -1;
 }
-function Ai(a, t, e) {
+function Ci(a, t, e) {
   if (e)
     return a;
   const i = new Set(a.map((n) => n.id)), s = t.filter(
@@ -7768,7 +7768,7 @@ function Ai(a, t, e) {
   );
   return s.length ? [...a, ...s] : a;
 }
-function Ci(a, t) {
+function Ai(a, t) {
   const e = /* @__PURE__ */ new Map();
   for (let i = 0; i < t.length; i++) {
     const s = t[i];
@@ -7807,8 +7807,8 @@ function qa(a, t, e) {
   const s = ja(a, t);
   if (s === -1) {
     const r = new Set(t.map((l) => l.id));
-    return Ai(
-      Ci(
+    return Ci(
+      Ai(
         [
           ...t.filter(
             (l) => be(l, i) && !Si(l)
@@ -7824,8 +7824,8 @@ function qa(a, t, e) {
   const n = new Set(a.map((r) => r.id)), o = t.slice(0, s).filter(
     (r) => be(r, i) && !n.has(r.id) && !Si(r)
   );
-  return Ai(
-    Ci([...o, ...a], t),
+  return Ci(
+    Ai([...o, ...a], t),
     t,
     i
   );
@@ -7973,6 +7973,7 @@ const rs = {
   title: "Assist",
   pipeline_id: "preferred",
   run_count: Ft,
+  card_only_history: !1,
   show_header: !0,
   text_input: !0,
   voice_input: !1,
@@ -8045,7 +8046,19 @@ const it = rs, Pt = class Pt extends x {
     })}
           ${this.renderCheckbox("Show header (title, pipeline, status)", "show_header")}
           ${this.renderPipelineField()}
-          ${this.renderNumberInput("Recent runs", "run_count", it.run_count, 0, 20)}
+          ${this.renderCheckbox("Show only messages from this card", "card_only_history")}
+          <p class="hint">
+            Hides external and wake-word conversations by skipping Assist debug history. Thinking and
+            process details still appear for messages you send from this card.
+          </p>
+          ${this.renderNumberInput(
+      "Recent runs",
+      "run_count",
+      it.run_count,
+      0,
+      20,
+      this.getValue("card_only_history")
+    )}
         </div>
 
         <fieldset>
@@ -8162,6 +8175,10 @@ const it = rs, Pt = class Pt extends x {
           <li>Live text chat in the current browser session</li>
           <li>Voice input and playback while you are actively using the card</li>
           <li>Thinking and process details for conversations you start yourself</li>
+          <li>
+            <strong>Show only messages from this card</strong> — same live behavior without debug API
+            access
+          </li>
         </ul>
       </div>
     ` : "";
@@ -8235,8 +8252,8 @@ const it = rs, Pt = class Pt extends x {
       </label>
     `;
   }
-  renderNumberInput(t, e, i, s, n) {
-    const o = Number(this.getValue(e));
+  renderNumberInput(t, e, i, s, n, o = !1) {
+    const r = Number(this.getValue(e));
     return d`
       <label>
         <span>${t}</span>
@@ -8244,8 +8261,9 @@ const it = rs, Pt = class Pt extends x {
           type="number"
           min=${String(s)}
           max=${String(n)}
-          .value=${String(Number.isFinite(o) ? o : i)}
-          @change=${(r) => this.updateNumberValue(e, r.target.value, i, s, n)}
+          ?disabled=${o}
+          .value=${String(Number.isFinite(r) ? r : i)}
+          @change=${(l) => this.updateNumberValue(e, l.target.value, i, s, n)}
         />
       </label>
     `;
@@ -8511,7 +8529,11 @@ const w = rs, on = 1e3, rn = 3e4, ln = 400, cn = 48, dn = {
     if (t.has("messages") && this.scheduleScrollToEnd(), !this.hass || !this.config)
       return;
     const e = t.has("hass") && !t.get("hass");
-    (e || t.has("config") || t.has("resolvedPipelineId") || t.has("processing") || t.has("listening")) && this.syncConversationRefreshTimer(), (e || t.has("config")) && (this.loadPipelines(), xt(this.config.suggested_prompts) || (this.suggestedPrompts = [])), t.has("listening") && (this.listening ? this.updateComplete.then(() => this.startMicVisualizer()) : this.stopMicVisualizer());
+    if ((e || t.has("config") || t.has("resolvedPipelineId") || t.has("processing") || t.has("listening")) && this.syncConversationRefreshTimer(), t.has("config")) {
+      const i = t.get("config"), s = (i == null ? void 0 : i.card_only_history) === !0;
+      this.usesCardOnlyHistory() && !s && !this.processing && !this.listening && this.resetCardOnlyHistoryState();
+    }
+    (e || t.has("config")) && (this.loadPipelines(), xt(this.config.suggested_prompts) || (this.suggestedPrompts = [])), t.has("listening") && (this.listening ? this.updateComplete.then(() => this.startMicVisualizer()) : this.stopMicVisualizer());
   }
   render() {
     const t = this.isVoicePipelineConfigured(), e = this.needsHttpsForVoice();
@@ -8877,7 +8899,7 @@ const w = rs, on = 1e3, rn = 3e4, ln = 400, cn = 48, dn = {
         return;
       this.pipelines = i.pipelines || [];
       const s = Ji(this.config.pipeline_id, i);
-      this.resolvedPipelineId = s, this.error = "", s ? await this.loadRecentHistory(s, e, t) : !this.processing && !this.listening && (this.messages = [], this.conversationId = null);
+      this.resolvedPipelineId = s, this.error = "", s && !this.usesCardOnlyHistory() ? await this.loadRecentHistory(s, e, t) : !s && !this.processing && !this.listening && (this.messages = [], this.conversationId = null);
     } catch (i) {
       e === this.loadToken && (this.error = this.formatError(i));
     } finally {
@@ -8890,7 +8912,7 @@ const w = rs, on = 1e3, rn = 3e4, ln = 400, cn = 48, dn = {
    * user-facing error slot — that is reserved for the user's own actions.
    */
   async loadRecentHistory(t, e = this.loadToken, i = !1, s = this.messages, n = !1) {
-    if (!this.hass || this.processing || this.listening || this.historyDisabled)
+    if (!this.hass || this.processing || this.listening || this.historyDisabled || this.usesCardOnlyHistory())
       return !0;
     const o = `${t}:${this.getHistoryRunCount()}`;
     if (!i && o === this.lastHistoryKey)
@@ -8962,7 +8984,7 @@ const w = rs, on = 1e3, rn = 3e4, ln = 400, cn = 48, dn = {
     t.reset(), t.sync();
   }
   shouldLiveRefresh() {
-    return !!(this.hass && this.resolvedPipelineId && !this.processing && !this.listening && !this.historyDisabled && this.isConnected && !document.hidden);
+    return !!(this.hass && this.resolvedPipelineId && !this.processing && !this.listening && !this.historyDisabled && !this.usesCardOnlyHistory() && this.isConnected && !document.hidden);
   }
   clearConversationRefreshTimer() {
     var t;
@@ -9085,7 +9107,7 @@ ${n}`;
     (t = this.activeUnsubscribe) == null || t.call(this), this.activeUnsubscribe = void 0, this.processing = !1, this.stopListening(!1), this.removeUnprocessedSttMessages(), this.refreshHistoryAfterRun(), this.maybeContinueConversationAfterRun(this.audioController.isPlaying());
   }
   refreshHistoryAfterRun() {
-    if (!this.resolvedPipelineId || this.historyDisabled)
+    if (!this.resolvedPipelineId || this.historyDisabled || this.usesCardOnlyHistory())
       return;
     const t = ++this.loadToken;
     this.loadRecentHistory(this.resolvedPipelineId, t, !0, this.messages, !0);
@@ -9181,6 +9203,12 @@ ${n}`;
   }
   usesSessionConversation() {
     return this.config.session_conversation !== !1;
+  }
+  usesCardOnlyHistory() {
+    return this.config.card_only_history === !0;
+  }
+  resetCardOnlyHistoryState() {
+    this.messages = [], this.conversationId = null, this.lastHistoryKey = "", this.lastRunsSnapshot = "", this.hasInProgressHistoryRun = !1, this.clearConversationRefreshTimer();
   }
   resolveConversationId(t, e) {
     return this.usesSessionConversation() ? e ? this.conversationId : null : t || (e ? this.conversationId : null);

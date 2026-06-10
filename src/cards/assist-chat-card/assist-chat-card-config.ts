@@ -7,6 +7,7 @@ export type AssistChatCardConfig = {
   title?: string;
   pipeline_id?: string;
   run_count?: number;
+  card_only_history?: boolean;
   show_header?: boolean;
   text_input?: boolean;
   voice_input?: boolean;
@@ -42,6 +43,7 @@ export const ASSIST_CHAT_CARD_DEFAULTS = {
   title: "Assist",
   pipeline_id: "preferred",
   run_count: DEFAULT_ASSIST_RUN_COUNT,
+  card_only_history: false,
   show_header: true,
   text_input: true,
   voice_input: false,

@@ -301,6 +301,15 @@ class AssistChatCard extends BaseCard {
       this.syncConversationRefreshTimer();
     }
 
+    if (changedProperties.has("config")) {
+      const prevConfig = changedProperties.get("config") as AssistChatCardConfig | undefined;
+      const wasCardOnly = prevConfig?.card_only_history === true;
+
+      if (this.usesCardOnlyHistory() && !wasCardOnly && !this.processing && !this.listening) {
+        this.resetCardOnlyHistoryState();
+      }
+    }
+
     if (firstHass || changedProperties.has("config")) {
       void this.loadPipelines();
       const template = normalizeSuggestedPrompts(this.config.suggested_prompts);
@@ -945,9 +954,9 @@ class AssistChatCard extends BaseCard {
       this.resolvedPipelineId = pipelineId;
       this.error = "";
 
-      if (pipelineId) {
+      if (pipelineId && !this.usesCardOnlyHistory()) {
         await this.loadRecentHistory(pipelineId, token, forceHistory);
-      } else if (!this.processing && !this.listening) {
+      } else if (!pipelineId && !this.processing && !this.listening) {
         this.messages = [];
         this.conversationId = null;
       }
@@ -974,7 +983,13 @@ class AssistChatCard extends BaseCard {
     fallbackMessages: AssistChatMessage[] = this.messages,
     preserveLocalMessages = false
   ): Promise<boolean> {
-    if (!this.hass || this.processing || this.listening || this.historyDisabled) {
+    if (
+      !this.hass ||
+      this.processing ||
+      this.listening ||
+      this.historyDisabled ||
+      this.usesCardOnlyHistory()
+    ) {
       return true;
     }
 
@@ -1135,6 +1150,7 @@ class AssistChatCard extends BaseCard {
         !this.processing &&
         !this.listening &&
         !this.historyDisabled &&
+        !this.usesCardOnlyHistory() &&
         this.isConnected &&
         !document.hidden
     );
@@ -1346,7 +1362,7 @@ class AssistChatCard extends BaseCard {
   }
 
   private refreshHistoryAfterRun() {
-    if (!this.resolvedPipelineId || this.historyDisabled) {
+    if (!this.resolvedPipelineId || this.historyDisabled || this.usesCardOnlyHistory()) {
       return;
     }
 
@@ -1520,6 +1536,19 @@ class AssistChatCard extends BaseCard {
 
   private usesSessionConversation() {
     return this.config.session_conversation !== false;
+  }
+
+  private usesCardOnlyHistory() {
+    return this.config.card_only_history === true;
+  }
+
+  private resetCardOnlyHistoryState() {
+    this.messages = [];
+    this.conversationId = null;
+    this.lastHistoryKey = "";
+    this.lastRunsSnapshot = "";
+    this.hasInProgressHistoryRun = false;
+    this.clearConversationRefreshTimer();
   }
 
   private resolveConversationId(historyConversationId: string | null, preserveLocalMessages: boolean) {

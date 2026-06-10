@@ -6,6 +6,10 @@ describe("ASSIST_CHAT_CARD_DEFAULTS", () => {
     expect(ASSIST_CHAT_CARD_DEFAULTS.session_conversation).toBe(true);
   });
 
+  it("defaults card_only_history to false", () => {
+    expect(ASSIST_CHAT_CARD_DEFAULTS.card_only_history).toBe(false);
+  });
+
   it("defaults colors to theme tokens", () => {
     expect(ASSIST_CHAT_CARD_DEFAULTS.background_color).toBe("var(--card-background-color)");
 
