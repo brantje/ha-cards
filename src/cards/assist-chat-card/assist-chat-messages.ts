@@ -311,6 +311,34 @@ export function buildMessagesFromRuns(
 }
 
 /**
+ * Shallow-clone messages so Lit re-renders bubbles after in-place assistant
+ * edits (array spread alone keeps the same message object references).
+ */
+export function touchMessages(messages: AssistChatMessage[]): AssistChatMessage[] {
+  return messages.map((message) => ({ ...message }));
+}
+
+/**
+ * Fingerprint of visible message content, for scroll decisions independent of
+ * array identity.
+ */
+export function getMessagesScrollSnapshot(messages: AssistChatMessage[]): string {
+  return messages
+    .map((message) =>
+      [
+        message.id,
+        message.role,
+        message.status,
+        message.text,
+        message.thinking || "",
+        message.process?.stage || "",
+        message.process?.toolCalls.length ?? 0,
+      ].join(":")
+    )
+    .join("|");
+}
+
+/**
  * Stable fingerprint of run state, used to skip rebuilds when nothing changed.
  */
 export function getRunsSnapshot(runs: AssistChatRun[]): string {
