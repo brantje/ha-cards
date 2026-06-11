@@ -10,11 +10,13 @@ import {
   buildMessagesFromRuns,
   filterRunsAfterConversationClear,
   finalizeCancelledMessages,
+  getMessagesScrollSnapshot,
   getRunsSnapshot,
   isLoadingMessage,
   isListeningPlaceholderMessage,
   isUnprocessedSttAssistantMessage,
   mergeHistoryMessages,
+  touchMessages,
 } from "./assist-chat-messages";
 
 const ev = (type: string, timestamp: string, data?: Record<string, any>): PipelineRunEvent => ({
@@ -165,6 +167,33 @@ describe("filterRunsAfterConversationClear", () => {
       "b",
     ]);
     expect(filterRunsAfterConversationClear(runs, null)).toHaveLength(2);
+  });
+});
+
+describe("touchMessages", () => {
+  it("returns new array and message objects without mutating the source", () => {
+    const source = [message({ id: "1", role: "user", text: "hi" })];
+    const touched = touchMessages(source);
+
+    expect(touched).not.toBe(source);
+    expect(touched[0]).not.toBe(source[0]);
+    expect(touched[0]).toEqual(source[0]);
+
+    touched[0].text = "changed";
+    expect(source[0].text).toBe("hi");
+  });
+});
+
+describe("getMessagesScrollSnapshot", () => {
+  it("changes when streamed content grows", () => {
+    const before = getMessagesScrollSnapshot([
+      message({ id: "a", role: "assistant", status: "streaming", text: "hel" }),
+    ]);
+    const after = getMessagesScrollSnapshot([
+      message({ id: "a", role: "assistant", status: "streaming", text: "hello" }),
+    ]);
+
+    expect(after).not.toBe(before);
   });
 });
 

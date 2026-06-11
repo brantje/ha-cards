@@ -55,6 +55,7 @@ import {
   isListeningPlaceholderMessage,
   isUnprocessedSttAssistantMessage,
   mergeHistoryMessages,
+  touchMessages,
 } from "./assist-chat-messages";
 import {
   ASSIST_CHAT_CARD_DEFAULTS,
@@ -164,6 +165,8 @@ class AssistChatCard extends BaseCard {
   private chatLogAccumulator = createAssistChatLogAccumulator();
   private continueConversationAfterRun = false;
   private scrollFrame?: number;
+  private messagesResizeObserver?: ResizeObserver;
+  private suppressScrollTracking = false;
   private stickToBottom = true;
   private stickThinkingToBottom = true;
   private loadToken = 0;
@@ -248,6 +251,8 @@ class AssistChatCard extends BaseCard {
       window.cancelAnimationFrame(this.scrollFrame);
       this.scrollFrame = undefined;
     }
+    this.messagesResizeObserver?.disconnect();
+    this.messagesResizeObserver = undefined;
     this.stopMicVisualizer();
     this.clearConversationRefreshTimer();
     this.stopActiveRun();
@@ -279,6 +284,7 @@ class AssistChatCard extends BaseCard {
 
   updated(changedProperties: PropertyValues) {
     if (changedProperties.has("messages")) {
+      this.observeMessagesResize();
       this.scheduleScrollToEnd();
     }
 
@@ -571,11 +577,19 @@ class AssistChatCard extends BaseCard {
   }
 
   private handleMessagesScroll = (event: Event) => {
+    if (this.suppressScrollTracking) {
+      return;
+    }
+
     const messages = event.currentTarget as HTMLElement;
     this.stickToBottom = this.isNearBottom(messages);
   };
 
   private handleThinkingScroll = (event: Event) => {
+    if (this.suppressScrollTracking) {
+      return;
+    }
+
     const target = event.currentTarget as HTMLElement;
     const blocks = this.renderRoot.querySelectorAll(".thinking-content");
     const latest = blocks[blocks.length - 1];
@@ -620,11 +634,33 @@ class AssistChatCard extends BaseCard {
     scroll(attempts);
   }
 
+  private observeMessagesResize() {
+    const messages = this.renderRoot.querySelector(".messages") as HTMLElement | null;
+    if (!messages) {
+      return;
+    }
+
+    if (!this.messagesResizeObserver) {
+      this.messagesResizeObserver = new ResizeObserver(() => {
+        if (this.stickToBottom || this.stickThinkingToBottom) {
+          this.scheduleScrollToEnd(2);
+        }
+      });
+    }
+
+    this.messagesResizeObserver.disconnect();
+    this.messagesResizeObserver.observe(messages);
+  }
+
   private scrollMessagesToEnd() {
     const messages = this.renderRoot.querySelector(".messages") as HTMLElement | null;
 
     if (messages) {
+      this.suppressScrollTracking = true;
       messages.scrollTop = messages.scrollHeight;
+      window.requestAnimationFrame(() => {
+        this.suppressScrollTracking = false;
+      });
     }
   }
 
@@ -633,7 +669,11 @@ class AssistChatCard extends BaseCard {
     const latest = blocks[blocks.length - 1] as HTMLElement | undefined;
 
     if (latest) {
+      this.suppressScrollTracking = true;
       latest.scrollTop = latest.scrollHeight;
+      window.requestAnimationFrame(() => {
+        this.suppressScrollTracking = false;
+      });
     }
   }
 
@@ -816,7 +856,8 @@ class AssistChatCard extends BaseCard {
             this.error = String(event.data?.message || this.text("run_failed"));
             this.finishRun();
           } else {
-            this.messages = [...this.messages];
+            this.messages = touchMessages(this.messages);
+            this.scheduleScrollToEnd();
           }
 
           if (event.type === "run-start") {
@@ -872,7 +913,8 @@ class AssistChatCard extends BaseCard {
       this.finishRun();
     }
 
-    this.messages = [...this.messages];
+    this.messages = touchMessages(this.messages);
+    this.scheduleScrollToEnd();
   }
 
   private applyIntentDelta(assistant: AssistChatMessage, delta: AssistChatLogDelta) {
@@ -1043,6 +1085,7 @@ class AssistChatCard extends BaseCard {
       }
 
       this.messages = mergedMessages.filter((message) => !isUnprocessedSttAssistantMessage(message));
+      this.scheduleScrollToEnd();
       this.conversationId = this.resolveConversationId(conversationId, preserveLocalMessages);
       this.lastRunsSnapshot = snapshot;
       this.lastHistoryKey = historyKey;
@@ -1237,7 +1280,7 @@ class AssistChatCard extends BaseCard {
     const text = this.getMicrophoneNotSupportedText();
 
     if (this.messages.some((message) => message.persistLocal && message.text === text)) {
-      this.messages = [...this.messages];
+      this.messages = touchMessages(this.messages);
       this.scheduleScrollToEnd();
       return;
     }
@@ -1407,14 +1450,15 @@ class AssistChatCard extends BaseCard {
       ...message,
       timestamp: message.timestamp || new Date().toISOString(),
     };
-    this.messages = [...this.messages, next];
+    this.messages = [...touchMessages(this.messages), next];
     return next;
   }
 
   private setAssistantError(assistant: AssistChatMessage, message: string) {
     assistant.text = message;
     assistant.status = "error";
-    this.messages = [...this.messages];
+    this.messages = touchMessages(this.messages);
+    this.scheduleScrollToEnd();
   }
 
   private clearConversation() {
