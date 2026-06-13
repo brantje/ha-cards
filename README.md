@@ -18,7 +18,7 @@ A small collection of **custom Lovelace cards** built with **Lit** and bundled i
 
 ### Manual
 
-1. Download/copy `dist/ha-cards.js` to your Home Assistant `config/www/` folder (so it becomes `/local/ha-cards.js`).
+1. Download `dist/ha-cards.js` from the [latest GitHub release](https://github.com/brantje/ha-cards/releases/latest) and copy it to your Home Assistant `config/www/` folder (so it becomes `/local/ha-cards.js`).
 2. Add the resource:
 
 ```yaml
@@ -334,7 +334,31 @@ npm install
 npm run dev
 ```
 
-Build output:
+Build locally:
 
-- `dist/ha-cards.js`
+```bash
+npm run build
+```
+
+Output: `dist/ha-cards.js` (not committed; CI builds it for releases).
+
+Run tests:
+
+```bash
+npm test
+```
+
+## Releasing
+
+1. Merge changes to `main`.
+2. Create and push a version tag:
+
+```bash
+git checkout main && git pull
+git tag v1.2.3
+git push origin v1.2.3
+```
+
+3. GitHub Actions runs tests, builds `dist/ha-cards.js`, and publishes a GitHub Release with that file attached.
+4. HACS users receive the new version from the release tag.
 

@@ -1,6 +1,7 @@
 {
   "name": "HA Cards",
   "render_readme": true,
-  "filename": "ha-cards.js"
+  "filename": "dist/ha-cards.js",
+  "content_in_root": false
 }
 
